@@ -78,3 +78,11 @@ Images are previewed using revocable browser object URLs and are never uploaded.
 This build uses `output: 'export'`, so it requires no Node.js server on Hostinger. API routes, image recognition, feed imports and database writes are not implemented. Before adding server features, upgrade Next.js/React to the current patched releases, enable a supported secure server runtime, and implement the safeguards in the integration plan. The current lockfile records the dependency versions tested for this static prototype.
 
 Before public launch, replace the incomplete operator/legal pages, complete privacy disclosures, connect verified product data and remove the prototype's `noindex` and `robots.txt` restrictions only when the site is ready. The hostname has not been configured or deployed by this implementation.
+
+## MySQL/server preparation
+
+The default static export and demo UI remain intact. A separate `server-app/` build reuses the existing pages and adds disabled-by-default MySQL search and image-analysis API boundaries. No production database has been connected.
+
+Use `npm run build:server` / `npm run start:server` for the optional Node.js target. The schema and checksum-verified migration runner live in `db/migrations/` and `server/db/`. Runtime, import and migration credentials are separate, server-only environment variables. `.env.example` has no passwords and all access gates are false.
+
+See [MySQL and Hostinger transition](docs/mysql-server-transition.md) for the schema, least-privilege accounts, staged Awin batch import, disabled image integration, test commands and safe rollout/rollback plan. No migration or import runs automatically during build/start.

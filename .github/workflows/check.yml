@@ -51,3 +51,70 @@ jobs:
           name: dependency-audit-reports
           path: audit-*.json
           if-no-files-found: ignore
+
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ci_ephemeral_root_password
+          MYSQL_DATABASE: findmydup_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -pci_ephemeral_root_password"
+          --health-interval=10s --health-timeout=5s --health-retries=10
+    env:
+      TEST_MYSQL_INTEGRATION_ENABLED: "true"
+      DATABASE_ACCESS_ENABLED: "true"
+      DB_MIGRATIONS_ENABLED: "true"
+      AWIN_IMPORT_ENABLED: "true"
+      CATALOG_SEARCH_ENABLED: "true"
+      IMAGE_SEARCH_ENABLED: "false"
+      MYSQL_HOST: 127.0.0.1
+      MYSQL_PORT: "3306"
+      MYSQL_DATABASE: findmydup_test
+      MYSQL_USER: findmydup_test_read
+      MYSQL_PASSWORD: ci_ephemeral_read_password
+      MYSQL_MIGRATION_USER: root
+      MYSQL_MIGRATION_PASSWORD: ci_ephemeral_root_password
+      MYSQL_IMPORT_USER: findmydup_test_import
+      MYSQL_IMPORT_PASSWORD: ci_ephemeral_import_password
+      MYSQL_TLS_MODE: disabled
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build existing static website without database access
+        run: npm run build
+        env:
+          DATABASE_ACCESS_ENABLED: "false"
+          DB_MIGRATIONS_ENABLED: "false"
+          AWIN_IMPORT_ENABLED: "false"
+          CATALOG_SEARCH_ENABLED: "false"
+      - name: Build separate standalone server without database access
+        run: npm run build:server
+        env:
+          DATABASE_ACCESS_ENABLED: "false"
+          DB_MIGRATIONS_ENABLED: "false"
+          AWIN_IMPORT_ENABLED: "false"
+          CATALOG_SEARCH_ENABLED: "false"
+      - name: Test migrations and imports only against isolated CI MySQL
+        run: npm run test:db
+      - name: Verify server build and MySQL API
+        run: |
+          npx playwright-core install chromium
+          npm run test:server
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backend-browser-evidence
+          path: test-artifacts/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hostinger-standalone-server
+          path: server-app/.next/standalone/

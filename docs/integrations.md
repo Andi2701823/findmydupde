@@ -1,5 +1,7 @@
 # Phase 2 integration boundaries
 
+The selected database is now Hostinger MySQL. See [MySQL/server transition](mysql-server-transition.md) for the prepared schema, API, staged Awin imports and access gates. The Supabase section below remains an earlier option, not an active dependency.
+
 No external SDK, secret or paid service is needed or contacted by the prototype. These interfaces are preparation, not implemented integrations.
 
 ## Catalog provider

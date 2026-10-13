@@ -7,15 +7,24 @@
     "build": "next build --webpack",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "test": "node --conditions=react-server --experimental-strip-types --test tests/*.test.ts",
     "test:e2e": "node tests/browser.mjs",
     "check": "npm run typecheck && npm run lint && npm test && npm run build",
-    "serve": "python3 -m http.server 3000 --directory out"
+    "serve": "python3 -m http.server 3000 --directory out",
+    "dev:server": "node scripts/prepare-server.mjs && node --env-file-if-exists=.env node_modules/next/dist/bin/next dev server-app",
+    "build:server": "node scripts/prepare-server.mjs && next build server-app --webpack && node scripts/package-server.mjs",
+    "start:server": "node --env-file-if-exists=.env server-app/.next/standalone/server-app/server.js",
+    "db:migrate": "node --env-file-if-exists=.env --conditions=react-server --experimental-strip-types scripts/migrate.ts",
+    "test:db": "node --conditions=react-server --experimental-strip-types --test tests/mysql.integration.ts",
+    "test:server": "node tests/server-browser.mjs",
+    "awin:import": "node --env-file-if-exists=.env --conditions=react-server --experimental-strip-types scripts/import-awin.ts"
   },
   "dependencies": {
     "next": "16.4.0",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "mysql2": "^3.21.0",
+    "server-only": "0.0.1"
   },
   "devDependencies": {
     "@types/node": "22.20.5",
