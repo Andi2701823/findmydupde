@@ -8,18 +8,21 @@ const port = 3218,
   origin = `http://127.0.0.1:${port}`;
 let child, browser;
 async function stop() {
-  if (child) {
-    const current = child;
-    child = undefined;
-    current.kill("SIGTERM");
-    await new Promise((resolve) => {
-      current.once("exit", resolve);
-      setTimeout(() => {
-        current.kill("SIGKILL");
-        resolve();
-      }, 5000).unref();
+  if (!child) return;
+  const current = child;
+  child = undefined;
+  if (current.exitCode !== null || current.signalCode !== null) return;
+  await new Promise((resolve) => {
+    const timer = setTimeout(() => {
+      current.kill("SIGKILL");
+      resolve();
+    }, 5000);
+    current.once("exit", () => {
+      clearTimeout(timer);
+      resolve();
     });
-  }
+    current.kill("SIGTERM");
+  });
 }
 async function start(enabled) {
   await stop();
@@ -27,7 +30,7 @@ async function start(enabled) {
     process.execPath,
     ["server-app/.next/standalone/server-app/server.js"],
     {
-      stdio: "ignore",
+      stdio: ["ignore", "ignore", "pipe"],
       env: {
         ...process.env,
         PORT: String(port),
@@ -38,8 +41,13 @@ async function start(enabled) {
       },
     },
   );
+  let startupError = "";
+  child.stderr.on("data", (data) => {
+    startupError = (startupError + data.toString()).slice(-4000);
+  });
   let ready = false;
   for (let n = 0; n < 200; n++) {
+    if (child.exitCode !== null || child.signalCode !== null) break;
     try {
       if ((await fetch(origin)).ok) {
         ready = true;
@@ -48,7 +56,7 @@ async function start(enabled) {
     } catch {}
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
-  assert.ok(ready, "Server build did not start");
+  assert.ok(ready, "Server build did not start: " + startupError);
 }
 function walk(dir) {
   return readdirSync(dir, { withFileTypes: true }).flatMap((e) =>

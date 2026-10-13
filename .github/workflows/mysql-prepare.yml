@@ -134,3 +134,5 @@ jobs:
           path: server-app/.next/standalone/
 
 # Verification revision 2: configuration types and migration integrity.
+
+# Verification revision 3: standalone module boundary and startup diagnostics.
