@@ -26,6 +26,9 @@ export async function migrate(
     const names = (await readdir(directory))
       .filter((name) => /^\d{3}_[a-z0-9_]+\.sql$/.test(name))
       .sort();
+    for (const version of applied.keys())
+      if (!names.includes(version))
+        throw new Error("Applied migration file is missing");
     for (const name of names) {
       const sql = await readFile(resolve(directory, name), "utf8");
       const hash = createHash("sha256").update(sql).digest("hex");

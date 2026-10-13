@@ -6,7 +6,10 @@ export class DatabaseUnavailable extends Error {
     this.name = "DatabaseUnavailable";
   }
 }
-function required(env: NodeJS.ProcessEnv, name: string): string {
+function required(
+  env: Readonly<Record<string, string | undefined>>,
+  name: string,
+): string {
   const value = env[name];
   if (!value || value === "replace_me" || value.includes("your_password"))
     throw new DatabaseUnavailable();
@@ -25,7 +28,7 @@ function integer(
 }
 export function databaseOptions(
   role: DatabaseRole,
-  env: NodeJS.ProcessEnv = process.env,
+  env: Readonly<Record<string, string | undefined>> = process.env,
 ) {
   if (env.DATABASE_ACCESS_ENABLED !== "true") throw new DatabaseUnavailable();
   if (role === "migration" && env.DB_MIGRATIONS_ENABLED !== "true")

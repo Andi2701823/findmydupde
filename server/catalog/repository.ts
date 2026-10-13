@@ -43,6 +43,7 @@ export function buildSearchQuery(input: CatalogSearch, maxAgeDays = 3) {
     throw new Error("Invalid freshness limit");
   const conditions = [
     "p.active = 1",
+    "p.source = 'awin'",
     "r.enabled = 1",
     "o.active = 1",
     "o.availability <> 'out_of_stock'",

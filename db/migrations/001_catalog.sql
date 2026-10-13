@@ -1,6 +1,6 @@
 -- Empty catalog schema. No product, retailer, price or affiliate seed data.
 -- MySQL 8+ / compatible MariaDB. DDL is not transactionally rolled back by MySQL.
-CREATE TABLE IF NOT EXISTS categories (
+CREATE TABLE categories (
   id CHAR(36) NOT NULL PRIMARY KEY,
   slug VARCHAR(64) NOT NULL,
   name VARCHAR(120) NOT NULL,
@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS categories (
   CONSTRAINT categories_parent FOREIGN KEY (parent_id) REFERENCES categories(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 -- statement-breakpoint
-CREATE TABLE IF NOT EXISTS retailers (
+CREATE TABLE retailers (
   id CHAR(36) NOT NULL PRIMARY KEY,
   awin_merchant_id VARCHAR(30) NULL,
   name VARCHAR(160) NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS retailers (
   UNIQUE KEY retailers_awin_merchant (awin_merchant_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 -- statement-breakpoint
-CREATE TABLE IF NOT EXISTS products (
+CREATE TABLE products (
   id CHAR(36) NOT NULL PRIMARY KEY,
   source VARCHAR(20) NOT NULL,
   source_key VARCHAR(191) NOT NULL,
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS products (
   CONSTRAINT products_category FOREIGN KEY (category_id) REFERENCES categories(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 -- statement-breakpoint
-CREATE TABLE IF NOT EXISTS offers (
+CREATE TABLE offers (
   id CHAR(36) NOT NULL PRIMARY KEY,
   product_id CHAR(36) NOT NULL,
   retailer_id CHAR(36) NOT NULL,
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS offers (
   CONSTRAINT offers_retailer FOREIGN KEY (retailer_id) REFERENCES retailers(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 -- statement-breakpoint
-CREATE TABLE IF NOT EXISTS prices (
+CREATE TABLE prices (
   id CHAR(36) NOT NULL PRIMARY KEY,
   offer_id CHAR(36) NOT NULL,
   amount_minor BIGINT UNSIGNED NOT NULL,
@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS prices (
   CONSTRAINT prices_offer FOREIGN KEY (offer_id) REFERENCES offers(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 -- statement-breakpoint
-CREATE TABLE IF NOT EXISTS product_images (
+CREATE TABLE product_images (
   id CHAR(36) NOT NULL PRIMARY KEY,
   product_id CHAR(36) NOT NULL,
   url VARCHAR(2048) NOT NULL,
@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS product_images (
   CONSTRAINT images_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 -- statement-breakpoint
-CREATE TABLE IF NOT EXISTS affiliate_links (
+CREATE TABLE affiliate_links (
   id CHAR(36) NOT NULL PRIMARY KEY,
   offer_id CHAR(36) NOT NULL,
   network VARCHAR(20) NOT NULL,
@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS affiliate_links (
   CONSTRAINT affiliate_offer FOREIGN KEY (offer_id) REFERENCES offers(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 -- statement-breakpoint
-CREATE TABLE IF NOT EXISTS feed_runs (
+CREATE TABLE feed_runs (
   id CHAR(36) NOT NULL PRIMARY KEY,
   retailer_id CHAR(36) NOT NULL,
   source VARCHAR(20) NOT NULL,
