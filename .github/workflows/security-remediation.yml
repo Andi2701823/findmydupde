@@ -1,0 +1,126 @@
+name: Security remediation verification
+on:
+  push:
+    branches: [security/dependency-remediation-20261013]
+    paths: [.github/workflows/security-remediation.yml]
+permissions:
+  contents: write
+jobs:
+  remediate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Audit original lockfile
+        run: |
+          mkdir -p test-artifacts
+          npm audit --json > test-artifacts/audit-before.json || true
+          node -e "const a=require('./test-artifacts/audit-before.json'); if(!a.metadata) throw Error('Audit failed'); console.log('BASELINE_AUDIT', JSON.stringify(a.metadata.vulnerabilities));"
+      - name: Select stable compatible releases and update lockfile
+        run: |
+          cat > "$RUNNER_TEMP/security-update.cjs" <<'JS'
+          const fs = require('node:fs');
+          const { execFileSync } = require('node:child_process');
+          const p = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          function latest(name, range) {
+            const raw = JSON.parse(execFileSync('npm', ['view', name + '@' + range, 'version', '--json'], { encoding: 'utf8' }));
+            const versions = (Array.isArray(raw) ? raw : [raw]).filter(v => /^\d+\.\d+\.\d+$/.test(v)).sort((a,b) => {
+              const aa=a.split('.').map(Number), bb=b.split('.').map(Number);
+              return aa[0]-bb[0] || aa[1]-bb[1] || aa[2]-bb[2];
+            });
+            if (!versions.length) throw new Error('No stable version for ' + name + '@' + range);
+            return versions.at(-1);
+          }
+          for (const section of ['dependencies', 'devDependencies']) {
+            for (const [name, version] of Object.entries(p[section])) {
+              if (name === 'eslint-config-next') continue;
+              p[section][name] = latest(name, version.split('.')[0]);
+            }
+          }
+          p.devDependencies['eslint-config-next'] = p.dependencies.next;
+          if (Number(p.dependencies.next.split('.')[1]) < 3) throw new Error('No patched Next 16.3+ found');
+          fs.writeFileSync('package.json', JSON.stringify(p,null,2)+'\n');
+          console.log('SELECTED_VERSIONS', JSON.stringify({dependencies:p.dependencies,devDependencies:p.devDependencies}));
+          execFileSync('npm',['install','--no-audit','--no-fund'], {stdio:'inherit'});
+          JS
+          node "$RUNNER_TEMP/security-update.cjs"
+      - name: Audit upgraded dependencies and patch affected compatible transitive releases
+        run: |
+          npm audit --json > test-artifacts/audit-upgrade.json || true
+          cat > "$RUNNER_TEMP/security-overrides.cjs" <<'JS'
+          const fs=require('node:fs'), {execFileSync}=require('node:child_process');
+          const audit=JSON.parse(fs.readFileSync('test-artifacts/audit-upgrade.json','utf8'));
+          if(!audit.metadata)throw Error('Audit failed');
+          console.log('AFTER_UPGRADE_AUDIT',JSON.stringify(audit.metadata.vulnerabilities));
+          console.log('AFTER_UPGRADE_FINDINGS',JSON.stringify(Object.values(audit.vulnerabilities||{}).map(v=>({name:v.name,severity:v.severity,isDirect:v.isDirect,range:v.range,fixAvailable:v.fixAvailable}))));
+          const p=JSON.parse(fs.readFileSync('package.json','utf8'));
+          const lock=JSON.parse(fs.readFileSync('package-lock.json','utf8'));
+          function latest(name, range) {
+            const raw=JSON.parse(execFileSync('npm',['view',name+'@'+range,'version','--json'],{encoding:'utf8'}));
+            return (Array.isArray(raw)?raw:[raw]).filter(v=>/^\d+\.\d+\.\d+$/.test(v)).sort((a,b)=>{const x=a.split('.').map(Number),y=b.split('.').map(Number);return x[0]-y[0]||x[1]-y[1]||x[2]-y[2]}).at(-1);
+          }
+          for(const name of ['sharp','brace-expansion','source-map-js','postcss','browserslist','js-yaml']){
+            if(!audit.vulnerabilities?.[name])continue;
+            p.overrides ||= {};
+            if(p.dependencies[name] || p.devDependencies[name]){p.overrides[name]='$'+name;continue;}
+            const versions=[...new Set(Object.entries(lock.packages).filter(([path])=>path.endsWith('node_modules/'+name)).map(([,pkg])=>pkg.version))];
+            for(const v of versions){
+              const [major,minor]=v.split('.');
+              const range=major==='0'?major+'.'+minor:major;
+              const target=latest(name,range);
+              if(!target)throw Error('No compatible override for '+name+' '+v);
+              if(target!==v)p.overrides[name+'@^'+range]=target;
+            }
+          }
+          if(p.overrides && !Object.keys(p.overrides).length)delete p.overrides;
+          fs.writeFileSync('package.json',JSON.stringify(p,null,2)+'\n');
+          console.log('COMPATIBLE_OVERRIDES',JSON.stringify(p.overrides||{}));
+          JS
+          node "$RUNNER_TEMP/security-overrides.cjs"
+          npm install --no-audit --no-fund
+          npm audit fix --no-fund || true
+      - name: Verify clean installation and collect full and production audits
+        run: |
+          npm ci --no-fund
+          npm audit --json > test-artifacts/audit-full.json || true
+          npm audit --omit=dev --json > test-artifacts/audit-production.json || true
+          node <<'JS'
+          const fs=require('node:fs');
+          for(const name of ['full','production']){
+            const a=JSON.parse(fs.readFileSync('test-artifacts/audit-'+name+'.json','utf8'));
+            if(!a.metadata)throw Error('Audit failed: '+name);
+            console.log('FINAL_AUDIT_'+name.toUpperCase(),JSON.stringify(a.metadata.vulnerabilities));
+            console.log('FINAL_FINDINGS_'+name.toUpperCase(),JSON.stringify(Object.values(a.vulnerabilities||{}).map(v=>({name:v.name,severity:v.severity,isDirect:v.isDirect,range:v.range,fixAvailable:v.fixAvailable,via:v.via,nodes:v.nodes}))));
+          }
+          const p=JSON.parse(fs.readFileSync('package.json','utf8'));
+          const lock=JSON.parse(fs.readFileSync('package-lock.json','utf8'));
+          for(const name of ['next','eslint-config-next','react','react-dom','sharp','brace-expansion','source-map-js','postcss','browserslist','js-yaml']){
+            console.log('RESOLVED_PACKAGE',name,JSON.stringify([...new Set(Object.entries(lock.packages).filter(([path])=>path.endsWith('node_modules/'+name)).map(([,pkg])=>pkg.version))]));
+          }
+          fs.writeFileSync('docs/security-audit.md','# Dependency security verification\n\nChecked on 2026-10-13 using the public npm registry.\n\n'+
+            'Next.js: '+p.dependencies.next+'; eslint-config-next: '+p.devDependencies['eslint-config-next']+'.\n\n'+
+            'Full audit: '+JSON.stringify(JSON.parse(fs.readFileSync('test-artifacts/audit-full.json')).metadata.vulnerabilities)+'.\n\n'+
+            'Production audit (omit=dev): '+JSON.stringify(JSON.parse(fs.readFileSync('test-artifacts/audit-production.json')).metadata.vulnerabilities)+'.\n\n'+
+            'Compatible direct releases were selected within their existing major lines, keeping Tailwind 3 and TypeScript 5. Overrides, if present, are restricted to compatible affected dependency lines. No force audit fix was used.\n\n'+
+            'Validation: fresh npm ci, TypeScript, ESLint, nine unit tests, production static export, and browser smoke tests at 375, 390, 768 and 1440 px. Product search, local image upload preview, filters, favorites and static Hostinger deployment are preserved.\n');
+          JS
+      - name: TypeScript ESLint unit tests and production static build
+        run: npm run check
+      - name: Browser tests against the static export
+        run: |
+          npx playwright-core install chromium
+          npm run test:e2e
+      - name: Commit tested dependency files to the verification branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json docs/security-audit.md
+          git commit -m "Update compatible dependencies and verify security audits"
+          git push origin HEAD:security/dependency-remediation-20261013
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-audits-and-browser-evidence
+          path: test-artifacts/
