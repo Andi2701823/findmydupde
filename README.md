@@ -44,7 +44,7 @@ Open `http://localhost:3000`. No environment variables or service accounts are n
 
 ```sh
 npm run check
-# Includes TypeScript, ESLint, 9 unit tests and the production static build.
+# Includes TypeScript, ESLint, unit tests and the production static build.
 npm run serve
 # Serves out/ at http://localhost:3000 (requires Python 3).
 ```
@@ -86,3 +86,12 @@ The default static export and demo UI remain intact. A separate `server-app/` bu
 Use `npm run build:server` / `npm run start:server` for the optional Node.js target. The schema and checksum-verified migration runner live in `db/migrations/` and `server/db/`. Runtime, import and migration credentials are separate, server-only environment variables. `.env.example` has no passwords and all access gates are false.
 
 See [MySQL and Hostinger transition](docs/mysql-server-transition.md) for the schema, least-privilege accounts, staged Awin batch import, disabled image integration, test commands and safe rollout/rollback plan. No migration or import runs automatically during build/start.
+
+## Safe Hostinger staging activation
+
+The website is already live. Preparation must preserve that deployment. See
+[the Hostinger staging runbook](docs/hostinger-staging.md) for exact build/entry
+settings, a blank staging environment template, read-only connection checks,
+migration compatibility checks and rollback. The new `npm run db:check` command
+requires an explicitly confirmed staging database and rejects the known production
+database. No database probes, migrations or imports run on application startup.

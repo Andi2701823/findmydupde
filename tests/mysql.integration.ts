@@ -1,9 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
 import type { RowDataPacket } from "mysql2/promise";
 import { getDatabase, closeDatabases } from "../server/db/connection.ts";
 import { migrate } from "../server/db/migrations.ts";
+import { checkStagingConnection } from "../server/db/readiness.ts";
 import { importAwinBatch } from "../server/feeds/importer.ts";
 import {
   catalogRepository,
@@ -50,6 +53,15 @@ test(
           ["findmydup_test", user],
         );
       }
+      const probe = await promisify(execFile)(process.execPath, ["--conditions=react-server", "--experimental-strip-types", "scripts/check-db.ts", "--confirm", "--database=findmydup_test", "--schema"], { env: { ...process.env, DEPLOYMENT_ENV: "staging", DB_CONNECTION_TEST_ENABLED: "true", DB_MIGRATIONS_ENABLED: "false", AWIN_IMPORT_ENABLED: "false" }, timeout: 15000 });
+      assert.equal(JSON.parse(probe.stdout).schema, "verified");
+      assert.equal(probe.stdout.includes(process.env.MYSQL_PASSWORD!), false);
+      const reader = await getDatabase("read").getConnection();
+      try {
+        const before = await checkStagingConnection(reader, "findmydup_test", true);
+        assert.equal(before.schema, "verified");
+        await assert.rejects(() => checkStagingConnection(connection, "findmydup_test", true), /SELECT/);
+      } finally { reader.release(); }
       const retailerId = randomUUID(),
         categoryId = randomUUID();
       await connection.execute(

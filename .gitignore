@@ -9,3 +9,4 @@ test-artifacts/
 server-app/.next/
 server-app/public/
 server-app/next-env.d.ts
+!.env.staging.example

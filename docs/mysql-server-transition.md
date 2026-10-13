@@ -103,14 +103,18 @@ The provider contract returns category/color/material/style attributes, never pr
 
 ## Hostinger rollout without disrupting the static site
 
-1. Keep the current static site and normal `npm run build` deployment untouched.
-2. Confirm Node.js Web Apps availability and the supported Node.js version in the existing Business account. Serving only `public_html` cannot execute Next.js API routes.
-3. Create a separate staging Node.js app/subdomain. Use repository-root build command `npm run build:server`. The deployable Node.js output directory is `server-app/.next/standalone`, with entry file `server-app/server.js` relative to that directory (framework “Other” if manual output/entry settings are required). From a full repository checkout, the start command is `npm run start:server`. Use the platform-provided `PORT` and set the Next.js bind `HOSTNAME` to `0.0.0.0` for the Node.js app. Keep all database/API flags false for the initial preview.
-4. Verify homepage, routes, local assets, demo functionality and disabled API responses. No database connection is required for this stage.
-5. After explicit authorization, provision staging-only database users, review and apply migrations, then import only approved real feed data. Test that the runtime user cannot write.
-6. Enable database/search flags on staging, verify actual search and legal/affiliate/privacy disclosures, and separately update the frontend catalog adapter when ready.
-7. Only after approval, take a production backup, apply reviewed migrations with a dedicated account, configure production environment variables in hPanel, and switch the domain/routing to the Node.js app. Retain the previous static export for rollback.
+Follow [the detailed staging and rollback runbook](hostinger-staging.md). The live
+website and existing production database stay untouched during this preparation.
+Do not remove/recreate the existing website or change its deployment settings.
+Hostinger's current documentation says converting an existing domain may require
+removing its website first. That procedure does not satisfy our no-interruption
+requirement. Confirm an additive, reversible migration with Hostinger support
+before any production cutover. A staging preview is not another production site.
 
-No production connection, migration, domain change or deployment is performed by these preparation steps. A rollback to static `out/` must not delete database data or migration history.
+The static build remains the default. Build `server-app/` only in an isolated
+staging deployment, with all integration flags false first. Test a separate,
+empty staging database with a SELECT-only runtime account. Keep Awin and image
+recognition disabled throughout this task. The frontend still uses labeled demo
+data; database activation alone does not switch the frontend to live offers.
 
 References: [Hostinger Node.js apps](https://www.hostinger.com/support/how-to-deploy-a-nodejs-website-in-hostinger/), [Hostinger MySQL for Node.js](https://www.hostinger.com/support/connecting-a-hostinger-mysql-database-to-a-node-js-application/), [Next.js CLI directories](https://nextjs.org/docs/app/api-reference/cli/next), [mysql2 prepared statements/pools](https://sidorares.github.io/node-mysql2/docs).

@@ -120,3 +120,42 @@ jobs:
           path: server-app/.next/standalone/
           include-hidden-files: true
 
+  mariadb:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mariadb:10.11
+        env:
+          MARIADB_ROOT_PASSWORD: ci_ephemeral_root_password
+          MARIADB_DATABASE: findmydup_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=10s --health-timeout=5s --health-retries=10
+    env:
+      TEST_MYSQL_INTEGRATION_ENABLED: "true"
+      DATABASE_ACCESS_ENABLED: "true"
+      DB_MIGRATIONS_ENABLED: "true"
+      AWIN_IMPORT_ENABLED: "true"
+      CATALOG_SEARCH_ENABLED: "true"
+      IMAGE_SEARCH_ENABLED: "false"
+      MYSQL_HOST: 127.0.0.1
+      MYSQL_PORT: "3306"
+      MYSQL_DATABASE: findmydup_test
+      MYSQL_USER: findmydup_test_read
+      MYSQL_PASSWORD: ci_ephemeral_read_password
+      MYSQL_MIGRATION_USER: root
+      MYSQL_MIGRATION_PASSWORD: ci_ephemeral_root_password
+      MYSQL_IMPORT_USER: findmydup_test_import
+      MYSQL_IMPORT_PASSWORD: ci_ephemeral_import_password
+      MYSQL_TLS_MODE: disabled
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Test migrations and read-only connection probe on isolated MariaDB
+        run: npm run test:db

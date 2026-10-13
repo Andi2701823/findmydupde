@@ -1,0 +1,256 @@
+# FindMyDup: sichere Hostinger-Staging-Konfiguration
+
+Stand: 13.10.2026. Diese Anleitung bereitet die Aktivierung vor. Sie führt keine
+Hostinger-Aktion aus. `findmydup.de`, DNS, `public_html` und die vorhandene
+Produktionsdatenbank bleiben unverändert. Keine neue Produktionswebsite oder
+gekaufte Domain ist nötig.
+
+## 1. Bestehende Website schützen
+
+- Die aktuelle Website nicht entfernen, neu anlegen oder auf eine andere
+  Repository-Verbindung umstellen. Ihre bestehenden Build-Einstellungen nicht ändern.
+- Die Änderungen zuerst auf `deployment/hostinger-staging-20261013` testen.
+  Diesen Branch nur mit einer getrennten Staging-App verbinden, niemals mit dem
+  laufenden Produktionsdeployment. Ein Push kann bei Hostinger automatisch deployen.
+- Vor einer späteren Umstellung die tatsächlich live verwendeten Dateien inklusive
+  `.htaccess`, den bisherigen Git-Stand, Deployment-Einstellungen und eine
+  Datenbanksicherung privat sichern. Das CI-Artefakt `out/` ersetzt keine Sicherung
+  möglicherweise abweichender Live-Dateien.
+
+Hostinger unterstützt Node.js auf Business. Die aktuelle Anleitung sagt aber,
+dass eine bereits zugeordnete Domain für die Node.js-Umstellung zuerst als Website
+entfernt werden muss. **Das hier nicht machen.** Website-Entfernung kann auch
+Datenbanken, E-Mails und Konfiguration löschen. Hostinger muss zuerst bestätigen,
+wie die bestehende Website mit einem additiven, reversiblen Wechsel erhalten
+bleibt. Eine unterbrechungsfreie Umstellung ist mit diesem dokumentierten
+Standardverfahren nicht nachgewiesen.
+
+## 2. Getrennte Staging-App vorbereiten
+
+In hPanel eine ausschließlich für Tests bestimmte Node.js-Web-App mit einer
+Hostinger-Vorschauadresse vorbereiten, sofern dein Account diese anbietet.
+Keine Zuordnung von `findmydup.de` und keine Änderung seiner DNS-Einträge.
+Falls keine Vorschau möglich ist, zunächst lokal/CI testen und Hostinger nach
+einer isolierten Vorschau fragen. Diese Vorbereitung erstellt keine Hosting-App.
+
+Für die Staging-App unter Einstellungen/Build Settings:
+
+| Einstellung | Wert |
+| --- | --- |
+| Repository | `Andi2701823/findmydupde` |
+| Branch | `deployment/hostinger-staging-20261013` |
+| Root directory | Repository-Wurzel, `.` |
+| Node.js | `22.x`, mindestens `22.13.0` |
+| Framework | `Other`, wenn nötig für eigene Ausgabe und Entry-Datei |
+| Install command, falls separat verfügbar | `npm ci` |
+| Build command | `npm run build:server` |
+| Build output directory | `server-app/.next/standalone` |
+| Entry file, relativ zum Ausgabeordner | `server-app/server.js` |
+| Start command, bei vollständigem Repository als Arbeitsverzeichnis | `npm run start:server` |
+| Start command, bei Ausgabeordner als Arbeitsverzeichnis | `node server-app/server.js` |
+
+Wenn Hostinger kein separates Install-Feld bietet und nicht selbst installiert:
+`npm ci && npm run build:server` als benutzerdefinierte Build-Anweisung.
+Wenn die Oberfläche die eigene Entry-Datei/Ausgabe nicht zulässt, nicht den
+statischen Standardbuild als Server deployen, sondern diese Einstellungen mit
+Hostinger klären. `npm run build` erzeugt weiterhin ausschließlich die statische
+Website. Kein Wechsel des Standardbuilds ist nötig.
+
+Das CI-Artefakt `hostinger-standalone-server` enthält bereits Node-Abhängigkeiten,
+`.next/static` und gemeinsame öffentliche Dateien. Bei Nutzung dieses fertigen
+Artefakts nicht nochmals npm im Ausgabeordner installieren. Den gesamten Inhalt
+einschließlich versteckter `.next`-Ordner erhalten. Die Anwendung liegt außerhalb
+des öffentlichen `public_html`; dort niemals `.env`, Quellen oder Zugangsdaten ablegen.
+
+## 3. Staging zuerst ohne Datenbank starten
+
+In der Staging-App unter Environment Variables einzeln eintragen:
+
+```dotenv
+NODE_ENV=production
+HOSTNAME=0.0.0.0
+DEPLOYMENT_ENV=staging
+DATABASE_ACCESS_ENABLED=false
+CATALOG_SEARCH_ENABLED=false
+DB_MIGRATIONS_ENABLED=false
+AWIN_IMPORT_ENABLED=false
+IMAGE_SEARCH_ENABLED=false
+DB_CONNECTION_TEST_ENABLED=false
+TRUST_PROXY_HEADERS=false
+```
+
+`PORT` kommt von Hostinger, nicht fest auf 3000 setzen. Keine Datenbankpasswörter,
+Awin-Zugänge oder OpenAI-Schlüssel für diesen ersten Start eintragen. Die
+Staging-Vorschau zeigt dieselbe Demo-Oberfläche. Upload-Vorschauen bleiben lokal.
+`GET /api/products/search/?q=tasche` liefert 503, ebenso ein POST auf
+`/api/image-search/`. Diese Antworten sind bei deaktivierten Integrationen erwartet.
+
+Die Vorschau vor öffentlicher Nutzung durch Hostinger-Zugriffsschutz schützen,
+falls verfügbar. Andernfalls ausschließlich die Tests in CI/lokal nutzen, bis
+ein geeigneter Schutz bestätigt ist. `noindex` ist kein Zugriffsschutz.
+
+## 4. Separate leere Staging-Datenbank
+
+Erst im nächsten manuellen Schritt unter Databases → Management eine getrennte
+Staging-Datenbank und getrennte Benutzer vorbereiten. Der Name muss einen eigenen
+`staging`-Abschnitt enthalten, beispielsweise `u874339379_findmydup_staging`.
+Das ist ein vorgeschlagener Name, keine bereits angelegte Datenbank.
+
+Nicht `u874339379_findmydupde` und nicht deren vorhandenen Benutzer für Staging
+verwenden. Die Vorlage `.env.staging.example` hat absichtlich leere DB-Felder.
+
+| Variable | Staging-Wert |
+| --- | --- |
+| `MYSQL_HOST` | Der in Hostinger bestätigte Hostname, häufig `localhost` |
+| `MYSQL_PORT` | `3306`, sofern Hostinger nichts anderes nennt |
+| `MYSQL_DATABASE` | Vollständiger Name der separaten Staging-Datenbank |
+| `MYSQL_USER` | Separater Benutzer mit ausschließlich SELECT-Rechten |
+| `MYSQL_PASSWORD` | Neues Passwort, nur privat in hPanel eintragen |
+| `MYSQL_CONNECTION_LIMIT` | `2` |
+| `MYSQL_TLS_MODE` | `disabled` nur bei `localhost`/Loopback, sonst `required` |
+| `MYSQL_SSL_CA` | Bei Remote-TLS die vertrauenswürdige PEM-CA, falls erforderlich |
+| `CATALOG_MAX_AGE_DAYS` | `3` |
+
+Falls hPanel keine getrennten SELECT-only-Rechte ermöglicht, mit Hostinger klären.
+Der vorhandene Benutzername beweist keine passenden Rechte. Den Laufzeitbenutzer
+nicht mit ALL PRIVILEGES einsetzen. Migrationen brauchen einen separaten Account;
+dessen Zugangsdaten gehören nicht in die öffentliche Web-App.
+
+Die Verbindung verwendet server-only-Module, vorbereitete SQL-Werte, Zeitlimits
+und einen kleinen Pool. Es gibt keine `NEXT_PUBLIC_*`-Zugangsdaten. Remote-TLS
+prüft Zertifikate. `rejectUnauthorized=false` wird nicht verwendet.
+
+## 5. Verbindungstest vor Migrationen
+
+Der Test ist ein CLI-Werkzeug, keine öffentliche Diagnose-URL und kein Startup-Hook.
+Er läuft in einem vertrauenswürdigen Wartungsumfeld mit vollständigem Repository,
+Node 22.13+ und `npm ci`. Hostinger dokumentiert, dass npm auf Business nicht
+über SSH ausführbar ist. Daher nicht von einem verfügbaren hPanel-Terminal ausgehen.
+Ein eigener Rechner darf nur mit ausdrücklich freigegebener Staging-Verbindung,
+IP-Beschränkung und verifiziertem Remote-TLS verbinden. Kein allgemeines `%`-
+Remote-Allowlisting. Wenn Hostinger diesen Weg nicht unterstützt, zunächst mit
+Support einen sicheren einmaligen Wartungszugang vereinbaren.
+
+Im privaten Wartungsumfeld die bestätigten Staging-DB-Werte setzen, dazu:
+
+```dotenv
+DEPLOYMENT_ENV=staging
+DATABASE_ACCESS_ENABLED=true
+DB_CONNECTION_TEST_ENABLED=true
+DB_MIGRATIONS_ENABLED=false
+AWIN_IMPORT_ENABLED=false
+IMAGE_SEARCH_ENABLED=false
+CATALOG_SEARCH_ENABLED=false
+```
+
+Dann, mit dem tatsächlich angelegten Namen:
+
+```sh
+npm run db:check -- --confirm --database=u874339379_findmydup_staging
+```
+
+Erwartet: JSON mit `connection: "ok"`, `version: "supported"`,
+`privileges: "read-only"`, `schema: "not-checked"`. Das Werkzeug macht ausschließlich
+SELECT/SHOW-Abfragen. Es prüft die ausgewählte Datenbank, MySQL 8+ oder MariaDB
+10.6+ und SELECT-only/USAGE-Grants. Rollen, globale SELECT-Rechte und GRANT OPTION
+werden vorsichtshalber abgewiesen. Bei Fehlern: Exit 1 und ein allgemeiner Hinweis,
+keine Passwörter, Hostnamen, SQL-Fehler oder rohe Grant-Ausgaben.
+
+Ohne Staging-Flag, bestätigten Staging-Namen oder bei aktivierten Schreibflags
+wird vor der Verbindung abgebrochen. Die bekannte Produktionsdatenbank wird
+ausdrücklich abgewiesen. Ein erfolgreicher lokaler Test ersetzt nicht die Prüfung
+der Erreichbarkeit aus dem Hostinger-Node-Prozess.
+
+## 6. Leeres Schema und API auf Staging prüfen
+
+Die Migration nutzt InnoDB, utf8mb4_unicode_ci, Fremdschlüssel, DATETIME(3),
+UUID-Zeichenfelder und ganzzahlige Centbeträge. Sie enthält keine Produkt-Seeds,
+keine CREATE USER-/GRANT-Anweisungen und keine Anforderungen an SUPER-Rechte.
+CI prüft MySQL 8.0 und MariaDB 10.11. Die tatsächliche Hostinger-Version bleibt
+vor Ort zu bestätigen. Beim bestehenden Produktionsschema nichts ausprobieren.
+
+Im getrennten Wartungsumfeld, ausschließlich mit Staging-Ziel und nach dessen
+Sicherung, `DATABASE_ACCESS_ENABLED=true`, `DB_MIGRATIONS_ENABLED=true` und
+separate `MYSQL_MIGRATION_USER`/`MYSQL_MIGRATION_PASSWORD` setzen. Der Account
+braucht CREATE, REFERENCES sowie SELECT und INSERT für `schema_migrations`.
+Dann:
+
+```sh
+npm run db:migrate -- --confirm
+```
+
+Danach Schreibflag wieder false, Wartungszugänge entfernen und den SELECT-only-
+Account einsetzen:
+
+```sh
+npm run db:check -- --confirm --database=u874339379_findmydup_staging --schema
+```
+
+Jetzt muss `schema: "verified"` erscheinen. Der Test liest alle neun Tabellen
+und vergleicht die Migrationshistorie mit den eingecheckten Dateiprüfsummen.
+Die Migration erzeugt nur leere Tabellen. Keine Tests mit Demo-Angeboten gegen
+Hostinger ausführen; `test:db` schreibt Fixtures nur in die isolierte CI-Datenbank.
+
+In der Staging-Web-App die SELECT-only-DB-Werte eintragen, lediglich
+`DATABASE_ACCESS_ENABLED=true` und `CATALOG_SEARCH_ENABLED=true` setzen und die
+App in hPanel neu starten. Alle Schreib-/Bildflags und der Diagnose-Schalter
+bleiben false. `GET /api/products/search/?q=tasche` muss HTTP 200 mit einem leeren
+Katalog liefern. Das bestätigt Erreichbarkeit, Schema und Leserechte aus der
+Web-App. Ungültiges `q=x` muss 400 liefern. Image-POST bleibt 503. Fehlerdetails
+werden bewusst nicht öffentlich ausgegeben.
+
+Die sichtbare Suche bleibt weiterhin die gekennzeichnete Demo. Das Aktivieren
+der DB verbindet nicht automatisch die Oberfläche mit Live-Produkten. Ohne
+autorisierten Feed gibt es keine echten Angebote. Awin/OpenAI bleiben deaktiviert.
+
+## 7. Produktionsfreigabe und Rückweg
+
+Noch kein Produktionszugriff. Vor einem späteren freigegebenen Wechsel:
+
+1. Hostinger bestätigt einen Wechsel ohne Website-Entfernung und den konkreten
+   Rückweg zur vorhandenen statischen Bereitstellung. Ohne diese Bestätigung
+   bei Staging bleiben. Keine Domain oder zweite Produktionswebsite anlegen.
+2. Tatsächliche Live-Dateien, Konfiguration und Produktionsdatenbank sichern,
+   Wiederherstellung auf Staging prüfen und den geprüften Commit festhalten.
+3. Produktionsversion/Rechte und bestehende Tabellen prüfen. Erst nach Freigabe
+   Migrationen mit Wartungsaccount anwenden. Keine Demo-Produkte importieren.
+4. In der freigegebenen Node-Laufzeit `DEPLOYMENT_ENV=production`, den bestätigten
+   DB-Host, `MYSQL_DATABASE=u874339379_findmydupde`, einen nachweislich SELECT-only-
+   Runtime-Account und dessen Passwort setzen. `u874339379_findmydup` nur verwenden,
+   wenn dessen Rechte entsprechend begrenzt sind. Zunächst alle Flags false.
+5. Nach geprüftem Routing nur DATABASE_ACCESS_ENABLED und CATALOG_SEARCH_ENABLED
+   true setzen, dann neu starten und die API prüfen. DB_CONNECTION_TEST_ENABLED,
+   DB_MIGRATIONS_ENABLED, AWIN_IMPORT_ENABLED und IMAGE_SEARCH_ENABLED bleiben false.
+   Keine privilegierten Credentials oder API-Schlüssel in der Web-App belassen.
+
+**Rückweg:** Bei API-Fehlern zuerst DATABASE_ACCESS_ENABLED und
+CATALOG_SEARCH_ENABLED false setzen und die betroffene Node-App neu starten.
+Die UI ist weiterhin ohne DB nutzbar. Bei Server-/Routingfehlern über den zuvor
+mit Hostinger bestätigten Weg die gesicherte statische Version samt Routing
+wiederherstellen. Nur einen alten Node-Commit zurückzurollen stellt nicht
+automatisch ein früheres statisches Hosting wieder her. Hostinger behält laut
+Dokumentation nur zwei erfolgreiche Build-Versionen, deshalb eigene Sicherungen
+behalten. Kein DROP TABLE, keine Löschung von `schema_migrations` und keine
+Website-Entfernung als Rollback verwenden.
+
+MySQL-DDL ist nicht atomar. Eine teilweise fehlgeschlagene Migration kann Tabellen
+hinterlassen. Schreibzugriff dann deaktiviert lassen, Bestand/Sicherung prüfen
+und kontrolliert wiederherstellen oder eine geprüfte Vorwärtsmigration planen.
+Die Migration nicht blind erneut ausführen und angewendete Dateien nicht ändern.
+
+## Checks
+
+```sh
+npm ci
+npm run check
+npx playwright-core install chromium
+npm run test:e2e
+npm run build:server
+```
+
+CI ergänzt isolierte MySQL-/MariaDB-Tests, den read-only Verbindungscheck,
+Server-Browsertests und npm audit (einschließlich separatem Produktions-Audit).
+`npm run test:db` und `npm run test:server` nicht mit Hostinger-Zugangsdaten starten.
+
+Quellen: [Hostinger Node.js inklusive bestehender Domains und SSH-Grenzen](https://www.hostinger.com/support/how-to-deploy-a-nodejs-website-in-hostinger/),
+[Hostinger MySQL und Neustart nach Env-Änderungen](https://www.hostinger.com/support/connecting-a-hostinger-mysql-database-to-a-node-js-application/).
