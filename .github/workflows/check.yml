@@ -20,3 +20,9 @@ jobs:
         with:
           name: hostinger-static-site
           path: out/
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-screenshots
+          path: test-artifacts/
+          if-no-files-found: ignore

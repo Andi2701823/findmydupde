@@ -217,6 +217,7 @@ select {
   margin: 17px 0 24px;
 }
 .underlined {
+  isolation: isolate;
   color: var(--leaf);
   position: relative;
 }

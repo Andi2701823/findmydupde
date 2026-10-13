@@ -18,6 +18,7 @@ const server = spawn(
   { stdio: "ignore" },
 );
 let browser;
+let page;
 try {
   let ready = false;
   for (let n = 0; n < 100; n++) {
@@ -43,7 +44,7 @@ try {
   const context = await browser.newContext({
     viewport: { width: 1440, height: 1000 },
   });
-  const page = await context.newPage();
+  page = await context.newPage();
   const errors = [];
   const remoteRequests = [];
   const uploads = [];
@@ -57,7 +58,9 @@ try {
   await page
     .getByRole("heading", { name: "Dein Stil. Für weniger." })
     .waitFor();
-  await page.getByLabel("Produktname", { exact: true }).fill("Tasche");
+  await page
+    .getByRole("textbox", { name: "Produktname", exact: true })
+    .fill("Tasche");
   await page.getByRole("button", { name: "Entdecken", exact: true }).click();
   await page.getByRole("heading", { name: "Funde für „Tasche“" }).waitFor();
   await page.waitForFunction(
@@ -248,6 +251,13 @@ try {
   console.log(
     "PASS: static routes, text search, empty results, photo validation and preview, category demo, filters, sorting, details, favorites, corrupt/blocked storage, mobile navigation, responsive layouts, no remote requests or image uploads.",
   );
+} catch (error) {
+  mkdirSync("test-artifacts", { recursive: true });
+  if (page && !page.isClosed())
+    await page
+      .screenshot({ path: "test-artifacts/failure.png", fullPage: true })
+      .catch(() => {});
+  throw error;
 } finally {
   await browser?.close();
   server.kill();

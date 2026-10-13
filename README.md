@@ -23,7 +23,7 @@ FindMyDup is a German-language product discovery website for finding visually si
 - Do not present AI matches as identical products. Do not invent prices or availability.
 - Keep the site independent of the owner's other websites.
 
-Status: project initialized. Application code to be developed using Codex.
+Status: Phase 1 prototype implemented. Demo catalog only, no live integrations.
 
 ## Phase 1 implementation
 
