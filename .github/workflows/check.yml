@@ -12,6 +12,25 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Audit all dependencies with documented upstream exception
+        run: |
+          npm audit --json > audit-full.json || true
+          node <<'JS'
+          const fs = require('node:fs');
+          const audit = JSON.parse(fs.readFileSync('audit-full.json', 'utf8'));
+          if (!audit.metadata) throw new Error('npm audit did not return a valid report');
+          const allowed = new Set(['braces', 'chokidar', 'micromatch', 'fast-glob', 'tailwindcss', '@next/eslint-plugin-next', 'eslint-config-next']);
+          const advisory = 'https://github.com/advisories/GHSA-vfj7-8cjw-p6xm';
+          for (const finding of Object.values(audit.vulnerabilities || {})) {
+            if (!allowed.has(finding.name) || finding.severity !== 'high' || finding.via.some(v => typeof v === 'string' ? !allowed.has(v) : v.url !== advisory)) {
+              throw new Error('New or undocumented vulnerability: ' + finding.name);
+            }
+          }
+          console.log('FULL_AUDIT', JSON.stringify(audit.metadata.vulnerabilities));
+          console.log('Only the documented, currently unpatched braces development-tool dependency chain is allowed. Production is audited separately without exceptions.');
+          JS
+      - name: Audit production dependencies without exceptions
+        run: npm audit --omit=dev --json > audit-production.json
       - run: npm run check
       - name: Install browser for smoke tests
         run: npx playwright-core install chromium
@@ -25,4 +44,10 @@ jobs:
         with:
           name: browser-screenshots
           path: test-artifacts/
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dependency-audit-reports
+          path: audit-*.json
           if-no-files-found: ignore
