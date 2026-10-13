@@ -4,19 +4,13 @@ import { existsSync, mkdirSync } from "node:fs";
 import { chromium } from "playwright-core";
 const port = 3217;
 const origin = `http://127.0.0.1:${port}`;
-const server = spawn(
-  "python3",
-  [
-    "-m",
-    "http.server",
-    String(port),
-    "--bind",
-    "127.0.0.1",
-    "--directory",
-    "out",
-  ],
-  { stdio: "ignore" },
-);
+const staticMode = process.argv.includes("--static");
+const server = staticMode
+  ? spawn("python3", ["-m", "http.server", String(port), "--bind", "127.0.0.1", "--directory", "static-app/out"], { stdio: "ignore" })
+  : spawn(process.execPath, ["node_modules/next/dist/bin/next", "start", "--hostname", "127.0.0.1"], {
+      stdio: "ignore",
+      env: { ...process.env, PORT: String(port), DATABASE_ACCESS_ENABLED: "false", CATALOG_SEARCH_ENABLED: "false", DB_MIGRATIONS_ENABLED: "false", AWIN_IMPORT_ENABLED: "false", IMAGE_SEARCH_ENABLED: "false" },
+    });
 let browser;
 let page;
 try {
@@ -30,7 +24,7 @@ try {
     } catch {}
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
-  if (!ready) throw new Error("Static test server could not start.");
+  if (!ready) throw new Error("Browser test server could not start.");
   const macChrome =
     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
   browser = await chromium.launch({
@@ -258,7 +252,7 @@ try {
   assert.deepEqual(remoteRequests, []);
   assert.deepEqual(uploads, []);
   console.log(
-    "PASS: static routes, text search, empty results, photo validation and preview, category demo, filters, sorting, details, favorites, corrupt/blocked storage, mobile navigation, responsive layouts, no remote requests or image uploads.",
+    "PASS: production UI routes, text search, empty results, photo validation and preview, category demo, filters, sorting, details, favorites, corrupt/blocked storage, mobile navigation, responsive layouts, no remote requests or image uploads.",
   );
 } catch (error) {
   mkdirSync("test-artifacts", { recursive: true });

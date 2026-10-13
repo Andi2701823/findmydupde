@@ -2,24 +2,31 @@
 
 ## Current state
 
-The current root application remains the static German demo. `npm run build` still creates `out/`, using the existing design, local image preview, search, filters and favorites. No database account, key or paid service is required for that build. No production database was connected and no production migration or feed import was run by this implementation.
+The root Next.js application now includes disabled Node.js API routes alongside
+the unchanged German demo UI. `npm run build` produces normal `.next/` output and
+`npm start` starts the standard Node.js server. No separate server-app target or
+standalone packaging is required for Hostinger's standard Next.js deployment.
+No production database was connected or changed.
 
-A separate `server-app/` Next.js target re-exports the existing pages and layout. It adds Node.js API routes while sharing the same CSS, components and generated copies of the local public assets. This avoids placing dynamic API routes inside the static-export application. The UI continues to use the clearly labeled demo provider; switching it to verified API data is a later, explicit release step.
-
-`mysql2` with prepared SQL and reviewed, versioned migrations is the MySQL-compatible solution used here. No ORM engine, schema push, automatic database introspection or database connection occurs during builds. The driver creates a bounded pool lazily, only after explicit access flags and credentials are validated.
+`mysql2` with prepared SQL and reviewed versioned migrations remains the selected
+solution. Pools are lazy and gated. No connection, migration, import or OpenAI
+call runs during build or startup. The UI still uses labeled demo fixtures; API
+activation does not switch the frontend to real offers.
 
 ## Commands
 
 ```sh
-npm ci
-npm run check             # Default static application, types, lint and unit tests
-npm run test:e2e          # Existing static browser suite
-npm run build:server     # Separate Node.js build, does not connect to MySQL
-npm run start:server     # Separate Next.js server; respects the PORT environment variable
-npm run dev:server       # Development server target
+npm ci --include=dev
+npm run check             # Types, lint, unit tests and normal root Node.js build
+npm start                 # Standard next start, using the host-provided PORT
+npm run test:e2e          # Full browser suite against root next start
+npm run build:static      # Optional rollback export to static-app/out/
+npm run test:static       # Same browser suite against optional static fallback
 ```
 
-Start and development commands optionally load the root `.env` with Node.js. Builds do not require it. Hostinger-provided process environment variables take precedence. Root `next.config.ts` remains `output: 'export'`; `server-app/next.config.ts` uses a standalone Node.js output, separate from the static export. The build packages the shared public and static assets into the standalone directory.
+The `static-app/` fallback re-exports the existing pages/styles and omits APIs.
+It is not used by the standard Node.js deployment. No database credentials are
+needed to build or run the root app with integrations disabled.
 
 ## Schema and migrations
 
@@ -67,7 +74,7 @@ Local MySQL may use a local socket/TCP connection without TLS. Remote connection
 
 ## Search API
 
-Server target only:
+Root Node.js application:
 
 `GET /api/products/search/?q=tasche&category=mode&color=Grün&maxPrice=50.00&sort=price-asc&page=1&pageSize=12`
 
@@ -103,18 +110,11 @@ The provider contract returns category/color/material/style attributes, never pr
 
 ## Hostinger rollout without disrupting the static site
 
-Follow [the detailed staging and rollback runbook](hostinger-staging.md). The live
-website and existing production database stay untouched during this preparation.
-Do not remove/recreate the existing website or change its deployment settings.
-Hostinger's current documentation says converting an existing domain may require
-removing its website first. That procedure does not satisfy our no-interruption
-requirement. Confirm an additive, reversible migration with Hostinger support
-before any production cutover. A staging preview is not another production site.
+Follow [the standard Next.js staging and rollback runbook](hostinger-staging.md).
+The owner confirmed that findmydup.de already uses Next.js on Node 22.x with
+standard settings and automatic GitHub deployment from main. No hosting-mode
+migration, new production website, domain switch or standalone target is needed.
+This development branch must not be merged or deployed to production without
+separate release approval. Keep all integrations false for initial staging.
 
-The static build remains the default. Build `server-app/` only in an isolated
-staging deployment, with all integration flags false first. Test a separate,
-empty staging database with a SELECT-only runtime account. Keep Awin and image
-recognition disabled throughout this task. The frontend still uses labeled demo
-data; database activation alone does not switch the frontend to live offers.
-
-References: [Hostinger Node.js apps](https://www.hostinger.com/support/how-to-deploy-a-nodejs-website-in-hostinger/), [Hostinger MySQL for Node.js](https://www.hostinger.com/support/connecting-a-hostinger-mysql-database-to-a-node-js-application/), [Next.js CLI directories](https://nextjs.org/docs/app/api-reference/cli/next), [mysql2 prepared statements/pools](https://sidorares.github.io/node-mysql2/docs).
+References: [Hostinger Node.js apps](https://www.hostinger.com/support/how-to-deploy-a-nodejs-website-in-hostinger/), [Hostinger MySQL for Node.js](https://www.hostinger.com/support/connecting-a-hostinger-mysql-database-to-a-node-js-application/), [Next.js Node deployment](https://nextjs.org/docs/app/getting-started/deploying), [mysql2 prepared statements/pools](https://sidorares.github.io/node-mysql2/docs).

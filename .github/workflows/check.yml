@@ -35,10 +35,14 @@ jobs:
       - name: Install browser for smoke tests
         run: npx playwright-core install chromium
       - run: npm run test:e2e
+      - name: Build and test optional static fallback
+        run: |
+          npm run build:static
+          npm run test:static
       - uses: actions/upload-artifact@v4
         with:
           name: hostinger-static-site
-          path: out/
+          path: static-app/out/
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -91,15 +95,15 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Build existing static website without database access
-        run: npm run build
+      - name: Build optional static fallback without database access
+        run: npm run build:static
         env:
           DATABASE_ACCESS_ENABLED: "false"
           DB_MIGRATIONS_ENABLED: "false"
           AWIN_IMPORT_ENABLED: "false"
           CATALOG_SEARCH_ENABLED: "false"
-      - name: Build separate standalone server without database access
-        run: npm run build:server
+      - name: Build standard root Next.js server without database access
+        run: npm run build
         env:
           DATABASE_ACCESS_ENABLED: "false"
           DB_MIGRATIONS_ENABLED: "false"
@@ -116,11 +120,6 @@ jobs:
         with:
           name: backend-browser-evidence
           path: test-artifacts/
-      - uses: actions/upload-artifact@v4
-        with:
-          name: hostinger-standalone-server
-          path: server-app/.next/standalone/
-          include-hidden-files: true
 
   mariadb:
     runs-on: ubuntu-latest

@@ -28,7 +28,7 @@ async function start(enabled) {
   await stop();
   child = spawn(
     process.execPath,
-    ["server-app/.next/standalone/server-app/server.js"],
+    ["node_modules/next/dist/bin/next", "start", "--hostname", "127.0.0.1"],
     {
       stdio: ["ignore", "ignore", "pipe"],
       env: {
@@ -38,6 +38,12 @@ async function start(enabled) {
         DATABASE_ACCESS_ENABLED: String(enabled),
         CATALOG_SEARCH_ENABLED: String(enabled),
         IMAGE_SEARCH_ENABLED: "false",
+        DB_MIGRATIONS_ENABLED: "false",
+        AWIN_IMPORT_ENABLED: "false",
+        MYSQL_HOST: enabled ? process.env.MYSQL_HOST : "unreachable.invalid",
+        MYSQL_DATABASE: enabled ? process.env.MYSQL_DATABASE : "",
+        MYSQL_USER: enabled ? process.env.MYSQL_USER : "",
+        MYSQL_PASSWORD: enabled ? process.env.MYSQL_PASSWORD : "",
       },
     },
   );
@@ -81,8 +87,8 @@ try {
   assert.equal(image.status, 503);
   assert.equal((await image.json()).error, "IMAGE_SEARCH_DISABLED");
   assert.deepEqual(
-    cssHashes("server-app/.next/static"),
-    cssHashes("out/_next/static"),
+    cssHashes(".next/static"),
+    cssHashes("static-app/out/_next/static"),
     "Static and server builds must use identical design CSS",
   );
   const secrets = [
@@ -90,7 +96,7 @@ try {
     process.env.MYSQL_MIGRATION_PASSWORD,
     process.env.MYSQL_IMPORT_PASSWORD,
   ].filter(Boolean);
-  for (const file of walk("server-app/.next/static").filter((p) =>
+  for (const file of walk(".next/static").filter((p) =>
     /\.(js|css|html)$/.test(p),
   )) {
     const content = readFileSync(file, "utf8");
@@ -182,7 +188,7 @@ try {
     );
   }
   console.log(
-    "PASS: separate server build, no database required by default, shared responsive UI, text search, favorites, upload interface, identical static/server CSS and no client credential leakage.",
+    "PASS: standard root Next.js server build, no database required by default, shared responsive UI, text search, favorites, upload interface, identical static/server CSS and no client credential leakage.",
   );
 } finally {
   await browser?.close();

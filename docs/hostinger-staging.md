@@ -5,62 +5,66 @@ Hostinger-Aktion aus. `findmydup.de`, DNS, `public_html` und die vorhandene
 Produktionsdatenbank bleiben unverändert. Keine neue Produktionswebsite oder
 gekaufte Domain ist nötig.
 
-## 1. Bestehende Website schützen
+## 1. Bestätigte bestehende Node.js-Website erhalten
 
-- Die aktuelle Website nicht entfernen, neu anlegen oder auf eine andere
-  Repository-Verbindung umstellen. Ihre bestehenden Build-Einstellungen nicht ändern.
-- Die Änderungen zuerst auf `deployment/hostinger-staging-20261013` testen.
-  Diesen Branch nur mit einer getrennten Staging-App verbinden, niemals mit dem
-  laufenden Produktionsdeployment. Ein Push kann bei Hostinger automatisch deployen.
-- Vor einer späteren Umstellung die tatsächlich live verwendeten Dateien inklusive
-  `.htaccess`, den bisherigen Git-Stand, Deployment-Einstellungen und eine
-  Datenbanksicherung privat sichern. Das CI-Artefakt `out/` ersetzt keine Sicherung
-  möglicherweise abweichender Live-Dateien.
+Die bestätigte Live-Konfiguration ist Hostinger Business, Next.js auf Node 22.x,
+Root `./`, Standard-Build/-Ausgabe und GitHub-Autodeploy von `main`.
+Die Website läuft bereits als Node.js-App. Es ist keine Umstellung des Hostingtyps,
+kein Entfernen der Website, keine neue Produktionswebsite und kein Domainwechsel
+nötig. Frühere Hinweise zum Wechsel von rein statischem Hosting gelten hier nicht.
 
-Hostinger unterstützt Node.js auf Business. Die aktuelle Anleitung sagt aber,
-dass eine bereits zugeordnete Domain für die Node.js-Umstellung zuerst als Website
-entfernt werden muss. **Das hier nicht machen.** Website-Entfernung kann auch
-Datenbanken, E-Mails und Konfiguration löschen. Hostinger muss zuerst bestätigen,
-wie die bestehende Website mit einem additiven, reversiblen Wechsel erhalten
-bleibt. Eine unterbrechungsfreie Umstellung ist mit diesem dokumentierten
-Standardverfahren nicht nachgewiesen.
+Die Backend-Routen liegen nun direkt unter `app/api/`. Der bisherige
+`output: 'export'`-Modus war die technische Grenze: Er kann keine dynamischen
+MySQL-Abfragen ausführen. Der root Standardbuild entfernt diese Grenze und nutzt
+`next start`. Die Seiten, Komponenten und CSS bleiben unverändert.
 
-## 2. Getrennte Staging-App vorbereiten
+- Dieser Stand liegt auf `development/standard-next-mysql-20261013`.
+- Nicht nach `main` mergen und den Produktionsbranch in hPanel nicht umstellen.
+  Ein Push/Merge nach `main` löst das bestehende automatische Deployment aus.
+- Keine Hostinger- oder Datenbankeinstellungen der Live-Website für Tests ändern.
+- Für einen späteren freigegebenen Release den letzten funktionierenden Commit,
+  die aktuellen Deployment-Einstellungen und die Env-Konfiguration privat sichern.
+  Eine DB-Sicherung erst bei später autorisiertem DB-Zugriff durchführen.
 
-In hPanel eine ausschließlich für Tests bestimmte Node.js-Web-App mit einer
-Hostinger-Vorschauadresse vorbereiten, sofern dein Account diese anbietet.
-Keine Zuordnung von `findmydup.de` und keine Änderung seiner DNS-Einträge.
-Falls keine Vorschau möglich ist, zunächst lokal/CI testen und Hostinger nach
-einer isolierten Vorschau fragen. Diese Vorbereitung erstellt keine Hosting-App.
+## 2. Standard-Next.js-Konfiguration auf Staging
 
-Für die Staging-App unter Einstellungen/Build Settings:
+Für eine getrennte, geschützte Testvorschau dieselbe Next.js-Konfiguration nutzen.
+Diese Arbeit erstellt keine Hosting-App. Keine Zuordnung von `findmydup.de` und
+keine DNS-Änderung. Wenn dein Account keine getrennte Vorschau anbietet, zunächst
+CI/lokal nutzen, statt den Produktionsbranch umzuschalten.
 
 | Einstellung | Wert |
 | --- | --- |
 | Repository | `Andi2701823/findmydupde` |
-| Branch | `deployment/hostinger-staging-20261013` |
-| Root directory | Repository-Wurzel, `.` |
+| Branch nur für Staging | `development/standard-next-mysql-20261013` |
+| Root directory | `./` |
 | Node.js | `22.x`, mindestens `22.13.0` |
-| Framework | `Other`, wenn nötig für eigene Ausgabe und Entry-Datei |
+| Framework | `Next.js` |
+| Build settings | `Standard` |
+| Output settings | `Standard`, normales `.next/` wird automatisch verwaltet |
+| Build command, falls manuell nötig | `npm run build` |
+| Start command, falls manuell nötig | `npm start` |
 | Install command, falls separat verfügbar | `npm ci --include=dev` |
-| Build command | `npm run build:server` |
-| Build output directory | `server-app/.next/standalone` |
-| Entry file, relativ zum Ausgabeordner | `server-app/server.js` |
-| Start command, bei vollständigem Repository als Arbeitsverzeichnis | `npm run start:server` |
-| Start command, bei Ausgabeordner als Arbeitsverzeichnis | `node server-app/server.js` |
 
-Wenn Hostinger kein separates Install-Feld bietet und nicht selbst installiert:
-`npm ci --include=dev && npm run build:server` als benutzerdefinierte Build-Anweisung.
-Wenn die Oberfläche die eigene Entry-Datei/Ausgabe nicht zulässt, nicht den
-statischen Standardbuild als Server deployen, sondern diese Einstellungen mit
-Hostinger klären. `npm run build` erzeugt weiterhin ausschließlich die statische
-Website. Kein Wechsel des Standardbuilds ist nötig.
+`npm run build` ist im Repository `next build --webpack`. `npm start` ist
+`next start --hostname 0.0.0.0`. Die App verwendet Hostingers `PORT`.
+Keinen eigenen server.js-Entry, keinen Standalone-Ausgabeordner und keinen
+server-app-Build eintragen. Hostinger erkennt Next.js und verwaltet die
+Server-Builddateien außerhalb von `public_html`.
 
-Das CI-Artefakt `hostinger-standalone-server` enthält bereits Node-Abhängigkeiten,
-`.next/static` und gemeinsame öffentliche Dateien. Bei Nutzung dieses fertigen
-Artefakts nicht nochmals npm im Ausgabeordner installieren. Den gesamten Inhalt
-einschließlich versteckter `.next`-Ordner erhalten. Die Anwendung liegt außerhalb
-des öffentlichen `public_html`; dort niemals `.env`, Quellen oder Zugangsdaten ablegen.
+Die Standards sind mit Next.js-Node-Deployment und Hostingers dokumentierter
+Next.js-Backendunterstützung kompatibel. CI prüft exakt den normalen root Build
+und `next start`. Ein tatsächlicher Hostinger-Staging-Deploy ist noch manuell zu
+prüfen; diese Arbeit greift nicht auf hPanel zu. Sollte die Erkennung im konkreten
+Account die Scripts nicht übernehmen, auf Staging als kleinste Alternative im
+selben Projekt explizit `npm ci --include=dev && npm run build`, Ausgabe `.next`
+und `npm start` setzen. Kein separates Backend-Projekt erforderlich.
+
+`npm run build:static` bleibt ausschließlich ein optionaler statischer Rückweg
+mit Ausgabe `static-app/out/`, ohne API-Routen. Er wird nicht von der
+Standard-Node-Konfiguration aufgerufen. Das CI-Artefakt `hostinger-static-site`
+enthält diesen Export. Nicht über die bestehende Node-App hochladen. `.env`,
+Source und `node_modules` niemals öffentlich in `public_html` ablegen.
 
 ## 3. Staging zuerst ohne Datenbank starten
 
@@ -80,7 +84,7 @@ DB_CONNECTION_TEST_ENABLED=false
 TRUST_PROXY_HEADERS=false
 ```
 
-`NPM_CONFIG_INCLUDE=dev` hält die für TypeScript/Tailwind benötigten Build-Abhängigkeiten auch bei automatischer Installation mit NODE_ENV=production verfügbar. Der Standalone-Ausgabeordner enthält nur die vom Server benötigten Dateien.
+`NPM_CONFIG_INCLUDE=dev` hält die für TypeScript/Tailwind benötigten Build-Abhängigkeiten auch bei automatischer Installation mit NODE_ENV=production verfügbar. Die Anwendung wird mit dem normalen Next.js-Server gestartet.
 
 `PORT` kommt von Hostinger, nicht fest auf 3000 setzen. Keine Datenbankpasswörter,
 Awin-Zugänge oder OpenAI-Schlüssel für diesen ersten Start eintragen. Die
@@ -210,9 +214,10 @@ autorisierten Feed gibt es keine echten Angebote. Awin/OpenAI bleiben deaktivier
 
 Noch kein Produktionszugriff. Vor einem späteren freigegebenen Wechsel:
 
-1. Hostinger bestätigt einen Wechsel ohne Website-Entfernung und den konkreten
-   Rückweg zur vorhandenen statischen Bereitstellung. Ohne diese Bestätigung
-   bei Staging bleiben. Keine Domain oder zweite Produktionswebsite anlegen.
+1. Die geschützte Staging-Vorschau besteht Standardbuild, UI- und API-Prüfungen.
+   Erst nach ausdrücklicher Freigabe den geprüften Entwicklungsbranch nach main
+   übernehmen. Das startet den bestehenden Autodeploy. Keine Website entfernen,
+   keine Domain wechseln und den Root/Framework-Standard unverändert lassen.
 2. Tatsächliche Live-Dateien, Konfiguration und Produktionsdatenbank sichern,
    Wiederherstellung auf Staging prüfen und den geprüften Commit festhalten.
 3. Produktionsversion/Rechte und bestehende Tabellen prüfen. Erst nach Freigabe
@@ -228,13 +233,18 @@ Noch kein Produktionszugriff. Vor einem späteren freigegebenen Wechsel:
 
 **Rückweg:** Bei API-Fehlern zuerst DATABASE_ACCESS_ENABLED und
 CATALOG_SEARCH_ENABLED false setzen und die betroffene Node-App neu starten.
-Die UI ist weiterhin ohne DB nutzbar. Bei Server-/Routingfehlern über den zuvor
-mit Hostinger bestätigten Weg die gesicherte statische Version samt Routing
-wiederherstellen. Nur einen alten Node-Commit zurückzurollen stellt nicht
-automatisch ein früheres statisches Hosting wieder her. Hostinger behält laut
-Dokumentation nur zwei erfolgreiche Build-Versionen, deshalb eigene Sicherungen
-behalten. Kein DROP TABLE, keine Löschung von `schema_migrations` und keine
-Website-Entfernung als Rollback verwenden.
+Die UI ist weiterhin ohne DB nutzbar. Bei Build-/Serverfehlern die letzte
+funktionierende Node-Deployment-Version über Hostinger wiederherstellen oder den
+Release-Commit auf main gezielt zurücknehmen und das bestehende Autodeploy nutzen.
+Nur nach Releasefreigabe an main arbeiten. Hostinger behält laut Dokumentation
+zwei erfolgreiche Build-Versionen, deshalb den letzten funktionierenden Commit
+und die Konfiguration selbst festhalten. Fehlgeschlagene Builds ersetzen laut
+Hostinger nicht die letzte erfolgreiche Version.
+
+Ein Code-Rollback darf keine Datenbanktabellen oder Migrationshistorie entfernen.
+Kein DROP TABLE, keine Löschung von `schema_migrations` und keine
+Website-Entfernung als Rollback. Der optionale statische Export ist eine weitere
+Dateisicherung, keine automatische Rücksetzung des Node-Hostings.
 
 MySQL-DDL ist nicht atomar. Eine teilweise fehlgeschlagene Migration kann Tabellen
 hinterlassen. Schreibzugriff dann deaktiviert lassen, Bestand/Sicherung prüfen
@@ -248,12 +258,13 @@ npm ci
 npm run check
 npx playwright-core install chromium
 npm run test:e2e
-npm run build:server
+npm run build:static
+npm run test:static
 ```
 
 CI ergänzt isolierte MySQL-/MariaDB-Tests, den read-only Verbindungscheck,
 Server-Browsertests und npm audit (einschließlich separatem Produktions-Audit).
 `npm run test:db` und `npm run test:server` nicht mit Hostinger-Zugangsdaten starten.
 
-Quellen: [Hostinger Node.js inklusive bestehender Domains und SSH-Grenzen](https://www.hostinger.com/support/how-to-deploy-a-nodejs-website-in-hostinger/),
+Quellen: [Hostinger Node.js inklusive Standarderkennung und SSH-Grenzen](https://www.hostinger.com/support/how-to-deploy-a-nodejs-website-in-hostinger/),
 [Hostinger MySQL und Neustart nach Env-Änderungen](https://www.hostinger.com/support/connecting-a-hostinger-mysql-database-to-a-node-js-application/).

@@ -10,15 +10,15 @@
     "test": "node --conditions=react-server --experimental-strip-types --test tests/*.test.ts",
     "test:e2e": "node tests/browser.mjs",
     "check": "npm run typecheck && npm run lint && npm test && npm run build",
-    "serve": "python3 -m http.server 3000 --directory out",
-    "dev:server": "node scripts/prepare-server.mjs && node --env-file-if-exists=.env node_modules/next/dist/bin/next dev server-app",
-    "build:server": "node scripts/prepare-server.mjs && next build server-app --webpack && node scripts/package-server.mjs",
-    "start:server": "node --env-file-if-exists=.env server-app/.next/standalone/server-app/server.js",
+    "serve": "python3 -m http.server 3000 --directory static-app/out",
     "db:migrate": "node --env-file-if-exists=.env --conditions=react-server --experimental-strip-types scripts/migrate.ts",
     "test:db": "node --conditions=react-server --experimental-strip-types --test tests/mysql.integration.ts",
     "test:server": "node tests/server-browser.mjs",
     "awin:import": "node --env-file-if-exists=.env --conditions=react-server --experimental-strip-types scripts/import-awin.ts",
-    "db:check": "node --env-file-if-exists=.env --conditions=react-server --experimental-strip-types scripts/check-db.ts"
+    "db:check": "node --env-file-if-exists=.env --conditions=react-server --experimental-strip-types scripts/check-db.ts",
+    "start": "next start --hostname 0.0.0.0",
+    "build:static": "node scripts/prepare-static.mjs && next build static-app --webpack",
+    "test:static": "node tests/browser.mjs --static"
   },
   "dependencies": {
     "mysql2": "3.24.6",

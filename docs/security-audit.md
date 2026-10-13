@@ -49,7 +49,7 @@ These are development glob/file-watching/lint dependencies. Deeply nested untrus
 
 npm suggests Tailwind 4 for part of this dependency chain and an eslint-config-next downgrade for another part. A Tailwind major migration would violate the requirement to preserve the existing styling setup, and downgrading the Next ESLint configuration would conflict with the corresponding-version requirement. Neither would provide a published patch for braces itself, so no blind force repair, version falsification or alert dismissal was performed.
 
-The static Hostinger export uploads only out/, without Node.js tooling or node_modules. This further limits exposure in that deployment, but does not erase the documented risk to development/build tools.
+The optional static fallback exports static-app/out/ without Node.js tooling. The root application now uses normal Node.js deployment, so its production dependencies are audited with npm audit --omit=dev. Build tools can still be installed on managed builders; their documented development risk is not erased by the runtime split.
 
 ## Verification
 
