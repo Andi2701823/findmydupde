@@ -148,8 +148,16 @@ try {
     buffer: Buffer.alloc(5 * 1024 * 1024 + 1),
   });
   await page.getByRole("alert").filter({ hasText: "zu groß" }).waitFor();
+  await page
+    .locator("#product-image")
+    .setInputFiles({
+      name: "broken.png",
+      mimeType: "image/png",
+      buffer: Buffer.from("not a valid image"),
+    });
+  await page.getByRole("alert").filter({ hasText: "nicht öffnen" }).waitFor();
   const png = Buffer.from(
-    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jP1sAAAAASUVORK5CYII=",
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGOomFz9HwAFkwKGwufLZgAAAABJRU5ErkJggg==",
     "base64",
   );
   await page
@@ -158,6 +166,9 @@ try {
   await page
     .getByAltText("Vorschau deines ausgewählten Produktbildes")
     .waitFor();
+  await page
+    .getByAltText("Vorschau deines ausgewählten Produktbildes")
+    .evaluate((image) => image.decode());
   await page.getByLabel("Beispielbereich").selectOption("Beauty");
   await page.getByRole("button", { name: "Demo-Ergebnisse ansehen" }).click();
   await page
