@@ -18,6 +18,17 @@ jobs:
           mkdir -p test-artifacts
           npm audit --json > test-artifacts/audit-before.json || true
           node -e "const a=require('./test-artifacts/audit-before.json'); if(!a.metadata) throw Error('Audit failed'); console.log('BASELINE_AUDIT', JSON.stringify(a.metadata.vulnerabilities));"
+      - name: Capture CSS before selector-parser remediation
+        run: |
+          npm ci --no-fund
+          npm run build
+          node <<'JS'
+          const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+          function walk(dir){return fs.readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(path.join(dir,e.name)):[path.join(dir,e.name)]);}
+          const css=walk('out/_next/static').filter(p=>p.endsWith('.css')).map(p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex')).sort();
+          fs.writeFileSync(process.env.RUNNER_TEMP+'/findmydup-css-baseline.json',JSON.stringify(css));
+          console.log('CSS_BASELINE',JSON.stringify(css));
+          JS
       - name: Select stable compatible releases and update lockfile
         run: |
           cat > "$RUNNER_TEMP/security-update.cjs" <<'JS'
@@ -74,7 +85,9 @@ jobs:
               if(target!==v)p.overrides[name+'@^'+range]=target;
             }
           }
-          if(p.overrides && !Object.keys(p.overrides).length)delete p.overrides;
+          // Reviewed v7 change: safe insertions during iteration. Validate identical CSS below.
+          p.overrides ||= {};
+          p.overrides['postcss-selector-parser'] = '7.1.6';
           fs.writeFileSync('package.json',JSON.stringify(p,null,2)+'\n');
           console.log('COMPATIBLE_OVERRIDES',JSON.stringify(p.overrides||{}));
           JS
@@ -108,6 +121,15 @@ jobs:
           JS
       - name: TypeScript ESLint unit tests and production static build
         run: npm run check
+      - name: Verify unchanged generated CSS
+        run: |
+          node <<'JS'
+          const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),assert=require('node:assert/strict');
+          function walk(dir){return fs.readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(path.join(dir,e.name)):[path.join(dir,e.name)]);}
+          const css=walk('out/_next/static').filter(p=>p.endsWith('.css')).map(p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex')).sort();
+          assert.deepEqual(css,JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP+'/findmydup-css-baseline.json')));
+          console.log('CSS_IDENTICAL_BEFORE_AFTER',JSON.stringify(css));
+          JS
       - name: Browser tests against the static export
         run: |
           npx playwright-core install chromium
