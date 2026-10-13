@@ -52,7 +52,7 @@ try {
   page.on("request", (req) => {
     if (/^https?:/.test(req.url()) && !req.url().startsWith(origin))
       remoteRequests.push(req.url());
-    if (req.method() !== "GET") uploads.push(req.url());
+    if (!["GET", "HEAD"].includes(req.method())) uploads.push(req.url());
   });
   await page.goto(origin);
   await page
@@ -148,13 +148,11 @@ try {
     buffer: Buffer.alloc(5 * 1024 * 1024 + 1),
   });
   await page.getByRole("alert").filter({ hasText: "zu groß" }).waitFor();
-  await page
-    .locator("#product-image")
-    .setInputFiles({
-      name: "broken.png",
-      mimeType: "image/png",
-      buffer: Buffer.from("not a valid image"),
-    });
+  await page.locator("#product-image").setInputFiles({
+    name: "broken.png",
+    mimeType: "image/png",
+    buffer: Buffer.from("not a valid image"),
+  });
   await page.getByRole("alert").filter({ hasText: "nicht öffnen" }).waitFor();
   const png = Buffer.from(
     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGOomFz9HwAFkwKGwufLZgAAAABJRU5ErkJggg==",
