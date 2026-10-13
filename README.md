@@ -24,3 +24,57 @@ FindMyDup is a German-language product discovery website for finding visually si
 - Keep the site independent of the owner's other websites.
 
 Status: project initialized. Application code to be developed using Codex.
+
+## Phase 1 implementation
+
+The prototype now includes a responsive German homepage, text search, local image preview, an explicit category-based image demo, results with category/color/example-price filters, sorting, accessible product dialogs, and a browser-local favorites list. All eight products, illustrations and example prices are fictional fixtures. There are no retailer offers, purchase links, AI matches, external product images, analytics or paid services.
+
+### Run locally
+
+Use Node.js 22.13 or newer (Node 22 LTS recommended):
+
+```sh
+npm ci
+npm run dev
+```
+
+Open `http://localhost:3000`. No environment variables or service accounts are needed.
+
+### Checks and static export
+
+```sh
+npm run check
+# Includes TypeScript, ESLint, 9 unit tests and the production static build.
+npm run serve
+# Serves out/ at http://localhost:3000 (requires Python 3).
+```
+
+Browser smoke tests run against the actual `out/` export:
+
+```sh
+npx playwright-core install chromium
+npm run test:e2e
+```
+
+`CHROME_PATH` optionally selects a locally installed Chrome/Chromium binary. The browser tests start a temporary Python static server and cover search, filters, upload validation, image preview, product details, favorites persistence, storage failures, navigation and layouts at 375, 390, 768 and 1440 pixels. They also assert that the app makes no external requests or image uploads. Browser screenshots are written to ignored `test-artifacts/`.
+
+### Project structure
+
+- `app/`: App Router pages, German metadata, layout, responsive styles and 404.
+- `components/`: Search, results, navigation, cards/dialogs and favorites.
+- `lib/catalog.ts`: Fictional fixtures only; each has `source: 'demo'`.
+- `lib/search.ts`: Deterministic text search, filters and `demoCatalog` provider.
+- `lib/upload.ts`: JPG/PNG/WebP validation with a 5 MB size limit.
+- `lib/types.ts`: Catalog, image-recognition and verified-offer integration contracts.
+- `public/products/`: Original local SVG illustrations, no external downloads.
+- `docs/hostinger.md`: Static upload instructions and hosting boundaries.
+- `docs/integrations.md`: Server-side OpenAI, Supabase and Awin integration plan.
+- `.github/workflows/check.yml`: Build and browser checks, with `out/` as a deployable artifact.
+
+### Prototype boundaries
+
+Images are previewed using revocable browser object URLs and are never uploaded. Image demo results use the category selected by the visitor, not image contents. Unknown text searches show an empty state. Prices and reference prices are labeled fictional, with no savings or availability claims. Favorites store only demo IDs in the current browser, with an in-memory fallback if storage is blocked.
+
+This build uses `output: 'export'`, so it requires no Node.js server on Hostinger. API routes, image recognition, feed imports and database writes are not implemented. Before adding server features, upgrade Next.js/React to the current patched releases, enable a supported secure server runtime, and implement the safeguards in the integration plan. The current lockfile records the dependency versions tested for this static prototype.
+
+Before public launch, replace the incomplete operator/legal pages, complete privacy disclosures, connect verified product data and remove the prototype's `noindex` and `robots.txt` restrictions only when the site is ready. The hostname has not been configured or deployed by this implementation.
