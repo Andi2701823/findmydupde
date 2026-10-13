@@ -42,7 +42,7 @@ Für die Staging-App unter Einstellungen/Build Settings:
 | Root directory | Repository-Wurzel, `.` |
 | Node.js | `22.x`, mindestens `22.13.0` |
 | Framework | `Other`, wenn nötig für eigene Ausgabe und Entry-Datei |
-| Install command, falls separat verfügbar | `npm ci` |
+| Install command, falls separat verfügbar | `npm ci --include=dev` |
 | Build command | `npm run build:server` |
 | Build output directory | `server-app/.next/standalone` |
 | Entry file, relativ zum Ausgabeordner | `server-app/server.js` |
@@ -50,7 +50,7 @@ Für die Staging-App unter Einstellungen/Build Settings:
 | Start command, bei Ausgabeordner als Arbeitsverzeichnis | `node server-app/server.js` |
 
 Wenn Hostinger kein separates Install-Feld bietet und nicht selbst installiert:
-`npm ci && npm run build:server` als benutzerdefinierte Build-Anweisung.
+`npm ci --include=dev && npm run build:server` als benutzerdefinierte Build-Anweisung.
 Wenn die Oberfläche die eigene Entry-Datei/Ausgabe nicht zulässt, nicht den
 statischen Standardbuild als Server deployen, sondern diese Einstellungen mit
 Hostinger klären. `npm run build` erzeugt weiterhin ausschließlich die statische
@@ -68,6 +68,7 @@ In der Staging-App unter Environment Variables einzeln eintragen:
 
 ```dotenv
 NODE_ENV=production
+NPM_CONFIG_INCLUDE=dev
 HOSTNAME=0.0.0.0
 DEPLOYMENT_ENV=staging
 DATABASE_ACCESS_ENABLED=false
@@ -78,6 +79,8 @@ IMAGE_SEARCH_ENABLED=false
 DB_CONNECTION_TEST_ENABLED=false
 TRUST_PROXY_HEADERS=false
 ```
+
+`NPM_CONFIG_INCLUDE=dev` hält die für TypeScript/Tailwind benötigten Build-Abhängigkeiten auch bei automatischer Installation mit NODE_ENV=production verfügbar. Der Standalone-Ausgabeordner enthält nur die vom Server benötigten Dateien.
 
 `PORT` kommt von Hostinger, nicht fest auf 3000 setzen. Keine Datenbankpasswörter,
 Awin-Zugänge oder OpenAI-Schlüssel für diesen ersten Start eintragen. Die

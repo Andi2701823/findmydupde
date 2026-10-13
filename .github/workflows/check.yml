@@ -66,6 +66,8 @@ jobs:
           --health-cmd="mysqladmin ping -h 127.0.0.1 -pci_ephemeral_root_password"
           --health-interval=10s --health-timeout=5s --health-retries=10
     env:
+      NODE_ENV: production
+      NPM_CONFIG_INCLUDE: dev
       TEST_MYSQL_INTEGRATION_ENABLED: "true"
       DATABASE_ACCESS_ENABLED: "true"
       DB_MIGRATIONS_ENABLED: "true"
@@ -134,6 +136,8 @@ jobs:
           --health-cmd="healthcheck.sh --connect --innodb_initialized"
           --health-interval=10s --health-timeout=5s --health-retries=10
     env:
+      NODE_ENV: production
+      NPM_CONFIG_INCLUDE: dev
       TEST_MYSQL_INTEGRATION_ENABLED: "true"
       DATABASE_ACCESS_ENABLED: "true"
       DB_MIGRATIONS_ENABLED: "true"

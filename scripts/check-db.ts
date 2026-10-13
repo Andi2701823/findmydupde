@@ -14,5 +14,10 @@ try {
   console.error("Staging connection test failed or blocked. Check the confirmed staging target, TLS, supported version, SELECT-only grants and migration history. No credentials or server errors are logged.");
   process.exitCode = 1;
 } finally {
-  await closeDatabases();
+  try {
+    await closeDatabases();
+  } catch {
+    console.error("Staging connection cleanup failed. No connection details are logged.");
+    process.exitCode = 1;
+  }
 }
