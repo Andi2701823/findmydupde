@@ -15,7 +15,7 @@ import {
   createRateLimiter,
   requestQuotaKey,
 } from "../server/http/rate-limit.ts";
-import { productSearchHandler } from "../server/http/product-search.ts";
+import { productSearchHandler, stagingCatalogDiagnosticReason } from "../server/http/product-search.ts";
 import { handleImageSearch } from "../server/http/image-search.ts";
 import {
   validateImageInput,
@@ -189,6 +189,16 @@ test("disabled API never calls the database; bad inputs and faults have safe res
     429,
   );
 });
+test("staging diagnostic uses fixed labels and never prints arbitrary error content", () => {
+  assert.equal(stagingCatalogDiagnosticReason(new Error("password=private SQL=secret")), "unclassified");
+  assert.equal(stagingCatalogDiagnosticReason(new Error("Staging compatibility identity or grants rejected")),
+    "Staging compatibility identity or grants rejected");
+  assert.equal(stagingCatalogDiagnosticReason(Object.assign(new Error("secret"), { code: "ER_ACCESS_DENIED_ERROR" })),
+    "ER_ACCESS_DENIED_ERROR");
+  assert.equal(stagingCatalogDiagnosticReason(Object.assign(new Error("secret"), { code: "PRIVATE_SERVER_MESSAGE" })),
+    "unclassified");
+});
+
 test("image endpoint remains disabled and does not consume uploaded bodies", async () => {
   const request = new Request("https://example.test/api/image-search", {
     method: "POST",
