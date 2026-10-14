@@ -13,7 +13,7 @@ test("eight genuine editorial guides with unique valid slugs across four categor
   }
 });
 test("the public search operates on real editorial text rather than fake product prices",()=>{
-  assert.equal(searchGuides(""),guides.length ? guides : []);
+  assert.deepEqual(searchGuides(""), guides);
   assert.deepEqual(searchGuides("serum").map(g=>g.slug),["gesichtsserum-vergleichen"]);
   assert.deepEqual(searchGuides("KOPFHÖRER").map(g=>g.slug),["kopfhoerer-vergleichen"]);
   assert.equal(searchGuides("Technik").length,2);
