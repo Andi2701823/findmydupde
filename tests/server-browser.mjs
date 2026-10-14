@@ -85,8 +85,8 @@ try {
   assert.equal((await image.json()).error, "IMAGE_SEARCH_DISABLED");
   assert.deepEqual(
     cssHashes("server-app/.next/static"),
-    cssHashes("out/_next/static"),
-    "Static and server builds must use identical design CSS",
+    cssHashes(".next/static"),
+    "Main and separate server builds must use identical design CSS",
   );
   const secrets = [
     process.env.MYSQL_PASSWORD,
@@ -174,7 +174,7 @@ try {
     );
   }
   console.log(
-    "PASS: separate server build, no database required by default, shared responsive editorial site, authentic affiliate links, saved guides, identical static/server CSS and no client credential leakage.",
+    "PASS: separate server build, no database required by default, shared responsive editorial site, authentic affiliate links, saved guides, identical main/server CSS and no client credential leakage.",
   );
 } finally {
   await browser?.close();
