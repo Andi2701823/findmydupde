@@ -18,7 +18,7 @@ export function SearchBox({ compact = false, initialQuery = "" }: { compact?: bo
       <label className="sr-only" htmlFor="product-query">Thema oder Produkt suchen</label>
       <Icon name="search" />
       <input id="product-query" type="search" maxLength={120} value={query} onChange={event => {setQuery(event.target.value);setError("");}}
-        placeholder="Produkt oder Thema suchen, z. B. Serum" aria-invalid={!!error} aria-describedby={error ? "search-error" : "search-hint"} />
+        placeholder="Produktname oder Suchbegriff eingeben" aria-invalid={!!error} aria-describedby={error ? "search-error" : "search-hint"} />
       <button className="button primary" type="submit">Entdecken <Icon name="arrow" /></button>
     </form>
     <div className="suggestions">
@@ -26,6 +26,7 @@ export function SearchBox({ compact = false, initialQuery = "" }: { compact?: bo
       {["Gesichtsserum","Sneaker","Kopfhörer"].map(word => <button key={word} type="button" onClick={() => router.push(`/suche/?q=${encodeURIComponent(word)}`)}>{word} ↗</button>)}
     </div>
     {error && <p id="search-error" role="alert" className="error-message">{error}</p>}
-    <p id="search-hint" className="search-note"><Icon name="shield" /> Echte Beauty-Produkte und unabhängige Einkaufsratgeber – kostenlos und ohne Konto.</p>
+    {!compact && <div className="photo-search-teaser"><Icon name="image" /><div><strong>Produktsuche per Foto</strong><span>Die KI-Bildsuche wird vorbereitet. Aktuell kannst du über Produktnamen und Suchbegriffe suchen.</span></div></div>}
+    <p id="search-hint" className="search-note"><Icon name="shield" /> Echte Händlerprodukte und Einkaufsratgeber. Weitere Sortimente folgen.</p>
   </section>;
 }
