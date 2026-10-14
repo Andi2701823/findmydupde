@@ -17,6 +17,7 @@ export function stagingLiveCatalogEnabled(env: Readonly<Record<string, string | 
 export function stagingEbaySearchEnabled(env: Readonly<Record<string, string | undefined>> = process.env) {
   return env.DEPLOYMENT_ENV === "staging" &&
     env.EBAY_SEARCH_ENABLED === "true" &&
+    env.CATALOG_SEARCH_ENABLED !== "true" &&
     env.DATABASE_ACCESS_ENABLED !== "true" &&
     env.DB_MIGRATIONS_ENABLED !== "true" &&
     env.AWIN_IMPORT_ENABLED !== "true" &&
