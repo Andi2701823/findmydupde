@@ -20,7 +20,7 @@ try {
     if(!["GET","HEAD"].includes(request.method()))uploads.push(request.url());
   });
   await page.goto(origin);
-  await page.getByRole("heading",{name:"Dein Stil. Deine Entscheidung."}).waitFor();
+  await page.getByRole("heading",{name:"Dein Stil. Deine Wahl."}).waitFor();
   await page.getByRole("link",{name:/Ratgeber lesen: Gesichtsserum vergleichen/}).waitFor();
   assert.equal(await page.locator(".product-card").count(),0);
   assert.equal(await page.locator('[name="verification"][content="00fd05c1707e91d286f87c424f566383"]').count(),1);
@@ -33,8 +33,8 @@ try {
   assert.equal(sitemap.status,200);
   assert.match(await sitemap.text(),/gesichtsserum-vergleichen/);
   await page.getByRole("textbox",{name:"Thema oder Produkt suchen"}).fill("Serum");
-  await page.getByRole("button",{name:"Ratgeber finden"}).click();
-  await page.getByRole("heading",{name:"Ratgeber zu „Serum“"}).waitFor();
+  await page.getByRole("button",{name:"Entdecken"}).click();
+  await page.getByRole("heading",{name:"Funde zu „Serum“"}).waitFor();
   assert.equal(await page.locator(".guide-card").count(),1);
   await page.getByRole("link",{name:/Ratgeber lesen: Gesichtsserum/}).click();
   await page.getByRole("heading",{name:/Gesichtsserum vergleichen/}).waitFor();
@@ -48,7 +48,7 @@ try {
   await page.getByRole("button",{name:/Gesichtsserum vergleichen.*aus Merkliste entfernen/}).click();
   await page.getByRole("heading",{name:"Platz für deine Favoriten."}).waitFor();
   await page.goto(`${origin}/suche/?q=xyzkeinerkenntdies`);
-  await page.getByRole("heading",{name:"Zu diesem Thema gibt es noch keinen Ratgeber."}).waitFor();
+  await page.getByRole("heading",{name:"Keine passenden Inhalte gefunden."}).waitFor();
   assert.equal(await page.locator(".guide-card").count(),0);
   await page.goto(`${origin}/suche/?category=Technik`);
   assert.equal(await page.locator(".guide-card").count(),2);
