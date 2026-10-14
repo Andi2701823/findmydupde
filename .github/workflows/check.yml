@@ -36,10 +36,6 @@ jobs:
         run: npx playwright-core install chromium
       - run: npm run test:e2e
       - uses: actions/upload-artifact@v4
-        with:
-          name: hostinger-static-site
-          path: out/
-      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: browser-screenshots
@@ -89,7 +85,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Build existing static website without database access
+      - name: Build standard Next.js website without database access
         run: npm run build
         env:
           DATABASE_ACCESS_ENABLED: "false"
