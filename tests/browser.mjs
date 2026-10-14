@@ -20,10 +20,13 @@ try {
     if(!["GET","HEAD"].includes(request.method()))uploads.push(request.url());
   });
   await page.goto(origin,{waitUntil:"domcontentloaded"});
-  await page.getByRole("heading",{name:"Dein Stil. Deine Wahl."}).waitFor();
+  await page.getByRole("heading",{name:"Finde Produkte. Entdecke mehr."}).waitFor();
   await page.getByRole("link",{name:/Ratgeber lesen: Gesichtsserum vergleichen/}).waitFor();
   assert.equal(await page.locator(".product-card").count(),0);
+  assert.equal(await page.getByText("Produktsuche per Foto").count(),1);
+  assert.equal(await page.locator("input[type=file]").count(),0,"Never imply photo recognition is already enabled");
   assert.equal(await page.locator('[name="verification"][content="00fd05c1707e91d286f87c424f566383"]').count(),1);
+  assert.equal(await page.locator('meta[name="google-site-verification"][content="YtCGA15drFx3pEG8yUQPmsIonnN8kDuFLIgtHicPnQY"]').count(),1);
   assert.equal(await page.locator('meta[name="robots"][content*="noindex"]').count(),0);
   assert.equal((await fetch(`${origin}/robots.txt`).then(r=>r.text())).includes("Disallow: /"),false);
   const verification=await fetch(`${origin}/00fd05c1707e91d286f87c424f566383.html`);

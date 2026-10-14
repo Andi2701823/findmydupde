@@ -2150,3 +2150,40 @@ select {
  .product-advice {padding:21px;}
  .product-detail-related .affiliate-grid {grid-template-columns:repeat(2,minmax(0,1fr));}
 }
+
+
+/* Search-first FindMyDup homepage. No inactive photo-upload controls or invented offers. */
+.search-first-hero {grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:44px;}
+.search-first-hero .hero-copy {min-width:0;}
+.search-first-hero h1 {font-size:clamp(44px,4.8vw,70px);letter-spacing:-3.4px;}
+.search-first-hero .hero-description {font-size:15px;line-height:1.85;max-width:585px;}
+.search-first-hero .search-box {max-width:615px;box-shadow:0 14px 48px rgba(37,56,49,.07);}
+.search-first-hero .text-search input {font-size:14px;}
+.search-first-hero .text-search .button {white-space:nowrap;}
+.photo-search-teaser {display:flex;gap:12px;align-items:flex-start;padding:13px 14px;margin:8px 0 12px;border:1px dashed #cddcc7;border-radius:9px;background:#f6f9f2;color:var(--ink);}
+.photo-search-teaser>svg {width:19px;height:19px;color:var(--leaf);flex-shrink:0;margin-top:2px;}
+.photo-search-teaser>div {display:flex;flex-direction:column;gap:3px;min-width:0;}
+.photo-search-teaser strong {font-size:11px;font-weight:700;}
+.photo-search-teaser span {font-size:11px;line-height:1.65;color:var(--muted);}
+.search-first-hero .hero-visual {background:linear-gradient(145deg,#eef4e6,#f6f8f0);}
+.search-first-hero .visual-top-label {font-size:9px;}
+.search-first-hero .visual-bottom-label {text-align:center;max-width:90%;margin:auto;}
+.search-first-hero .search-note {border-top:1px solid #edf0e9;}
+@media(max-width:1100px) {
+ .search-first-hero {gap:22px;}
+ .search-first-hero h1 {font-size:clamp(42px,5.3vw,64px);letter-spacing:-2.8px;}
+}
+@media(max-width:800px) {
+ .search-first-hero {grid-template-columns:1fr;gap:27px;}
+ .search-first-hero .hero-copy {max-width:640px;margin:auto;}
+ .search-first-hero h1 {font-size:clamp(44px,7.5vw,65px);letter-spacing:-2.6px;}
+ .search-first-hero .hero-visual {max-width:610px;}
+}
+@media(max-width:600px) {
+ .search-first-hero h1 {font-size:clamp(40px,10vw,52px);letter-spacing:-2px;}
+ .search-first-hero .hero-description {font-size:13px;line-height:1.75;}
+ .search-first-hero .text-search input {font-size:12px;}
+ .search-first-hero .text-search .button {font-size:11px;}
+ .photo-search-teaser {padding:11px 10px;margin:8px 0;}
+ .photo-search-teaser span {font-size:10px;}
+}
