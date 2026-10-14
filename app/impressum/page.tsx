@@ -1,28 +1,49 @@
-export const metadata = { title: "Impressum, Prototyp" };
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Impressum",
+  description: "Anbieterkennzeichnung und Kontakt für FindMyDup.",
+};
+
 export default function Imprint() {
   return (
     <main id="main" className="shell legal-page">
-      <span className="eyebrow">FINDMYDUP DEMO</span>
+      <span className="eyebrow">ANBIETERKENNZEICHNUNG</span>
       <h1>Impressum</h1>
-      <p className="notice">
-        Noch nicht für einen öffentlichen Produktstart ausgefüllt. Dies ist kein
-        vollständiges Impressum.
-      </p>
+
+      <h2>Angaben gemäß § 5 DDG</h2>
       <p>
-        FindMyDup ist in dieser Version ein Entwicklungsprototyp mit erfundenen
-        Produktbeispielen. Es gibt keine realen Shop-Angebote und keine
-        Affiliate-Links.
+        Andreas Paul
+        <br />
+        Germersheimer Straße 17
+        <br />
+        70499 Stuttgart
+        <br />
+        Deutschland
       </p>
-      <h2>Vor dem öffentlichen Start ergänzen</h2>
-      <ul>
-        <li>Vollständiger Name oder Firma des Betreibers</li>
-        <li>Ladungsfähige Anschrift</li>
-        <li>E-Mail-Adresse und weitere erforderliche Kontaktdaten</li>
-        <li>Weitere Angaben, soweit sie für den Betreiber erforderlich sind</li>
-      </ul>
+
+      <h2>Kontakt</h2>
       <p>
-        Betreiberangaben werden hier bewusst nicht erfunden. Der Prototyp ist
-        für Suchmaschinen auf „noindex“ gesetzt.
+        E-Mail:{" "}
+        <a href="mailto:andreas.paul4282@gmail.com">
+          andreas.paul4282@gmail.com
+        </a>
+      </p>
+
+      <h2>Über dieses Angebot</h2>
+      <p>
+        FindMyDup ist eine Plattform in Entwicklung, die die Suche nach
+        vergleichbaren Produkten und Händlerangeboten erleichtern soll.
+        FindMyDup ist selbst kein Verkäufer der angezeigten Produkte.
+        Alle Bestellungen und Vertragsabschlüsse erfolgen gegebenenfalls
+        direkt beim jeweiligen Händler.
+      </p>
+
+      <p>
+        Affiliate-Verlinkungen werden entsprechend gekennzeichnet,
+        sobald die Funktion mit autorisierten Partnern eingesetzt wird.
+        Derzeit gezeigte Beispielprodukte und Beispielpreise sind als
+        solche kenntlich gemacht.
       </p>
     </main>
   );

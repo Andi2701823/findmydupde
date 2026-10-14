@@ -2,24 +2,31 @@
 
 ## Current state
 
-The current root application remains the static German demo. `npm run build` still creates `out/`, using the existing design, local image preview, search, filters and favorites. No database account, key or paid service is required for that build. No production database was connected and no production migration or feed import was run by this implementation.
+The root Next.js application now includes disabled Node.js API routes alongside
+the unchanged German demo UI. `npm run build` produces normal `.next/` output and
+`npm start` starts the standard Node.js server. No separate server-app target or
+standalone packaging is required for Hostinger's standard Next.js deployment.
+No production database was connected or changed.
 
-A separate `server-app/` Next.js target re-exports the existing pages and layout. It adds Node.js API routes while sharing the same CSS, components and generated copies of the local public assets. This avoids placing dynamic API routes inside the static-export application. The UI continues to use the clearly labeled demo provider; switching it to verified API data is a later, explicit release step.
-
-`mysql2` with prepared SQL and reviewed, versioned migrations is the MySQL-compatible solution used here. No ORM engine, schema push, automatic database introspection or database connection occurs during builds. The driver creates a bounded pool lazily, only after explicit access flags and credentials are validated.
+`mysql2` with prepared SQL and reviewed versioned migrations remains the selected
+solution. Pools are lazy and gated. No connection, migration, import or OpenAI
+call runs during build or startup. The UI still uses labeled demo fixtures; API
+activation does not switch the frontend to real offers.
 
 ## Commands
 
 ```sh
-npm ci
-npm run check             # Default static application, types, lint and unit tests
-npm run test:e2e          # Existing static browser suite
-npm run build:server     # Separate Node.js build, does not connect to MySQL
-npm run start:server     # Separate Next.js server; respects the PORT environment variable
-npm run dev:server       # Development server target
+npm ci --include=dev
+npm run check             # Types, lint, unit tests and normal root Node.js build
+npm start                 # Standard next start, using the host-provided PORT
+npm run test:e2e          # Full browser suite against root next start
+npm run build:static      # Optional rollback export to static-app/out/
+npm run test:static       # Same browser suite against optional static fallback
 ```
 
-Start and development commands optionally load the root `.env` with Node.js. Builds do not require it. Hostinger-provided process environment variables take precedence. Root `next.config.ts` remains `output: 'export'`; `server-app/next.config.ts` uses a standalone Node.js output, separate from the static export. The build packages the shared public and static assets into the standalone directory.
+The `static-app/` fallback re-exports the existing pages/styles and omits APIs.
+It is not used by the standard Node.js deployment. No database credentials are
+needed to build or run the root app with integrations disabled.
 
 ## Schema and migrations
 
@@ -45,7 +52,7 @@ After reviewing a **staging** target and backup, the explicit migration command 
 
 ```sh
 # Requires DATABASE_ACCESS_ENABLED=true, DB_MIGRATIONS_ENABLED=true,
-# and a separate MYSQL_MIGRATION_USER / MYSQL_MIGRATION_PASSWORD.
+# and explicitly configured MYSQL_MIGRATION_USER / MYSQL_MIGRATION_PASSWORD.
 npm run db:migrate -- --confirm
 ```
 
@@ -55,19 +62,27 @@ Migration or import commands are never invoked by `npm run build`, application s
 
 `.env.example` contains only the provided database/account names and blank password fields. All access flags default to false. Runtime credentials are server-only, never `NEXT_PUBLIC_*`. Set the actual database hostname from the account's Hostinger database settings; do not assume a Node.js deployment can access every database via the same localhost address.
 
-Use separate users:
+Separate database users are preferred where the hosting plan supports them.
+Hostinger permits one user per database in this staging setup. Use the confirmed
+u874339379_findmyduptest database/user sequentially: temporary CREATE/REFERENCES/
+SELECT/INSERT for the empty migration, then SELECT-only for the Next.js runtime.
+The exact hPanel steps, password rotation, prepared phpMyAdmin SQL bundle and
+later bounded import windows are in [the staging runbook](hostinger-staging.md).
 
-- Runtime user: SELECT on the catalog tables only.
-- Import user: SELECT, INSERT, UPDATE and DELETE on catalog/import tables, no schema privileges.
-- Migration user: reviewed DDL and migration-history privileges only, used outside the web process.
-
-Do not use the public web account for migrations or imports. The code does not fall back to runtime credentials for privileged roles. Provision these users/permissions through authorized Hostinger/database administration when staging activation is approved. The existing account name alone does not prove that it currently has read-only grants.
+The role-specific environment prefixes remain explicit and do not fall back to
+runtime credentials. The same username can be supplied to a maintenance process;
+that does not isolate its privileges from the web process. Disable web database
+access, remove its password and restart before elevating the shared account.
+Return to SELECT-only, rotate the password and verify before enabling web reads.
+Never leave a shared account elevated for unattended imports. The staging API
+checks actual SELECT-only grants per search; disabled APIs do not open a pool.
+All staging roles reject the known production target before connecting.
 
 Local MySQL may use a local socket/TCP connection without TLS. Remote connections require certificate-verified TLS; the code rejects explicitly disabled remote TLS. Configure the trusted CA when required. Never disable certificate verification. Pool connections, queues and query timeouts are bounded to fit a lean hosting plan.
 
 ## Search API
 
-Server target only:
+Root Node.js application:
 
 `GET /api/products/search/?q=tasche&category=mode&color=Grün&maxPrice=50.00&sort=price-asc&page=1&pageSize=12`
 
@@ -103,14 +118,22 @@ The provider contract returns category/color/material/style attributes, never pr
 
 ## Hostinger rollout without disrupting the static site
 
-1. Keep the current static site and normal `npm run build` deployment untouched.
-2. Confirm Node.js Web Apps availability and the supported Node.js version in the existing Business account. Serving only `public_html` cannot execute Next.js API routes.
-3. Create a separate staging Node.js app/subdomain. Use repository-root build command `npm run build:server`. The deployable Node.js output directory is `server-app/.next/standalone`, with entry file `server-app/server.js` relative to that directory (framework “Other” if manual output/entry settings are required). From a full repository checkout, the start command is `npm run start:server`. Use the platform-provided `PORT` and set the Next.js bind `HOSTNAME` to `0.0.0.0` for the Node.js app. Keep all database/API flags false for the initial preview.
-4. Verify homepage, routes, local assets, demo functionality and disabled API responses. No database connection is required for this stage.
-5. After explicit authorization, provision staging-only database users, review and apply migrations, then import only approved real feed data. Test that the runtime user cannot write.
-6. Enable database/search flags on staging, verify actual search and legal/affiliate/privacy disclosures, and separately update the frontend catalog adapter when ready.
-7. Only after approval, take a production backup, apply reviewed migrations with a dedicated account, configure production environment variables in hPanel, and switch the domain/routing to the Node.js app. Retain the previous static export for rollback.
+Follow [the standard Next.js staging and rollback runbook](hostinger-staging.md).
+The owner confirmed that findmydup.de already uses Next.js on Node 22.x with
+standard settings and automatic GitHub deployment from main. No hosting-mode
+migration, new production website, domain switch or standalone target is needed.
+This development branch must not be merged or deployed to production without
+separate release approval. Keep all integrations false for initial staging.
 
-No production connection, migration, domain change or deployment is performed by these preparation steps. A rollback to static `out/` must not delete database data or migration history.
+References: [Hostinger Node.js apps](https://www.hostinger.com/support/how-to-deploy-a-nodejs-website-in-hostinger/), [Hostinger MySQL for Node.js](https://www.hostinger.com/support/connecting-a-hostinger-mysql-database-to-a-node-js-application/), [Next.js Node deployment](https://nextjs.org/docs/app/getting-started/deploying), [mysql2 prepared statements/pools](https://sidorares.github.io/node-mysql2/docs).
 
-References: [Hostinger Node.js apps](https://www.hostinger.com/support/how-to-deploy-a-nodejs-website-in-hostinger/), [Hostinger MySQL for Node.js](https://www.hostinger.com/support/connecting-a-hostinger-mysql-database-to-a-node-js-application/), [Next.js CLI directories](https://nextjs.org/docs/app/api-reference/cli/next), [mysql2 prepared statements/pools](https://sidorares.github.io/node-mysql2/docs).
+## Restricted staging grant compatibility
+
+The default and production API policy is strict SELECT/USAGE. The explicit
+HOSTINGER_STAGING_GRANT_COMPATIBILITY flag is false by default. Only the exact
+Hostinger staging database/account, DEPLOYMENT_ENV=staging and disabled maintenance/
+image flags can use the exception described in the staging runbook. It validates
+actual identities, effective grants and every non-versioned base table using the
+same connection as the catalog SELECT. The exception is not a strictly read-only
+MySQL account, and CLI diagnostics label it staging-compatibility. No write or
+DELETE HISTORY operation is executed by the web application.

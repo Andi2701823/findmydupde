@@ -1,4 +1,5 @@
 import "server-only";
+import { isStagingDatabase } from "./staging-target.ts";
 export type DatabaseRole = "read" | "import" | "migration";
 export class DatabaseUnavailable extends Error {
   constructor() {
@@ -30,6 +31,10 @@ export function databaseOptions(
   role: DatabaseRole,
   env: Readonly<Record<string, string | undefined>> = process.env,
 ) {
+  // Production catalog/database activation needs a separate, explicitly reviewed release.
+  // This staging-to-production preparation is intentionally demo-only and must never
+  // connect to the existing production MySQL database, even with accidentally enabled flags.
+  if (env.DEPLOYMENT_ENV === "production") throw new DatabaseUnavailable();
   if (env.DATABASE_ACCESS_ENABLED !== "true") throw new DatabaseUnavailable();
   if (role === "migration" && env.DB_MIGRATIONS_ENABLED !== "true")
     throw new DatabaseUnavailable();
@@ -38,6 +43,9 @@ export function databaseOptions(
   const host = required(env, "MYSQL_HOST");
   const database = required(env, "MYSQL_DATABASE");
   if (!/^[a-zA-Z0-9_]{1,64}$/.test(database)) throw new DatabaseUnavailable();
+  // Applies to read, migration and import roles, before any pool/connection exists.
+  if (env.DEPLOYMENT_ENV === "staging" && !isStagingDatabase(database))
+    throw new DatabaseUnavailable();
   const local = ["localhost", "127.0.0.1", "::1"].includes(host);
   const tls = env.MYSQL_TLS_MODE || (local ? "disabled" : "required");
   if (!["required", "disabled"].includes(tls) || (!local && tls !== "required"))

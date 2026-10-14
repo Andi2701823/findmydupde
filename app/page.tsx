@@ -1,16 +1,25 @@
 import Image from "next/image";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { SearchBox } from "@/components/search-box";
 import { ProductCard } from "@/components/product-card";
 import { Icon } from "@/components/icon";
 import { products } from "@/lib/catalog";
+import { stagingLiveCatalogEnabled } from "@/server/catalog/live-mode.ts";
+export const metadata: Metadata = {
+  title: { absolute: "FindMyDup | Produkte entdecken und Alternativen finden" },
+  description:
+    "FindMyDup entwickelt eine transparente Produktsuche für Mode, Beauty, Wohnen und Technik. Erfahre, wie die Suche funktioniert und welche Angebote bereits verfügbar sind.",
+};
 const categoryTiles = [
   { name: "Mode", sub: "Looks, die zu dir passen", image: "bag" },
   { name: "Beauty", sub: "Neue Favoriten entdecken", image: "serum" },
   { name: "Wohnen", sub: "Mehr Stil für dein Zuhause", image: "lamp" },
   { name: "Technik", sub: "Smart suchen, neu entdecken", image: "headphones" },
 ];
+export const dynamic = "force-dynamic";
 export default function Home() {
+  const liveCatalog = stagingLiveCatalogEnabled();
   return (
     <main id="main">
       <section className="hero shell">
@@ -25,12 +34,15 @@ export default function Home() {
             Für <span className="underlined">weniger.</span>
           </h1>
           <p className="hero-description">
-            Du hast etwas Schönes entdeckt? Finde ähnliche Produkte, die zu
-            deinem Stil und deinem Budget passen.
+            Du hast ein Produkt entdeckt, das dir gefällt? FindMyDup hilft dir
+            dabei, weitere Ideen und passende Angebote aus unterschiedlichen
+            Shops zu entdecken. Wir bauen den Händlerkatalog gerade auf.
           </p>
-          <SearchBox />
+          <SearchBox liveCatalog={liveCatalog} />
           <p className="hero-footnote">
-            Ein erster Einblick in FindMyDup. Alle Produkte sind Demo-Beispiele.
+            {liveCatalog
+              ? "Textsuche im Testbetrieb. Händlerangebote folgen nach Freigabe; Bilder und Beispielpreise auf dieser Startseite sind Demo."
+              : "Vorschau im Aufbau. Alle gezeigten Produkte und Preise sind als Beispiele erfunden."}
           </p>
         </div>
         <div
@@ -82,16 +94,16 @@ export default function Home() {
       <div className="trust-strip">
         <div className="shell trust-inner">
           <span>
-            <Icon name="search" /> Zwei Wege zum Lieblingsstück
+            <Icon name="search" /> {liveCatalog ? "Textsuche im Testbetrieb" : "Produktsuche ausprobieren"}
           </span>
           <span>
-            <Icon name="shield" /> Kein Konto nötig
+            <Icon name="shield" /> Ohne Registrierung testen
           </span>
           <span>
-            <Icon name="heart" /> Funde einfach merken
+            <Icon name="heart" /> Beispielprodukte merken
           </span>
           <span className="trust-demo">
-            Transparent von Anfang an: Demo-Katalog
+            Echte Händlerangebote erst nach Freigabe
           </span>
         </div>
       </div>
@@ -99,7 +111,7 @@ export default function Home() {
         <div className="section-heading">
           <div>
             <span className="eyebrow">WAS MÖCHTEST DU ENTDECKEN?</span>
-            <h2>Deine Welt. Dein Geschmack.</h2>
+            <h2>Entdecke deine Produktwelt.</h2>
           </div>
           <Link href="/suche/" className="text-link">
             Alles entdecken <Icon name="arrow" />
@@ -133,11 +145,11 @@ export default function Home() {
         <div className="section-heading">
           <div>
             <span className="eyebrow">EIN KLEINER VORGESCHMACK</span>
-            <h2>Schöne Funde. Gute Ideen.</h2>
-            <p>So könnten deine Ergebnisse aussehen. Alles hier ist Demo.</p>
+            <h2>So könnten deine Funde aussehen.</h2>
+            <p>Designbeispiele mit erfundenen Produkten und Preisen. Noch keine Händlerangebote.</p>
           </div>
           <Link href="/suche/" className="text-link">
-            Demo-Katalog ansehen <Icon name="arrow" />
+            Beispielkatalog ansehen <Icon name="arrow" />
           </Link>
         </div>
         <div className="product-grid">
@@ -155,27 +167,31 @@ export default function Home() {
               <br />
               mit einer einfachen Suche.
             </h2>
-            <p>Foto oder Name. Du entscheidest, wo es losgeht.</p>
+            <p>Die Textsuche ist bereits erlebbar. Die automatische Bildsuche kommt später.</p>
           </div>
           <div className="steps-grid">
             {[
               {
                 n: "01",
-                icon: "image" as const,
-                title: "Zeig uns deinen Stil",
-                text: "Gib einen Produktnamen ein oder wähle ein Foto. Bilder bleiben in dieser Demo nur auf deinem Gerät.",
+                icon: "search" as const,
+                title: "Starte mit einem Produktnamen",
+                text: liveCatalog
+                  ? "Die Textsuche durchsucht unseren echten Katalog. Partnerangebote erscheinen nach ihrer Freigabe."
+                  : "Die Produktsuche lässt sich derzeit mit gekennzeichneten Beispielen ausprobieren.",
               },
               {
                 n: "02",
                 icon: "search" as const,
-                title: "Entdecke die Möglichkeiten",
-                text: "Erkunde den Beispielkatalog. Die Bilddemo zeigt eine gewählte Kategorie, keine KI-Treffer.",
+                title: "Erkunde deine Möglichkeiten",
+                text: liveCatalog
+                  ? "Sortiere Treffer und grenze Angebote nach Preis ein, sobald der Produktkatalog befüllt ist."
+                  : "Entdecke Produktbeispiele und teste die Filter. Preise und Produkte sind noch nicht echt.",
               },
               {
                 n: "03",
                 icon: "heart" as const,
-                title: "Behalte deine Favoriten",
-                text: "Filtere nach deinem Geschmack und merke deine Funde. Echte Shop-Angebote folgen erst später.",
+                title: "Informiere dich transparent",
+                text: "Ähnliche Produkte sind nicht automatisch gleichwertig. Händlerpreise und Links werden erst mit genehmigten Partnerdaten gezeigt.",
               },
             ].map((step) => (
               <div className="step" key={step.n}>
@@ -188,6 +204,11 @@ export default function Home() {
               </div>
             ))}
           </div>
+          <div className="how-guide-cta">
+            <Link href="/ratgeber/" className="text-link">
+              Worauf du beim Produktvergleich achten solltest <Icon name="arrow" />
+            </Link>
+          </div>
         </div>
       </section>
       <section className="shell about-section">
@@ -199,14 +220,44 @@ export default function Home() {
           <h2>Mehr Auswahl. Deine Entscheidung.</h2>
           <p>
             Ein ähnlicher Look sagt nichts über gleiche Qualität, Materialien
-            oder Wirkung aus. FindMyDup soll dir später echte Alternativen
-            zeigen, mit nachvollziehbaren Produktdaten. Dieser Prototyp macht
-            die Idee schon heute erlebbar.
+            oder Wirkung aus. FindMyDup setzt auf klar zugeordnete Händlerangebote,
+            nachvollziehbare Preisangaben und eine eindeutige Kennzeichnung
+            von Beispielen. Wir bauen die Plattform Schritt für Schritt auf.
           </p>
         </div>
-        <Link href="/suche/" className="button secondary">
-          Jetzt ausprobieren <Icon name="arrow" />
+        <Link href="/ueber-uns/" className="button secondary">
+          Über FindMyDup <Icon name="arrow" />
         </Link>
+      </section>
+      <section className="shell publisher-section" aria-labelledby="publisher-title">
+        <div className="publisher-copy">
+          <span className="eyebrow">FÜR HÄNDLER UND MARKEN</span>
+          <h2 id="publisher-title">Produkte dort zeigen, wo neue Ideen entstehen.</h2>
+          <p>
+            FindMyDup ist eine deutschsprachige Produktentdeckungsplattform
+            im Aufbau. Wir suchen passende Handelspartner für Mode, Beauty,
+            Wohnen und Technik. Angebote übernehmen wir nur aus autorisierten
+            Produktdatenquellen. Wir versprechen keine Reichweite, die wir
+            noch nicht belegen können.
+          </p>
+          <Link href="/partner/" className="button primary">
+            Zusammenarbeit entdecken <Icon name="arrow" />
+          </Link>
+        </div>
+        <div className="publisher-facts" aria-label="Unsere Grundsätze">
+          <div>
+            <strong>Nachvollziehbar</strong>
+            <span>Händlername, Angebotspreis und Preisstand sollen deutlich sichtbar sein.</span>
+          </div>
+          <div>
+            <strong>Fair gekennzeichnet</strong>
+            <span>Beispielprodukte und spätere Affiliate-Verlinkungen werden transparent markiert.</span>
+          </div>
+          <div>
+            <strong>Direkter Shopkontakt</strong>
+            <span>Der Kauf findet beim jeweiligen Händler statt, nicht auf FindMyDup.</span>
+          </div>
+        </div>
       </section>
     </main>
   );

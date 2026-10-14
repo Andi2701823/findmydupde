@@ -6,8 +6,8 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
@@ -35,17 +35,21 @@ jobs:
       - name: Install browser for smoke tests
         run: npx playwright-core install chromium
       - run: npm run test:e2e
-      - uses: actions/upload-artifact@v4
+      - name: Build and test optional static fallback
+        run: |
+          npm run build:static
+          npm run test:static
+      - uses: actions/upload-artifact@v6
         with:
           name: hostinger-static-site
-          path: out/
-      - uses: actions/upload-artifact@v4
+          path: static-app/out/
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: browser-screenshots
           path: test-artifacts/
           if-no-files-found: ignore
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: dependency-audit-reports
@@ -66,6 +70,8 @@ jobs:
           --health-cmd="mysqladmin ping -h 127.0.0.1 -pci_ephemeral_root_password"
           --health-interval=10s --health-timeout=5s --health-retries=10
     env:
+      NODE_ENV: production
+      NPM_CONFIG_INCLUDE: dev
       TEST_MYSQL_INTEGRATION_ENABLED: "true"
       DATABASE_ACCESS_ENABLED: "true"
       DB_MIGRATIONS_ENABLED: "true"
@@ -83,21 +89,21 @@ jobs:
       MYSQL_IMPORT_PASSWORD: ci_ephemeral_import_password
       MYSQL_TLS_MODE: disabled
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Build existing static website without database access
-        run: npm run build
+      - name: Build optional static fallback without database access
+        run: npm run build:static
         env:
           DATABASE_ACCESS_ENABLED: "false"
           DB_MIGRATIONS_ENABLED: "false"
           AWIN_IMPORT_ENABLED: "false"
           CATALOG_SEARCH_ENABLED: "false"
-      - name: Build separate standalone server without database access
-        run: npm run build:server
+      - name: Build standard root Next.js server without database access
+        run: npm run build
         env:
           DATABASE_ACCESS_ENABLED: "false"
           DB_MIGRATIONS_ENABLED: "false"
@@ -109,14 +115,116 @@ jobs:
         run: |
           npx playwright-core install chromium
           npm run test:server
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: backend-browser-evidence
           path: test-artifacts/
-      - uses: actions/upload-artifact@v4
-        with:
-          name: hostinger-standalone-server
-          path: server-app/.next/standalone/
-          include-hidden-files: true
 
+  mariadb:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mariadb:10.11
+        env:
+          MARIADB_ROOT_PASSWORD: ci_ephemeral_root_password
+          MARIADB_DATABASE: findmydup_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=10s --health-timeout=5s --health-retries=10
+    env:
+      NODE_ENV: production
+      NPM_CONFIG_INCLUDE: dev
+      TEST_MYSQL_INTEGRATION_ENABLED: "true"
+      DATABASE_ACCESS_ENABLED: "true"
+      DB_MIGRATIONS_ENABLED: "true"
+      AWIN_IMPORT_ENABLED: "true"
+      CATALOG_SEARCH_ENABLED: "true"
+      IMAGE_SEARCH_ENABLED: "false"
+      MYSQL_HOST: 127.0.0.1
+      MYSQL_PORT: "3306"
+      MYSQL_DATABASE: findmydup_test
+      MYSQL_USER: findmydup_test_read
+      MYSQL_PASSWORD: ci_ephemeral_read_password
+      MYSQL_MIGRATION_USER: root
+      MYSQL_MIGRATION_PASSWORD: ci_ephemeral_root_password
+      MYSQL_IMPORT_USER: findmydup_test_import
+      MYSQL_IMPORT_PASSWORD: ci_ephemeral_import_password
+      MYSQL_TLS_MODE: disabled
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Test migrations and read-only connection probe on isolated MariaDB
+        run: npm run test:db
+
+  staging-compatibility:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mariadb:11.4
+        env:
+          MARIADB_ROOT_PASSWORD: ci_ephemeral_root_password
+          MARIADB_DATABASE: findmydup_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=10s --health-timeout=5s --health-retries=10
+    env:
+      NODE_ENV: production
+      NPM_CONFIG_INCLUDE: dev
+      TEST_HOSTINGER_COMPATIBILITY_ENABLED: "true"
+      MYSQL_HOST: 127.0.0.1
+      MYSQL_DATABASE: findmydup_test
+      MYSQL_MIGRATION_PASSWORD: ci_ephemeral_root_password
+      DATABASE_ACCESS_ENABLED: "false"
+      CATALOG_SEARCH_ENABLED: "false"
+      DB_MIGRATIONS_ENABLED: "false"
+      AWIN_IMPORT_ENABLED: "false"
+      IMAGE_SEARCH_ENABLED: "false"
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Verify opt-in policy using disposable MariaDB and actual Next.js API
+        run: npm run test:compat
+
+  supabase-schema:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Execute PostgreSQL schema and RLS authorization tests
+        run: |
+          docker run -d --name findmydup-supabase-ci \
+            -e POSTGRES_PASSWORD=ci_ephemeral_only \
+            -e POSTGRES_DB=findmydup_ci postgres:16
+          trap 'docker rm -f findmydup-supabase-ci >/dev/null 2>&1 || true' EXIT
+          # The postgres:16 entrypoint briefly exposes a temporary server during
+          # database initialization. pg_isready alone can succeed just before
+          # that temporary server shuts down, racing the CREATE ROLE command.
+          ready=0
+          for attempt in $(seq 1 60); do
+            if docker logs findmydup-supabase-ci 2>&1 | grep -q 'PostgreSQL init process complete;' &&
+               docker exec findmydup-supabase-ci pg_isready -U postgres -d findmydup_ci >/dev/null 2>&1; then
+              ready=1
+              break
+            fi
+            sleep 1
+          done
+          test "$ready" -eq 1
+          docker exec findmydup-supabase-ci psql -v ON_ERROR_STOP=1 -U postgres -d findmydup_ci \
+            -c 'CREATE ROLE anon NOLOGIN; CREATE ROLE authenticated NOLOGIN;'
+          docker cp db/supabase/001_catalog.sql findmydup-supabase-ci:/tmp/catalog.sql
+          docker cp tests/supabase-security.sql findmydup-supabase-ci:/tmp/security.sql
+          docker exec findmydup-supabase-ci psql -v ON_ERROR_STOP=1 -U postgres -d findmydup_ci -f /tmp/catalog.sql
+          docker exec findmydup-supabase-ci psql -v ON_ERROR_STOP=1 -U postgres -d findmydup_ci -f /tmp/security.sql

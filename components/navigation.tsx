@@ -43,7 +43,7 @@ export function Navigation() {
             <Icon name="heart" /> Merkliste
           </Link>
         </nav>
-        <span className="demo-pill nav-demo">Demo-Version</span>
+        <span className="demo-pill nav-demo">Im Aufbau</span>
         <button
           className="icon-button mobile-menu"
           aria-label={open ? "Menü schließen" : "Menü öffnen"}

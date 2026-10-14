@@ -13,7 +13,7 @@ FindMyDup is a German-language product discovery website for finding visually si
 
 - Phase 1: Next.js + TypeScript, accessible responsive German UI, photo-upload UI and text-search UI, example results clearly labeled as demo data, no live affiliate claims. Validate the complete flow.
 - Phase 2: Connect image recognition securely on the server, a product database (e.g., Supabase), and authorized Awin product feeds. Add real search, filtering, matching and outbound tracking where permitted.
-- Phase 3: Add production hosting on the existing Hostinger Business Web Hosting plan, connect findmydup.de after purchase, and complete legal/privacy compliance.
+- Hosting: findmydup.de is already live on Hostinger Business, Next.js/Node 22.x, standard settings, automatically deployed from main. This development branch does not change that deployment.
 
 ## Development principles
 
@@ -40,27 +40,36 @@ npm run dev
 
 Open `http://localhost:3000`. No environment variables or service accounts are needed.
 
-### Checks and static export
+### Checks and production build
 
 ```sh
-npm run check
-# Includes TypeScript, ESLint, 9 unit tests and the production static build.
-npm run serve
-# Serves out/ at http://localhost:3000 (requires Python 3).
-```
-
-Browser smoke tests run against the actual `out/` export:
-
-```sh
+npm ci --include=dev
+npm run check       # TypeScript, ESLint, unit tests and standard root Next.js build
+npm start           # next start, listens on Hostinger's PORT
 npx playwright-core install chromium
-npm run test:e2e
+npm run test:e2e    # Complete UI browser suite against the production Node.js build
 ```
 
-`CHROME_PATH` optionally selects a locally installed Chrome/Chromium binary. The browser tests start a temporary Python static server and cover search, filters, upload validation, image preview, product details, favorites persistence, storage failures, navigation and layouts at 375, 390, 768 and 1440 pixels. They also assert that the app makes no external requests or image uploads. Browser screenshots are written to ignored `test-artifacts/`.
+`npm run build` creates the normal `.next/` output. No database credentials or
+paid services are needed. Dynamic API routes remain disabled by default.
+
+An optional static fallback shares the existing pages and components, omits API
+routes and is never used by the standard Hostinger deployment:
+
+```sh
+npm run build:static  # Export to static-app/out/
+npm run serve        # Preview static fallback with Python 3
+npm run test:static  # Same complete UI browser suite against the static fallback
+```
+
+Browser checks cover search, filters, uploads/previews, details, favorites,
+storage failures, navigation and layouts at 375, 390, 768 and 1440 pixels.
+`CHROME_PATH` optionally selects a local browser. No external requests or image
+uploads are expected. Screenshots are written to ignored `test-artifacts/`.
 
 ### Project structure
 
-- `app/`: App Router pages, German metadata, layout, responsive styles and 404.
+- `app/`: Existing pages/design and disabled Node.js API routes.
 - `components/`: Search, results, navigation, cards/dialogs and favorites.
 - `lib/catalog.ts`: Fictional fixtures only; each has `source: 'demo'`.
 - `lib/search.ts`: Deterministic text search, filters and `demoCatalog` provider.
@@ -69,20 +78,59 @@ npm run test:e2e
 - `public/products/`: Original local SVG illustrations, no external downloads.
 - `docs/hostinger.md`: Static upload instructions and hosting boundaries.
 - `docs/integrations.md`: Server-side OpenAI, Supabase and Awin integration plan.
-- `.github/workflows/check.yml`: Build and browser checks, with `out/` as a deployable artifact.
+- `static-app/`: Optional static fallback, re-exports the same pages without APIs.
+- `.github/workflows/check.yml`: Standard/static builds, browser checks and isolated MySQL/MariaDB tests.
 
 ### Prototype boundaries
 
 Images are previewed using revocable browser object URLs and are never uploaded. Image demo results use the category selected by the visitor, not image contents. Unknown text searches show an empty state. Prices and reference prices are labeled fictional, with no savings or availability claims. Favorites store only demo IDs in the current browser, with an in-memory fallback if storage is blocked.
 
-This build uses `output: 'export'`, so it requires no Node.js server on Hostinger. API routes, image recognition, feed imports and database writes are not implemented. Before adding server features, upgrade Next.js/React to the current patched releases, enable a supported secure server runtime, and implement the safeguards in the integration plan. The current lockfile records the dependency versions tested for this static prototype.
+The root application uses the normal Node.js Next.js build, with dynamic route
+handlers for catalog search and a disabled image-analysis boundary. Static export
+cannot execute MySQL queries. The optional fallback is the only configuration
+with `output: 'export'`. The frontend continues to use explicitly labeled demos.
 
-Before public launch, replace the incomplete operator/legal pages, complete privacy disclosures, connect verified product data and remove the prototype's `noindex` and `robots.txt` restrictions only when the site is ready. The hostname has not been configured or deployed by this implementation.
+Before public launch, replace the incomplete operator/legal pages, complete privacy disclosures, connect verified product data and remove the prototype's `noindex` and `robots.txt` restrictions only when the site is ready. The live hostname and Hostinger settings were not modified by this work.
 
-## MySQL/server preparation
+## MySQL preparation in the main application
 
-The default static export and demo UI remain intact. A separate `server-app/` build reuses the existing pages and adds disabled-by-default MySQL search and image-analysis API boundaries. No production database has been connected.
+No separate server-app build is required. `app/api/products/search/route.ts` and
+`app/api/image-search/route.ts` use the existing server-only MySQL handlers.
+Runtime flags are read per request. Build/start do not open a connection, migrate,
+import a feed or call OpenAI. The UI, components and styles are unchanged.
 
-Use `npm run build:server` / `npm run start:server` for the optional Node.js target. The schema and checksum-verified migration runner live in `db/migrations/` and `server/db/`. Runtime, import and migration credentials are separate, server-only environment variables. `.env.example` has no passwords and all access gates are false.
+The reviewed schema/migrations live in `db/migrations/` and `server/db/`. Runtime,
+import and migration credential namespaces are explicit, with no privileged fallback.
+Hostinger staging uses one account sequentially with temporary maintenance rights
+and SELECT-only runtime rights; see the staging runbook.
+`.env.example` and `.env.staging.example` have no passwords and all access gates
+false. No production database was connected.
 
-See [MySQL and Hostinger transition](docs/mysql-server-transition.md) for the schema, least-privilege accounts, staged Awin batch import, disabled image integration, test commands and safe rollout/rollback plan. No migration or import runs automatically during build/start.
+See [MySQL preparation](docs/mysql-server-transition.md) for schema, least-
+privilege accounts, feed validation and image boundaries. Hostinger uses standard
+Next.js settings, root `./`, Node 22.x, `npm run build` and `npm start`.
+
+## Safe Hostinger staging activation
+
+The website is already live. Preparation must preserve that deployment. See
+[the Hostinger staging runbook](docs/hostinger-staging.md) for exact build/entry
+settings, a blank staging environment template, read-only connection checks,
+migration compatibility checks and rollback. The new `npm run db:check` command
+requires an explicitly confirmed staging database and rejects the known production
+database. No database probes, migrations or imports run on application startup.
+
+The confirmed staging database/user is `u874339379_findmyduptest`. Verification
+accepts this exact name and rejects `u874339379_findmydupde` in staging. A prepared
+[initial phpMyAdmin bundle](db/staging/hostinger-initial-schema.sql) copies the
+reviewed empty schema and records its migration checksum. It is for first staging
+initialization only, is not automatically executed and contains no product seeds.
+The staging search API also refuses catalog reads until the shared account has
+only SELECT/USAGE grants. All integration flags remain disabled by default.
+
+A narrowly scoped Hostinger staging grant exception is prepared and disabled by
+`HOSTINGER_STAGING_GRANT_COMPATIBILITY=false`. Opt-in is valid only for the exact
+confirmed staging database/account. It checks actual connection identities,
+effective grants and a complete non-versioned schema inventory before searching.
+This exception is not a strictly read-only account. Production and default
+operation enforce SELECT/USAGE; imports, migrations and OpenAI stay disabled.
+See the staging runbook for the exact environment setting and limitations.

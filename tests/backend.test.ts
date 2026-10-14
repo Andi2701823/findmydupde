@@ -15,7 +15,7 @@ import {
   createRateLimiter,
   requestQuotaKey,
 } from "../server/http/rate-limit.ts";
-import { productSearchHandler } from "../server/http/product-search.ts";
+import { productSearchHandler, stagingCatalogDiagnosticReason } from "../server/http/product-search.ts";
 import { handleImageSearch } from "../server/http/image-search.ts";
 import {
   validateImageInput,
@@ -61,6 +61,24 @@ test("database access is opt-in, roles do not fall back to runtime credentials",
   assert.equal(options.multipleStatements, false);
   assert.equal(options.connectionLimit, 2);
 });
+test("production MySQL fails closed even when read, import or migration are enabled", () => {
+  const accidentalProductionConfiguration = {
+    ...env,
+    DEPLOYMENT_ENV: "production",
+    CATALOG_SEARCH_ENABLED: "true",
+    AWIN_IMPORT_ENABLED: "true",
+    DB_MIGRATIONS_ENABLED: "true",
+    MYSQL_IMPORT_USER: "test_importer",
+    MYSQL_IMPORT_PASSWORD: "test-only-import-password",
+    MYSQL_MIGRATION_USER: "test_migration",
+    MYSQL_MIGRATION_PASSWORD: "test-only-migration-password",
+  };
+  for (const role of ["read", "import", "migration"] as const)
+    assert.throws(() => databaseOptions(role, accidentalProductionConfiguration), {
+      name: "DatabaseUnavailable",
+    });
+});
+
 test("remote MySQL refuses unencrypted connections and invalid pool limits", () => {
   assert.throws(() =>
     databaseOptions("read", {
@@ -189,6 +207,16 @@ test("disabled API never calls the database; bad inputs and faults have safe res
     429,
   );
 });
+test("staging diagnostic uses fixed labels and never prints arbitrary error content", () => {
+  assert.equal(stagingCatalogDiagnosticReason(new Error("password=private SQL=secret")), "unclassified");
+  assert.equal(stagingCatalogDiagnosticReason(new Error("Staging compatibility wildcard grant scope rejected")),
+    "Staging compatibility wildcard grant scope rejected");
+  assert.equal(stagingCatalogDiagnosticReason(Object.assign(new Error("secret"), { code: "ER_ACCESS_DENIED_ERROR" })),
+    "ER_ACCESS_DENIED_ERROR");
+  assert.equal(stagingCatalogDiagnosticReason(Object.assign(new Error("secret"), { code: "PRIVATE_SERVER_MESSAGE" })),
+    "unclassified");
+});
+
 test("image endpoint remains disabled and does not consume uploaded bodies", async () => {
   const request = new Request("https://example.test/api/image-search", {
     method: "POST",
@@ -216,4 +244,18 @@ test("image endpoint remains disabled and does not consume uploaded bodies", asy
     () => new UnavailableImageRecognizer().recognize(),
     /not implemented/,
   );
+});
+
+test("one explicitly configured staging user can serve maintenance roles without credential fallback", () => {
+  const shared = { ...env, MYSQL_USER: "u874339379_findmyduptest", MYSQL_DATABASE: "u874339379_findmyduptest" };
+  assert.throws(() => databaseOptions("migration", { ...shared, DB_MIGRATIONS_ENABLED: "true" }));
+  assert.throws(() => databaseOptions("import", { ...shared, AWIN_IMPORT_ENABLED: "true" }));
+  assert.equal(databaseOptions("migration", { ...shared, DB_MIGRATIONS_ENABLED: "true", MYSQL_MIGRATION_USER: shared.MYSQL_USER, MYSQL_MIGRATION_PASSWORD: shared.MYSQL_PASSWORD }).user, shared.MYSQL_USER);
+  assert.equal(databaseOptions("import", { ...shared, AWIN_IMPORT_ENABLED: "true", MYSQL_IMPORT_USER: shared.MYSQL_USER, MYSQL_IMPORT_PASSWORD: shared.MYSQL_PASSWORD }).user, shared.MYSQL_USER);
+});
+
+test("staging database roles reject the production target before connecting", () => {
+  const production = { ...env, DEPLOYMENT_ENV: "staging", MYSQL_DATABASE: "u874339379_findmydupde", DB_MIGRATIONS_ENABLED: "true", AWIN_IMPORT_ENABLED: "true", MYSQL_MIGRATION_USER: "test", MYSQL_MIGRATION_PASSWORD: "dummy-test-only", MYSQL_IMPORT_USER: "test", MYSQL_IMPORT_PASSWORD: "dummy-test-only" };
+  for (const role of ["read", "migration", "import"] as const)
+    assert.throws(() => databaseOptions(role, production));
 });

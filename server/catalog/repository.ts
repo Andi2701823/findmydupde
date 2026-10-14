@@ -86,54 +86,60 @@ export function buildSearchQuery(input: CatalogSearch, maxAgeDays = 3) {
     values,
   };
 }
+export function formatCatalogRows(rows: CatalogRow[], input: CatalogSearch) {
+  const hasMore = rows.length > input.pageSize;
+  const offers: CatalogOffer[] = rows
+    .slice(0, input.pageSize)
+    .map((row) => {
+      const amount = Number(row.amount_minor);
+      if (
+        !Number.isSafeInteger(amount) ||
+        amount < 0 ||
+        amount > MAX_AMOUNT_MINOR ||
+        row.currency !== "EUR"
+      )
+        throw new Error("Invalid catalog price");
+      const timeValue = row.observed_at.replace(" ", "T");
+      const timestamp = new Date(/(?:Z|[+-]\d{2}:\d{2})$/i.test(timeValue) ? timeValue : timeValue + "Z");
+      if (!Number.isFinite(timestamp.getTime()))
+        throw new Error("Invalid observation time");
+      return {
+        source: "awin",
+        productId: row.product_id,
+        offerId: row.offer_id,
+        title: row.title,
+        description: row.description,
+        category: row.category,
+        color: row.color,
+        material: row.material,
+        retailer: { id: row.retailer_id, name: row.retailer_name },
+        imageUrl: safePublicUrl(row.image_url),
+        price: {
+          amountMinor: amount,
+          currency: "EUR",
+          observedAt: timestamp.toISOString(),
+        },
+        availability:
+          row.availability === "in_stock" ? "in_stock" : "unknown",
+        affiliateUrl: safePublicUrl(row.affiliate_url),
+      };
+    });
+  return {
+    source: "catalog" as const,
+    offers,
+    page: input.page,
+    pageSize: input.pageSize,
+    hasMore,
+  };
+
+}
+
 export function catalogRepository(execute: SearchExecutor) {
   return {
     async search(input: CatalogSearch, maxAgeDays = 3) {
       const query = buildSearchQuery(input, maxAgeDays);
       const rows = await execute(query.sql, query.values);
-      const hasMore = rows.length > input.pageSize;
-      const offers: CatalogOffer[] = rows
-        .slice(0, input.pageSize)
-        .map((row) => {
-          const amount = Number(row.amount_minor);
-          if (
-            !Number.isSafeInteger(amount) ||
-            amount < 0 ||
-            amount > MAX_AMOUNT_MINOR ||
-            row.currency !== "EUR"
-          )
-            throw new Error("Invalid catalog price");
-          const timestamp = new Date(row.observed_at.replace(" ", "T") + "Z");
-          if (!Number.isFinite(timestamp.getTime()))
-            throw new Error("Invalid observation time");
-          return {
-            source: "awin",
-            productId: row.product_id,
-            offerId: row.offer_id,
-            title: row.title,
-            description: row.description,
-            category: row.category,
-            color: row.color,
-            material: row.material,
-            retailer: { id: row.retailer_id, name: row.retailer_name },
-            imageUrl: safePublicUrl(row.image_url),
-            price: {
-              amountMinor: amount,
-              currency: "EUR",
-              observedAt: timestamp.toISOString(),
-            },
-            availability:
-              row.availability === "in_stock" ? "in_stock" : "unknown",
-            affiliateUrl: safePublicUrl(row.affiliate_url),
-          };
-        });
-      return {
-        source: "catalog" as const,
-        offers,
-        page: input.page,
-        pageSize: input.pageSize,
-        hasMore,
-      };
+      return formatCatalogRows(rows, input);
     },
   };
 }
