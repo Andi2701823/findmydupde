@@ -17,7 +17,8 @@
     "db:migrate": "node --env-file-if-exists=.env --conditions=react-server --experimental-strip-types scripts/migrate.ts",
     "test:db": "node --conditions=react-server --experimental-strip-types --test tests/mysql.integration.ts",
     "test:server": "node tests/server-browser.mjs",
-    "awin:import": "node --env-file-if-exists=.env --conditions=react-server --experimental-strip-types scripts/import-awin.ts"
+    "awin:import": "node --env-file-if-exists=.env --conditions=react-server --experimental-strip-types scripts/import-awin.ts",
+    "start": "next start --hostname 0.0.0.0"
   },
   "dependencies": {
     "mysql2": "3.24.6",

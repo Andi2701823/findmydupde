@@ -3,12 +3,12 @@ import { spawn } from "node:child_process";
 import { existsSync, mkdirSync } from "node:fs";
 import { chromium } from "playwright-core";
 const port = 3217, origin = `http://127.0.0.1:${port}`;
-const server = spawn("python3",["-m","http.server",String(port),"--bind","127.0.0.1","--directory","out"],{stdio:"ignore"});
+const server = spawn(process.execPath,["node_modules/next/dist/bin/next","start","--port",String(port),"--hostname","127.0.0.1"],{stdio:"ignore"});
 let browser, page;
 try {
   let ready=false;
   for(let i=0;i<120;i++){try {if((await fetch(origin)).ok){ready=true;break;}}catch{}await new Promise(r=>setTimeout(r,100));}
-  if(!ready)throw new Error("Static test server did not start");
+  if(!ready)throw new Error("Next.js test server did not start");
   const macChrome="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
   browser=await chromium.launch({headless:true,...(process.env.CHROME_PATH?{executablePath:process.env.CHROME_PATH}:existsSync(macChrome)?{executablePath:macChrome}:{})});
   const context=await browser.newContext({viewport:{width:1440,height:1000}});
