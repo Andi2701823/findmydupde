@@ -12,6 +12,7 @@ import type {
 } from "@/lib/types";
 import { SearchBox } from "./search-box";
 import { LiveResults } from "./live-results";
+import { EbayResults } from "./ebay-results";
 import { ProductCard } from "./product-card";
 import { Icon } from "./icon";
 const defaults: SearchFilters = {
@@ -20,13 +21,14 @@ const defaults: SearchFilters = {
   color: "Alle",
   sort: "relevance",
 };
-export function Results({ liveCatalog = false }: { liveCatalog?: boolean }) {
+export function Results({ liveCatalog = false, ebaySearch = false }: { liveCatalog?: boolean; ebaySearch?: boolean }) {
   const params = useSearchParams();
   const query = (params.get("q") || "").slice(0, 120);
   const imageDemo = params.get("mode") === "image-demo";
   const categoryParam = params.get("category");
   const category = categories.find((c) => c === categoryParam);
   if (liveCatalog && !imageDemo) return <LiveResults key={query} query={query} />;
+  if (ebaySearch && !imageDemo) return <EbayResults key={query} query={query} />;
   return (
     <ResultsView
       key={`${query}:${category || ""}:${imageDemo}`}
