@@ -115,6 +115,15 @@ try {
       await page.goto(origin+route,{waitUntil:"domcontentloaded"});
       await page.locator("main").waitFor();
       assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,`${route} overflows at ${width}px`);
+      if(route === "/") {
+        const about=await page.locator(".about-section").boundingBox();
+        const partner=await page.locator(".editorial-partner").boundingBox();
+        assert.ok(about && partner,"Homepage sections should be laid out");
+        assert.ok(Math.abs(about.x-partner.x)<=1,
+          `Partner section must align with site shell at ${width}px (about=${about.x}, partner=${partner.x})`);
+        assert.ok(Math.abs(about.width-partner.width)<=1,
+          `Partner section must have same centered shell width at ${width}px`);
+      }
       assert.equal(await page.locator(".product-card").count(),0);
     }
   }
