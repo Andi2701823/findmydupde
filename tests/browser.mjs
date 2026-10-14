@@ -52,6 +52,19 @@ try {
   await page
     .getByRole("heading", { name: "Dein Stil. Für weniger." })
     .waitFor();
+  await page.getByRole("link", { name: "Zusammenarbeit entdecken" }).waitFor();
+  await page.getByRole("link", {
+    name: "Worauf du beim Produktvergleich achten solltest",
+  }).waitFor();
+  await page.goto(`${origin}/partner/`);
+  await page.getByRole("heading", {
+    name: "Ihre Produkte. Dort, wo Menschen nach Alternativen suchen.",
+  }).waitFor();
+  await page.goto(`${origin}/ratgeber/`);
+  await page.getByRole("heading", {
+    name: "Produkte vergleichen: Worauf es wirklich ankommt",
+  }).waitFor();
+  await page.goto(origin);
   await page
     .getByRole("textbox", { name: "Produktname", exact: true })
     .fill("Tasche");
@@ -187,6 +200,8 @@ try {
       "/merkliste/",
       "/datenschutz/",
       "/impressum/",
+      "/ratgeber/",
+      "/partner/",
     ]) {
       await page.goto(origin + route);
       await page.locator("main").waitFor();
