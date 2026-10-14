@@ -20,7 +20,7 @@ const categories = [
 ];
 export default function Home() {
   return <main id="main">
-    <section className="hero shell">
+    <section className="hero shell search-first-hero">
       <div className="hero-copy">
         <span className="eyebrow"><span className="little-star">✳</span> PRODUKTE SUCHEN. BESSER ENTSCHEIDEN.</span>
         <h1>Finde Produkte.<br />Entdecke <span className="underlined">mehr.</span></h1>
@@ -53,6 +53,25 @@ export default function Home() {
         <span className="trust-demo">Echte Händlerangebote transparent gekennzeichnet</span>
       </div>
     </div>
+    <section className="how-section" id="so-gehts">
+      <div className="shell">
+        <div className="how-header">
+          <span className="eyebrow">DEINE PRODUKTSUCHE</span>
+          <h2>Vom Suchbegriff<br/>zum passenden Produkt.</h2>
+          <p>So nutzt du die aktuelle Produktsuche. Eine Bildsuche mit KI ist für eine spätere Ausbaustufe geplant.</p>
+        </div>
+        <div className="steps-grid">
+          {[
+            {n:"01",icon:"search" as const,title:"Produkt suchen",text:"Gib einen Produktnamen oder einen Suchbegriff ein. Du siehst Treffer aus unserem vorhandenen Händlerkatalog."},
+            {n:"02",icon:"check" as const,title:"Details prüfen",text:"Sieh dir Produktbeschreibungen und Angaben aus dem Händlerfeed an. Vergleiche Eigenschaften und Kaufkriterien."},
+            {n:"03",icon:"arrow" as const,title:"Zum Händler wechseln",text:"Prüfe den aktuellen Preis und die Verfügbarkeit im Shop. Händlerlinks sind als Werbung gekennzeichnet."},
+          ].map(step => <div className="step" key={step.n}>
+            <div className="step-top"><span>{step.n}</span><Icon name={step.icon} /></div>
+            <h3>{step.title}</h3><p>{step.text}</p>
+          </div>)}
+        </div>
+      </div>
+    </section>
     <section className="shell section-space" id="kategorien">
       <div className="section-heading"><div><span className="eyebrow">PRODUKTE & EINKAUFSWISSEN</span><h2>Diese Themen kannst du entdecken.</h2><p>Beauty-Produkte sind bereits im Katalog. Für Mode, Wohnen und Technik findest du passende Ratgeber; weitere Händlerangebote sollen folgen.</p></div>
         <Link href="/ratgeber/" className="text-link">Alle Ratgeber <Icon name="arrow" /></Link></div>
@@ -79,25 +98,6 @@ export default function Home() {
         <Link href="/ratgeber/" className="text-link">Alle Beiträge <Icon name="arrow" /></Link>
       </div>
       <div className="guides-grid">{[guides[0],guides[2],guides[4],guides[6]].map(guide => <GuideCard guide={guide} key={guide.slug}/>)}</div>
-    </section>
-    <section className="how-section" id="so-gehts">
-      <div className="shell">
-        <div className="how-header">
-          <span className="eyebrow">DEINE PRODUKTSUCHE</span>
-          <h2>Vom Suchbegriff<br/>zum passenden Produkt.</h2>
-          <p>So nutzt du die aktuelle Produktsuche. Eine Bildsuche mit KI ist für eine spätere Ausbaustufe geplant.</p>
-        </div>
-        <div className="steps-grid">
-          {[
-            {n:"01",icon:"search" as const,title:"Produkt suchen",text:"Gib einen Produktnamen oder einen Suchbegriff ein. Du siehst Treffer aus unserem vorhandenen Händlerkatalog."},
-            {n:"02",icon:"check" as const,title:"Details prüfen",text:"Sieh dir Produktbeschreibungen und Angaben aus dem Händlerfeed an. Vergleiche Eigenschaften und Kaufkriterien."},
-            {n:"03",icon:"arrow" as const,title:"Zum Händler wechseln",text:"Prüfe den aktuellen Preis und die Verfügbarkeit im Shop. Händlerlinks sind als Werbung gekennzeichnet."},
-          ].map(step => <div className="step" key={step.n}>
-            <div className="step-top"><span>{step.n}</span><Icon name={step.icon} /></div>
-            <h3>{step.title}</h3><p>{step.text}</p>
-          </div>)}
-        </div>
-      </div>
     </section>
     <section className="shell about-section">
       <div className="about-mark">f<span>↗</span></div>
