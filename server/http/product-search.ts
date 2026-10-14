@@ -1,6 +1,7 @@
 import "server-only";
 import type { RowDataPacket } from "mysql2/promise";
 import { getDatabase } from "../db/connection.ts";
+import { searchSupabaseCatalog } from "../db/supabase-catalog.ts";
 import { requireReadOnlyAccount } from "../db/privileges.ts";
 import {
   parseSearch,
@@ -89,11 +90,18 @@ export function stagingCatalogDiagnosticReason(error: unknown): string {
 
 export const handleProductSearch = productSearchHandler({
   enabled: () =>
-    process.env.CATALOG_SEARCH_ENABLED === "true" &&
-    process.env.DATABASE_ACCESS_ENABLED === "true",
+    process.env.CATALOG_SEARCH_ENABLED === "true" && (
+      process.env.CATALOG_BACKEND === "supabase"
+        ? process.env.DEPLOYMENT_ENV === "staging" &&
+          process.env.SUPABASE_CATALOG_ENABLED === "true"
+        : (!process.env.CATALOG_BACKEND || process.env.CATALOG_BACKEND === "mysql") &&
+          process.env.DATABASE_ACCESS_ENABLED === "true"
+    ),
   allow: quota,
   trustProxy: process.env.TRUST_PROXY_HEADERS === "true",
   async search(input) {
+    if (process.env.CATALOG_BACKEND === "supabase")
+      return searchSupabaseCatalog(input);
     let stage = "configuration";
     try {
       const database = process.env.MYSQL_DATABASE || "";
