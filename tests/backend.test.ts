@@ -61,6 +61,24 @@ test("database access is opt-in, roles do not fall back to runtime credentials",
   assert.equal(options.multipleStatements, false);
   assert.equal(options.connectionLimit, 2);
 });
+test("production MySQL fails closed even when read, import or migration are enabled", () => {
+  const accidentalProductionConfiguration = {
+    ...env,
+    DEPLOYMENT_ENV: "production",
+    CATALOG_SEARCH_ENABLED: "true",
+    AWIN_IMPORT_ENABLED: "true",
+    DB_MIGRATIONS_ENABLED: "true",
+    MYSQL_IMPORT_USER: "test_importer",
+    MYSQL_IMPORT_PASSWORD: "test-only-import-password",
+    MYSQL_MIGRATION_USER: "test_migration",
+    MYSQL_MIGRATION_PASSWORD: "test-only-migration-password",
+  };
+  for (const role of ["read", "import", "migration"] as const)
+    assert.throws(() => databaseOptions(role, accidentalProductionConfiguration), {
+      name: "DatabaseUnavailable",
+    });
+});
+
 test("remote MySQL refuses unencrypted connections and invalid pool limits", () => {
   assert.throws(() =>
     databaseOptions("read", {
