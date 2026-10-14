@@ -5,7 +5,7 @@ import { SearchBox } from "@/components/search-box";
 import { ProductCard } from "@/components/product-card";
 import { Icon } from "@/components/icon";
 import { products } from "@/lib/catalog";
-import { stagingLiveCatalogEnabled } from "@/server/catalog/live-mode.ts";
+import { stagingLiveCatalogEnabled, stagingEbaySearchEnabled } from "@/server/catalog/live-mode.ts";
 export const metadata: Metadata = {
   title: { absolute: "FindMyDup | Produkte entdecken und Alternativen finden" },
   description:
@@ -20,6 +20,7 @@ const categoryTiles = [
 export const dynamic = "force-dynamic";
 export default function Home() {
   const liveCatalog = stagingLiveCatalogEnabled();
+  const ebaySearch = stagingEbaySearchEnabled() && !liveCatalog;
   return (
     <main id="main">
       <section className="hero shell">
@@ -38,11 +39,13 @@ export default function Home() {
             dabei, weitere Ideen und passende Angebote aus unterschiedlichen
             Shops zu entdecken. Wir bauen den Händlerkatalog gerade auf.
           </p>
-          <SearchBox liveCatalog={liveCatalog} />
+          <SearchBox liveCatalog={liveCatalog || ebaySearch} />
           <p className="hero-footnote">
-            {liveCatalog
-              ? "Textsuche im Testbetrieb. Händlerangebote folgen nach Freigabe; Bilder und Beispielpreise auf dieser Startseite sind Demo."
-              : "Vorschau im Aufbau. Alle gezeigten Produkte und Preise sind als Beispiele erfunden."}
+            {ebaySearch
+              ? "eBay-Textsuche im Testbetrieb. Die Produktbilder und Beispielpreise dieser Startseite bleiben Demo."
+              : liveCatalog
+                ? "Textsuche im Testbetrieb. Händlerangebote folgen nach Freigabe; Bilder und Beispielpreise auf dieser Startseite sind Demo."
+                : "Vorschau im Aufbau. Alle gezeigten Produkte und Preise sind als Beispiele erfunden."}
           </p>
         </div>
         <div
@@ -94,7 +97,7 @@ export default function Home() {
       <div className="trust-strip">
         <div className="shell trust-inner">
           <span>
-            <Icon name="search" /> {liveCatalog ? "Textsuche im Testbetrieb" : "Produktsuche ausprobieren"}
+            <Icon name="search" /> {ebaySearch ? "eBay-Angebote im Testbetrieb" : liveCatalog ? "Textsuche im Testbetrieb" : "Produktsuche ausprobieren"}
           </span>
           <span>
             <Icon name="shield" /> Ohne Registrierung testen
@@ -103,7 +106,7 @@ export default function Home() {
             <Icon name="heart" /> Beispielprodukte merken
           </span>
           <span className="trust-demo">
-            Echte Händlerangebote erst nach Freigabe
+            {ebaySearch ? "Angebote von eBay, Preise beim Händler prüfen" : "Echte Händlerangebote erst nach Freigabe"}
           </span>
         </div>
       </div>
@@ -175,7 +178,9 @@ export default function Home() {
                 n: "01",
                 icon: "search" as const,
                 title: "Starte mit einem Produktnamen",
-                text: liveCatalog
+                text: ebaySearch
+                  ? "Suche nach echten eBay-Angeboten. Preise, Zustand und Versand werden aus dem Marktplatz übernommen."
+                  : liveCatalog
                   ? "Die Textsuche durchsucht unseren echten Katalog. Partnerangebote erscheinen nach ihrer Freigabe."
                   : "Die Produktsuche lässt sich derzeit mit gekennzeichneten Beispielen ausprobieren.",
               },
@@ -183,7 +188,9 @@ export default function Home() {
                 n: "02",
                 icon: "search" as const,
                 title: "Erkunde deine Möglichkeiten",
-                text: liveCatalog
+                text: ebaySearch
+                  ? "Vergleiche Treffer und prüfe den Endpreis direkt bei eBay. Ähnliche Artikel können verschiedene Eigenschaften haben."
+                  : liveCatalog
                   ? "Sortiere Treffer und grenze Angebote nach Preis ein, sobald der Produktkatalog befüllt ist."
                   : "Entdecke Produktbeispiele und teste die Filter. Preise und Produkte sind noch nicht echt.",
               },
