@@ -3,7 +3,7 @@ import Link from "next/link";
 import { AffiliateProductList } from "@/components/affiliate-product-list";
 export const metadata:Metadata={
   title:"Beauty-Produkte von bdr-beauty entdecken",
-  description:"63 echte Beauty-Produkte von bdr-beauty DE mit Produktbildern, Feedpreisen und klar gekennzeichneten Awin-Partnerlinks. Vergleiche Produkte und prüfe aktuelle Preise beim Händler.",
+  description:"63 bdr-beauty Produkte entdecken: Produktbeschreibungen, Inhaltsstoff-Hinweise, Preisangaben aus dem Awin-Feed und transparente Händlerlinks.",
   alternates:{canonical:"https://findmydup.de/produkte/"},
 };
 export default function ProductsPage(){
