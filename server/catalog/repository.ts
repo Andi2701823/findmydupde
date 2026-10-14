@@ -100,7 +100,7 @@ export function formatCatalogRows(rows: CatalogRow[], input: CatalogSearch) {
       )
         throw new Error("Invalid catalog price");
       const timeValue = row.observed_at.replace(" ", "T");
-      const timestamp = new Date(/(?:Z|[+-]\\d{2}:\\d{2})$/i.test(timeValue) ? timeValue : timeValue + "Z");
+      const timestamp = new Date(/(?:Z|[+-]\d{2}:\d{2})$/i.test(timeValue) ? timeValue : timeValue + "Z");
       if (!Number.isFinite(timestamp.getTime()))
         throw new Error("Invalid observation time");
       return {
