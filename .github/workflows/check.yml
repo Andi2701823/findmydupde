@@ -6,8 +6,8 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
@@ -39,17 +39,17 @@ jobs:
         run: |
           npm run build:static
           npm run test:static
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: hostinger-static-site
           path: static-app/out/
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: browser-screenshots
           path: test-artifacts/
           if-no-files-found: ignore
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: dependency-audit-reports
@@ -89,8 +89,8 @@ jobs:
       MYSQL_IMPORT_PASSWORD: ci_ephemeral_import_password
       MYSQL_TLS_MODE: disabled
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
@@ -115,7 +115,7 @@ jobs:
         run: |
           npx playwright-core install chromium
           npm run test:server
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: backend-browser-evidence
@@ -154,8 +154,8 @@ jobs:
       MYSQL_IMPORT_PASSWORD: ci_ephemeral_import_password
       MYSQL_TLS_MODE: disabled
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
@@ -189,8 +189,8 @@ jobs:
       AWIN_IMPORT_ENABLED: "false"
       IMAGE_SEARCH_ENABLED: "false"
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
