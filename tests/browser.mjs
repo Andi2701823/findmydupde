@@ -19,7 +19,7 @@ try {
     if(/^https?:/.test(request.url())&&!request.url().startsWith(origin))remoteRequests.push(request.url());
     if(!["GET","HEAD"].includes(request.method()))uploads.push(request.url());
   });
-  await page.goto(origin);
+  await page.goto(origin,{waitUntil:"domcontentloaded"});
   await page.getByRole("heading",{name:"Dein Stil. Deine Wahl."}).waitFor();
   await page.getByRole("link",{name:/Ratgeber lesen: Gesichtsserum vergleichen/}).waitFor();
   assert.equal(await page.locator(".product-card").count(),0);
@@ -32,7 +32,7 @@ try {
   const sitemap=await fetch(`${origin}/sitemap.xml`);
   assert.equal(sitemap.status,200);
   assert.match(await sitemap.text(),/gesichtsserum-vergleichen/);
-  await page.getByRole("textbox",{name:"Thema oder Produkt suchen"}).fill("Serum");
+  await page.getByRole("searchbox",{name:"Thema oder Produkt suchen"}).fill("Serum");
   await page.getByRole("button",{name:"Entdecken"}).click();
   await page.getByRole("heading",{name:"Funde zu „Serum“"}).waitFor();
   assert.equal(await page.locator(".guide-card").count(),1);
@@ -47,44 +47,52 @@ try {
   assert.equal(await page.locator(".guide-card").count(),1);
   await page.getByRole("button",{name:/Gesichtsserum vergleichen.*aus Merkliste entfernen/}).click();
   await page.getByRole("heading",{name:"Platz für deine Favoriten."}).waitFor();
-  await page.goto(`${origin}/suche/?q=xyzkeinerkenntdies`);
+  await page.goto(`${origin}/suche/?q=xyzkeinerkenntdies`,{waitUntil:"domcontentloaded"});
   await page.getByRole("heading",{name:"Keine passenden Inhalte gefunden."}).waitFor();
   assert.equal(await page.locator(".guide-card").count(),0);
-  await page.goto(`${origin}/suche/?category=Technik`);
+  await page.goto(`${origin}/suche/?category=Technik`,{waitUntil:"domcontentloaded"});
   assert.equal(await page.locator(".guide-card").count(),2);
-  await page.goto(`${origin}/ratgeber/`);
+  await page.goto(`${origin}/ratgeber/`,{waitUntil:"domcontentloaded"});
   assert.equal(await page.locator(".guide-card").count(),8);
-  await page.goto(`${origin}/ueber-uns/`);
+  await page.goto(`${origin}/produkte/`,{waitUntil:"domcontentloaded"});
+  await page.getByRole("heading",{name:"Echte Beauty-Produkte. Direkt vom Händler."}).waitFor();
+  await page.waitForFunction(()=>document.querySelectorAll(".affiliate-card").length===63);
+  assert.equal(await page.locator('a[rel*="sponsored"][href*="awin1.com/pclick.php"]').count(),63);
+  await page.getByRole("searchbox",{name:"Produkte suchen"}).fill("Hyaluron");
+  await page.waitForFunction(()=>document.querySelectorAll(".affiliate-card").length>0 && document.querySelectorAll(".affiliate-card").length<63);
+  await page.getByRole("searchbox",{name:"Produkte suchen"}).fill("");
+  await page.waitForFunction(()=>document.querySelectorAll(".affiliate-card").length===63);
+  await page.goto(`${origin}/ueber-uns/`,{waitUntil:"domcontentloaded"});
   await page.getByRole("heading",{name:"Mehr wissen, bevor du kaufst."}).waitFor();
-  await page.goto(`${origin}/partner/`);
+  await page.goto(`${origin}/partner/`,{waitUntil:"domcontentloaded"});
   await page.getByRole("heading",{name:"Produkte verständlich und transparent präsentieren."}).waitFor();
-  await page.goto(`${origin}/impressum/`);
+  await page.goto(`${origin}/impressum/`,{waitUntil:"domcontentloaded"});
   assert.match(await page.locator("main").innerText(),/Andreas Paul/);
-  await page.goto(`${origin}/datenschutz/`);
+  await page.goto(`${origin}/datenschutz/`,{waitUntil:"domcontentloaded"});
   assert.match(await page.locator("main").innerText(),/Hostinger/);
   mkdirSync("test-artifacts",{recursive:true});
   for(const width of [375,390,768,1440]){
     await page.setViewportSize({width,height:900});
-    for(const route of ["/","/ratgeber/","/ratgeber/gesichtsserum-vergleichen/","/suche/","/merkliste/","/datenschutz/","/impressum/","/ueber-uns/","/partner/"]){
-      await page.goto(origin+route);
+    for(const route of ["/","/produkte/","/ratgeber/","/ratgeber/gesichtsserum-vergleichen/","/suche/","/merkliste/","/datenschutz/","/impressum/","/ueber-uns/","/partner/"]){
+      await page.goto(origin+route,{waitUntil:"domcontentloaded"});
       await page.locator("main").waitFor();
       assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,`${route} overflows at ${width}px`);
       assert.equal(await page.locator(".product-card").count(),0);
     }
   }
   await page.setViewportSize({width:390,height:844});
-  await page.goto(origin);
+  await page.goto(origin,{waitUntil:"domcontentloaded"});
   await page.getByRole("button",{name:"Menü öffnen"}).click();
   await page.getByRole("navigation",{name:"Hauptnavigation"}).getByRole("link",{name:"Ratgeber"}).click();
   await page.getByRole("heading",{name:"Bewusster wählen. Besser vergleichen."}).waitFor();
   await page.screenshot({path:"test-artifacts/guides-mobile.png",fullPage:true});
-  await page.goto(origin);
+  await page.goto(origin,{waitUntil:"domcontentloaded"});
   await page.screenshot({path:"test-artifacts/home-mobile.png",fullPage:true});
   await page.setViewportSize({width:1440,height:1000});
-  await page.goto(origin);
+  await page.goto(origin,{waitUntil:"domcontentloaded"});
   await page.screenshot({path:"test-artifacts/home-desktop.png",fullPage:true});
   await page.evaluate(()=>localStorage.setItem("findmydup:favorites","{invalid"));
-  await page.goto(`${origin}/merkliste/`);
+  await page.goto(`${origin}/merkliste/`,{waitUntil:"domcontentloaded"});
   await page.getByRole("heading",{name:"Platz für deine Favoriten."}).waitFor();
   const blocked=await browser.newContext();
   await blocked.addInitScript(()=>Object.defineProperty(window,"localStorage",{get(){throw new Error("Storage blocked");}}));
