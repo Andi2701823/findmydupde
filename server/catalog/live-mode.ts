@@ -12,3 +12,13 @@ export function stagingLiveCatalogEnabled(env: Readonly<Record<string, string | 
     env.DB_MIGRATIONS_ENABLED !== "true" &&
     env.IMAGE_SEARCH_ENABLED !== "true";
 }
+
+/** Separate eBay preview. This never enables the production storefront. */
+export function stagingEbaySearchEnabled(env: Readonly<Record<string, string | undefined>> = process.env) {
+  return env.DEPLOYMENT_ENV === "staging" &&
+    env.EBAY_SEARCH_ENABLED === "true" &&
+    env.DATABASE_ACCESS_ENABLED !== "true" &&
+    env.DB_MIGRATIONS_ENABLED !== "true" &&
+    env.AWIN_IMPORT_ENABLED !== "true" &&
+    env.IMAGE_SEARCH_ENABLED !== "true";
+}
