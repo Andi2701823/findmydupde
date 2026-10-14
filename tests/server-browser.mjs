@@ -107,9 +107,9 @@ try {
   page.on("pageerror", (e) => errors.push(e.message));
   for (const width of [375, 390, 768, 1440]) {
     await page.setViewportSize({ width, height: 900 });
-    await page.goto(origin);
+    await page.goto(origin, { waitUntil: "domcontentloaded" });
     await page
-      .getByRole("heading", { name: "Dein Stil. Für weniger." })
+      .getByRole("heading", { name: "Dein Stil. Deine Wahl." })
       .waitFor();
     assert.equal(
       await page.evaluate(
@@ -118,32 +118,18 @@ try {
       true,
     );
   }
-  await page
-    .getByRole("textbox", { name: "Produktname", exact: true })
-    .fill("Tasche");
+  await page.getByRole("searchbox", { name: "Thema oder Produkt suchen" }).fill("Serum");
   await page.getByRole("button", { name: "Entdecken", exact: true }).click();
-  await page.getByRole("heading", { name: "Funde für „Tasche“" }).waitFor();
-  await page.waitForFunction(
-    () => document.querySelectorAll(".results-grid .product-card").length === 1,
-  );
-  await page
-    .getByRole("button", {
-      name: "Die kleine Everyday Bag merken",
-      exact: true,
-    })
-    .click();
+  await page.getByRole("heading", { name: "Funde zu „Serum“" }).waitFor();
+  await page.waitForFunction(() => document.querySelectorAll(".affiliate-card").length > 0);
+  assert.equal(await page.locator(".guide-card").count(), 1);
+  await page.getByRole("button", { name: /Gesichtsserum vergleichen.*merken/ }).click();
   await page.getByRole("link", { name: "Merkliste", exact: true }).click();
-  await page.waitForFunction(
-    () => document.querySelectorAll(".product-card").length === 1,
-  );
-  await page.goto(origin);
-  await page.getByRole("tab", { name: "Foto hochladen" }).click();
-  assert.equal(
-    await page
-      .getByRole("button", { name: "Demo-Ergebnisse ansehen" })
-      .isDisabled(),
-    true,
-  );
+  await page.waitForFunction(() => document.querySelectorAll(".guide-card").length === 1);
+  await page.goto(origin + "/produkte/", { waitUntil: "domcontentloaded" });
+  await page.getByRole("heading", { name: "Echte Beauty-Produkte. Direkt vom Händler." }).waitFor();
+  await page.waitForFunction(() => document.querySelectorAll(".affiliate-card").length === 63);
+  assert.equal(await page.locator('a[rel*="sponsored"]').count(), 63);
   assert.deepEqual(errors, []);
   mkdirSync("test-artifacts", { recursive: true });
   await page.screenshot({
@@ -182,7 +168,7 @@ try {
     );
   }
   console.log(
-    "PASS: separate server build, no database required by default, shared responsive UI, text search, favorites, upload interface, identical static/server CSS and no client credential leakage.",
+    "PASS: separate server build, no database required by default, shared responsive editorial site, authentic affiliate links, saved guides, identical static/server CSS and no client credential leakage.",
   );
 } finally {
   await browser?.close();
