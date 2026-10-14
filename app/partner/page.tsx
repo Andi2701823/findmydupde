@@ -12,7 +12,7 @@ export default function PartnerPage(){return <main id="main" className="shell le
     <li><strong>Transparente Händlerlinks:</strong> Affiliate-Verweise werden, sobald verwendet, deutlich gekennzeichnet; Preis und Verfügbarkeit stammen vom jeweiligen Händler.</li>
   </ul>
   <h2>Affiliate-Partnerschaften</h2>
-  <p>Wir prüfen Kooperationen über Affiliate-Netzwerke, darunter Awin. Produktdaten, Bilder und Händlerlinks nutzen wir nur im Rahmen bestehender Freigaben und der jeweils geltenden Programmbedingungen. Wir machen keine unbelegten Angaben zu Reichweite, Verkäufen oder Produktgleichwertigkeit.</p>
+  <p>Wir arbeiten über Awin mit freigegebenen Partnern zusammen. Auf unserer Beauty-Produktseite zeigen wir derzeit Produkte von bdr-beauty DE mit gekennzeichneten Affiliate-Links. Produktdaten, Bilder und Händlerlinks nutzen wir nur im Rahmen bestehender Freigaben und der jeweils geltenden Programmbedingungen. Wir machen keine unbelegten Angaben zu Reichweite, Verkäufen oder Produktgleichwertigkeit.</p>
   <h2>Kontakt für Kooperationen</h2>
   <p>Sie möchten mögliche Formen der Zusammenarbeit besprechen? Kontaktieren Sie uns unter <a href="mailto:andreas.paul4282@gmail.com?subject=Partnerschaft%20FindMyDup">andreas.paul4282@gmail.com</a>. Weitere Betreiberangaben stehen im <Link href="/impressum/">Impressum</Link>.</p>
   <Link href="/ratgeber/" className="button secondary">Unsere Inhalte ansehen</Link>
