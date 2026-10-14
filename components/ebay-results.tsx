@@ -98,7 +98,7 @@ export function EbayResults({ query }: { query: string }) {
   const data = !loading && !state?.error ? state?.data : undefined;
   const offers = data?.items ?? [];
   const selected = offers.find(offer => offer.externalId === referenceId);
-  const currency = data?.marketplace === "EBAY_US" ? "USD" : "EUR";
+  const currency: "EUR" | "USD" = data?.marketplace === "EBAY_US" ? "USD" : "EUR";
   const manualAmount = parseReferencePrice(typedPrice);
   const reference = selected
     ? { price: selected.price, currency: selected.currency, externalId: selected.externalId, condition: selected.condition }
