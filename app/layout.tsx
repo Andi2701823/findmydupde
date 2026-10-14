@@ -5,6 +5,7 @@ import { Footer } from "@/components/footer";
 import { FavoritesProvider } from "@/components/favorites";
 export const metadata: Metadata = {
   metadataBase: new URL("https://findmydup.de"),
+  icons: { icon: [{url:"/icon.svg",type:"image/svg+xml",sizes:"any"}], shortcut:"/icon.svg" },
   title: {default: "FindMyDup | Wissen, das beim Einkaufen hilft",template: "%s | FindMyDup"},
   description: "Echte Beauty-Produkte unseres Awin-Partners und Einkaufsratgeber für Mode, Beauty, Wohnen und Technik. Produkte vergleichen und bewusst einkaufen.",
   robots: {index:true,follow:true},

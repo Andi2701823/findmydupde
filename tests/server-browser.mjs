@@ -71,6 +71,9 @@ function cssHashes(dir) {
 }
 try {
   await start(false);
+  const faviconResponse=await fetch(origin + "/icon.svg");
+  assert.equal(faviconResponse.status,200,"Standalone server serves the favicon");
+  assert.match(faviconResponse.headers.get("content-type")||"",/image\/svg\+xml/);
   const disabled = await fetch(origin + "/api/products/search/?q=tasche");
   assert.equal(disabled.status, 503);
   assert.equal((await disabled.json()).error, "CATALOG_DISABLED");

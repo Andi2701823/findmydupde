@@ -27,6 +27,11 @@ try {
   assert.equal(await page.locator("input[type=file]").count(),0,"Never imply photo recognition is already enabled");
   assert.equal(await page.locator('[name="verification"][content="00fd05c1707e91d286f87c424f566383"]').count(),1);
   assert.equal(await page.locator('meta[name="google-site-verification"][content="YtCGA15drFx3pEG8yUQPmsIonnN8kDuFLIgtHicPnQY"]').count(),1);
+  assert.equal(await page.locator('link[rel="icon"][href="/icon.svg"]').count(),1,"Browser tab needs branded favicon");
+  const favicon = await fetch(`${origin}/icon.svg`);
+  assert.equal(favicon.status,200,"Favicon asset must exist in static export");
+  assert.match(favicon.headers.get("content-type")||"",/image\/svg\+xml/);
+  assert.match(await favicon.text(),/viewBox="0 0 64 64"/);
   assert.equal(await page.locator('meta[name="robots"][content*="noindex"]').count(),0);
   assert.equal((await fetch(`${origin}/robots.txt`).then(r=>r.text())).includes("Disallow: /"),false);
   const verification=await fetch(`${origin}/00fd05c1707e91d286f87c424f566383.html`);
