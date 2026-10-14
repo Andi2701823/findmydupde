@@ -73,9 +73,20 @@ export async function requireReadOnlyAccount(
   const supportedMariaDB = /MariaDB/i.test(String(current.version)) && version &&
     (Number(version[1]) > 10 || (Number(version[1]) === 10 && Number(version[2]) >= 6));
   if (separator < 1 || !hostname || username !== HOSTINGER_STAGING_DATABASE ||
-      login.slice(0, login.lastIndexOf("@")) !== HOSTINGER_STAGING_DATABASE ||
-      !supportedMariaDB || !compatibilityGrants(grants, database))
-    throw new Error("Staging compatibility identity or grants rejected");
+      login.slice(0, login.lastIndexOf("@")) !== HOSTINGER_STAGING_DATABASE)
+    throw new Error("Staging compatibility authenticated user rejected");
+  if (!supportedMariaDB)
+    throw new Error("Staging compatibility server version rejected");
+  if (!compatibilityGrants(grants, database)) {
+    // Diagnostics only: an unescaped '_' in a database GRANT is a wildcard.
+    // Do not disclose the grant or relax the actual privileges check.
+    const rawScope = "ON `" + database + "`.* TO ";
+    const unquotedScope = "ON " + database + ".* TO ";
+    const wildcardScope = grants.some((grant) => grant.includes(rawScope) || grant.includes(unquotedScope));
+    throw new Error(wildcardScope
+      ? "Staging compatibility wildcard grant scope rejected"
+      : "Staging compatibility grants rejected");
+  }
 
   // Inspect effective privilege metadata for this authenticated principal, never a caller-supplied account.
   const grantee = "'" + username.replace(/'/g, "''") + "'@'" + hostname.replace(/'/g, "''") + "'";
