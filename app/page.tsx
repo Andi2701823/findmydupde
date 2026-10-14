@@ -4,13 +4,16 @@ import { SearchBox } from "@/components/search-box";
 import { ProductCard } from "@/components/product-card";
 import { Icon } from "@/components/icon";
 import { products } from "@/lib/catalog";
+import { stagingLiveCatalogEnabled } from "@/server/catalog/live-mode.ts";
 const categoryTiles = [
   { name: "Mode", sub: "Looks, die zu dir passen", image: "bag" },
   { name: "Beauty", sub: "Neue Favoriten entdecken", image: "serum" },
   { name: "Wohnen", sub: "Mehr Stil für dein Zuhause", image: "lamp" },
   { name: "Technik", sub: "Smart suchen, neu entdecken", image: "headphones" },
 ];
+export const dynamic = "force-dynamic";
 export default function Home() {
+  const liveCatalog = stagingLiveCatalogEnabled();
   return (
     <main id="main">
       <section className="hero shell">
@@ -28,9 +31,11 @@ export default function Home() {
             Du hast etwas Schönes entdeckt? Finde ähnliche Produkte, die zu
             deinem Stil und deinem Budget passen.
           </p>
-          <SearchBox />
+          <SearchBox liveCatalog={liveCatalog} />
           <p className="hero-footnote">
-            Ein erster Einblick in FindMyDup. Alle Produkte sind Demo-Beispiele.
+            {liveCatalog
+              ? "Echte Textsuche aktiviert. Die gezeigten Beispielbilder auf der Startseite bleiben Demo."
+              : "Ein erster Einblick in FindMyDup. Alle Produkte sind Demo-Beispiele."}
           </p>
         </div>
         <div
