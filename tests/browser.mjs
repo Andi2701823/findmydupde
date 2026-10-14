@@ -28,6 +28,20 @@ try {
   assert.equal(await page.locator('[name="verification"][content="00fd05c1707e91d286f87c424f566383"]').count(),1);
   assert.equal(await page.locator('meta[name="google-site-verification"][content="YtCGA15drFx3pEG8yUQPmsIonnN8kDuFLIgtHicPnQY"]').count(),1);
   assert.equal(await page.locator('link[rel="icon"][href="/icon.svg"]').count(),1,"Browser tab needs branded favicon");
+  const ogImage=await page.locator('meta[property="og:image"]').getAttribute("content");
+  assert.equal(ogImage,"https://findmydup.de/share-image/");
+  assert.equal(await page.locator('meta[name="twitter:image"]').getAttribute("content"),ogImage);
+  assert.equal(await page.locator('meta[name="twitter:card"]').getAttribute("content"),"summary_large_image");
+  assert.equal(await page.locator('meta[property="og:image:width"]').getAttribute("content"),"1200");
+  assert.equal(await page.locator('meta[property="og:image:height"]').getAttribute("content"),"630");
+  const preview=await fetch(`${origin}/share-image/`);
+  assert.equal(preview.status,200,"Share preview must be publicly accessible");
+  assert.match(preview.headers.get("content-type")||"",/image\/png/);
+  const png=Buffer.from(await preview.arrayBuffer());
+  assert.ok(png.length>5000);
+  assert.equal(png.subarray(0,8).toString("hex"),"89504e470d0a1a0a");
+  assert.equal(png.readUInt32BE(16),1200);
+  assert.equal(png.readUInt32BE(20),630);
   const favicon = await fetch(`${origin}/icon.svg`);
   assert.equal(favicon.status,200,"Favicon asset must exist in static export");
   assert.match(favicon.headers.get("content-type")||"",/image\/svg\+xml/);
@@ -79,6 +93,7 @@ try {
   assert.equal(await page.locator("link[rel='canonical']").getAttribute("href"),
     "https://findmydup.de/produkte/dermalumin-c-melanin-correcting-serum-1352/");
   assert.equal(await page.locator("a[rel*='sponsored']").count()>0,true);
+  assert.match(await page.locator('meta[property="og:image"]').getAttribute("content")||"",/bdr-beauty\.com/,"Product share preview retains product photo");
   const seoJson=await page.locator('script[type="application/ld+json"]').allTextContents();
   assert.equal(seoJson.length,2);
   const productSchema=JSON.parse(seoJson[0]);

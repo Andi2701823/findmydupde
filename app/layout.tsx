@@ -11,7 +11,8 @@ export const metadata: Metadata = {
   robots: {index:true,follow:true},
   verification: {google:"YtCGA15drFx3pEG8yUQPmsIonnN8kDuFLIgtHicPnQY"},
   other: {verification:"00fd05c1707e91d286f87c424f566383"},
-  openGraph: {type:"website",locale:"de_DE",siteName:"FindMyDup",title:"FindMyDup – Mehr wissen, besser einkaufen",description:"Echte Beauty-Produkte entdecken und unabhängige Einkaufsratgeber lesen.",url:"https://findmydup.de"},
+  openGraph: {type:"website",locale:"de_DE",siteName:"FindMyDup",title:"FindMyDup – Produkte suchen und Preise vergleichen",description:"Echte Händlerangebote entdecken, Preise vergleichen und Einkaufsratgeber lesen.",url:"https://findmydup.de/",images:[{url:"https://findmydup.de/share-image/",width:1200,height:630,type:"image/png",alt:"FindMyDup – Produkte suchen und Preise vergleichen"}]},
+  twitter: {card:"summary_large_image",title:"FindMyDup – Produkte suchen und Preise vergleichen",description:"Echte Händlerangebote entdecken, Preise vergleichen und Einkaufsratgeber lesen.",images:["https://findmydup.de/share-image/"]},
 };
 export default function RootLayout({children}:{children:React.ReactNode}){
   return <html lang="de"><body><FavoritesProvider>

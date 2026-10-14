@@ -10,7 +10,9 @@ export function generateMetadata({ params }: { params: Promise<{slug: string}> }
     const guide = findGuide(slug);
     if (!guide) return { title: "Ratgeber nicht gefunden" };
     return { title: guide.title, description: guide.excerpt,
-      alternates: { canonical: `https://findmydup.de/ratgeber/${slug}/` } };
+      alternates: { canonical: `https://findmydup.de/ratgeber/${slug}/` },
+      openGraph:{type:"article",title:guide.title,description:guide.excerpt,url:`https://findmydup.de/ratgeber/${slug}/`,images:[{url:"https://findmydup.de/share-image/",width:1200,height:630,alt:"FindMyDup – Produkte suchen und Preise vergleichen"}]},
+      twitter:{card:"summary_large_image",title:guide.title,description:guide.excerpt,images:["https://findmydup.de/share-image/"]} };
   });
 }
 export default async function GuidePage({ params }: { params: Promise<{slug: string}> }) {
