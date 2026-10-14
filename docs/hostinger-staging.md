@@ -165,8 +165,8 @@ keine DB-Verbindung oder gültige Wartungszugangsdaten besitzen.
 
 Die Datei setzt ausdrücklich USE `u874339379_findmyduptest`, enthält unverändert
 001_catalog.sql sowie schema_migrations und genau einen Metadaten-Eintrag mit
-Dateiprüfsumme. Sie legt neun leere Katalog-/Import-/Historientabellen an, keine
-Produkte, Händler, Preise oder Affiliate-Links. Sie erstellt keine Benutzer und
+Dateiprüfsumme. Sie legt acht leere Katalog-/Importtabellen und eine Migrationshistorie mit
+einem Metadaten-Eintrag an, keine Produkte, Händler, Preise oder Affiliate-Links. Sie erstellt keine Benutzer und
 ändert keine Rechte. CREATE TABLE ist absichtlich ohne IF NOT EXISTS, damit ein
 bestehendes/teilweise angelegtes Schema nicht verdeckt wird. MySQL-DDL ist nicht
 atomar. Bei Fehlern Rechte nicht erhöht lassen; Bestand/Sicherung prüfen und
