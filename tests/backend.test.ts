@@ -191,8 +191,8 @@ test("disabled API never calls the database; bad inputs and faults have safe res
 });
 test("staging diagnostic uses fixed labels and never prints arbitrary error content", () => {
   assert.equal(stagingCatalogDiagnosticReason(new Error("password=private SQL=secret")), "unclassified");
-  assert.equal(stagingCatalogDiagnosticReason(new Error("Staging compatibility identity or grants rejected")),
-    "Staging compatibility identity or grants rejected");
+  assert.equal(stagingCatalogDiagnosticReason(new Error("Staging compatibility wildcard grant scope rejected")),
+    "Staging compatibility wildcard grant scope rejected");
   assert.equal(stagingCatalogDiagnosticReason(Object.assign(new Error("secret"), { code: "ER_ACCESS_DENIED_ERROR" })),
     "ER_ACCESS_DENIED_ERROR");
   assert.equal(stagingCatalogDiagnosticReason(Object.assign(new Error("secret"), { code: "PRIVATE_SERVER_MESSAGE" })),
