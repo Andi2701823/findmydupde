@@ -26,3 +26,17 @@ test("Beauty product search and German price formatting",()=>{
   assert.equal(formatFeedPrice(3950),"39,50 €");
   assert.equal(affiliateProducts.find(p=>p.id==="1815")?.priceCents,36000);
 });
+
+import { affiliateDescriptions } from "../lib/affiliate-descriptions.ts";
+import { affiliateProductPath, affiliateProductSlug, findAffiliateProductBySlug } from "../lib/affiliate-products.ts";
+test("all 63 product detail pages have unique SEO slugs and sourced descriptions",()=>{
+  assert.equal(Object.keys(affiliateDescriptions).length,63);
+  assert.equal(new Set(affiliateProducts.map(affiliateProductSlug)).size,63);
+  for(const p of affiliateProducts){
+    const url=affiliateProductPath(p);
+    assert.match(url,/^\/produkte\/[a-z0-9-]+\/$/);
+    assert.equal(findAffiliateProductBySlug(affiliateProductSlug(p))?.id,p.id);
+    assert.ok(affiliateDescriptions[p.id]?.length>=300,`No substantial merchant description for ${p.id}`);
+  }
+  assert.equal(findAffiliateProductBySlug("no-such-product"),undefined);
+});

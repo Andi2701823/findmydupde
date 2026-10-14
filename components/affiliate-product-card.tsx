@@ -1,8 +1,9 @@
 "use client";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 import type { AffiliateProduct } from "@/lib/affiliate-products";
-import { affiliateFeedImported, formatFeedPrice } from "@/lib/affiliate-products";
+import { affiliateFeedImported, affiliateProductPath, formatFeedPrice } from "@/lib/affiliate-products";
 import { Icon } from "./icon";
 export function AffiliateProductCard({product}:{product:AffiliateProduct}) {
   const [brokenImage,setBrokenImage] = useState(false);
@@ -14,7 +15,8 @@ export function AffiliateProductCard({product}:{product:AffiliateProduct}) {
     </div>
     <div className="affiliate-body">
       <span className="affiliate-category">{product.category} · {product.merchant}</span>
-      <h3>{product.name}</h3>
+      <h3><Link href={affiliateProductPath(product)}>{product.name}</Link></h3>
+      <Link href={affiliateProductPath(product)} className="affiliate-details-link">Beschreibung & Details ansehen <Icon name="arrow" /></Link>
       <div className="affiliate-price">
         <strong>{formatFeedPrice(product.priceCents)}</strong>
         <small>Feedpreis vom {affiliateFeedImported} · Preis im Shop prüfen</small>

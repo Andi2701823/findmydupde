@@ -86,3 +86,17 @@ export function findAffiliateProducts(query:string,category?:string):AffiliatePr
   const terms=query.toLocaleLowerCase("de").trim().split(/\s+/).filter(Boolean);
   return affiliateProducts.filter(p=>(!category||p.category===category)&&terms.every(t=>`${p.name} ${p.category}`.toLocaleLowerCase("de").includes(t)));
 }
+
+
+/** Stable, descriptive product URLs. The merchant ID disambiguates sizes. */
+export function affiliateProductSlug(product:AffiliateProduct):string{
+  const readable=product.name.toLocaleLowerCase("de").replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss")
+    .normalize("NFKD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").replace(/-+/g,"-").slice(0,95).replace(/-$/,"");
+  return `${readable}-${product.id}`;
+}
+export function affiliateProductPath(product:AffiliateProduct):string{
+  return `/produkte/${affiliateProductSlug(product)}/`;
+}
+export function findAffiliateProductBySlug(slug:string):AffiliateProduct|undefined{
+  return affiliateProducts.find(p=>affiliateProductSlug(p)===slug);
+}

@@ -130,6 +130,9 @@ try {
   await page.getByRole("heading", { name: "Echte Beauty-Produkte. Direkt vom Händler." }).waitFor();
   await page.waitForFunction(() => document.querySelectorAll(".affiliate-card").length === 63);
   assert.equal(await page.locator('a[rel*="sponsored"]').count(), 63);
+  await page.goto(origin + "/produkte/dermalumin-c-melanin-correcting-serum-1352/", {waitUntil:"domcontentloaded"});
+  await page.getByRole("heading",{name:"DermaLumin-C Melanin Correcting Serum",exact:true}).waitFor();
+  assert.match(await page.locator(".product-description").innerText(),/Vitamin-C Ampullenkur/);
   assert.deepEqual(errors, []);
   mkdirSync("test-artifacts", { recursive: true });
   await page.screenshot({
