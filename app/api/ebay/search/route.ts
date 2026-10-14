@@ -23,7 +23,7 @@ function outbound(value: unknown): string | null {
   if (typeof value !== "string") return null;
   try {
     const url = new URL(value);
-    return url.protocol === "https:" && (url.hostname === "ebay.com" || url.hostname.endsWith(".ebay.com")) ? url.toString() : null;
+    return url.protocol === "https:" && (["ebay.com", "ebay.de"].some((host) => url.hostname === host || url.hostname.endsWith("." + host))) ? url.toString() : null;
   } catch { return null; }
 }
 
@@ -74,7 +74,11 @@ export async function GET(request: Request) {
   if (campaign && !/^\d{10}$/.test(campaign)) {
     return Response.json({ error: "EBAY_CONFIG_INVALID" }, { status: 503, headers: responseHeaders });
   }
-  const market = process.env.EBAY_MARKETPLACE_ID === "EBAY_DE" ? "EBAY_DE" : "EBAY_US";
+  const configuredMarket = process.env.EBAY_MARKETPLACE_ID || "EBAY_US";
+  if (configuredMarket !== "EBAY_DE" && configuredMarket !== "EBAY_US") {
+    return Response.json({ error: "EBAY_CONFIG_INVALID" }, { status: 503, headers: responseHeaders });
+  }
+  const market = configuredMarket;
   const searchUrl = new URL("https://api.ebay.com/buy/browse/v1/item_summary/search");
   searchUrl.searchParams.set("q", q);
   searchUrl.searchParams.set("limit", "10");
@@ -96,7 +100,10 @@ export async function GET(request: Request) {
     const items = (body.itemSummaries as EbayItem[]).flatMap((item) => {
       const price = Number(item.price?.value);
       const imageUrl = item.image?.imageUrl;
-      const url = outbound(campaign ? item.itemAffiliateWebUrl : item.itemWebUrl);
+      const affiliateUrl = campaign ? outbound(item.itemAffiliateWebUrl) : null;
+      // A placeholder or mismatched campaign ID must never be called an affiliate link.
+      const tracked = Boolean(affiliateUrl && new URL(affiliateUrl).searchParams.get("campid") === campaign);
+      const url = tracked ? affiliateUrl : outbound(item.itemWebUrl);
       if (!item.itemId || !item.title || !Number.isFinite(price) || price < 0 ||
           !item.price?.value || !item.price.currency || !url ||
           !imageUrl?.startsWith("https://i.ebayimg.com/")) return [];
@@ -109,7 +116,7 @@ export async function GET(request: Request) {
         currency: item.price.currency,
         retailer: "eBay",
         outboundUrl: url,
-        affiliate: Boolean(campaign),
+        affiliate: tracked,
         condition: item.condition ?? null,
         seller: item.seller?.username ?? null,
         shippingCost: item.shippingOptions?.[0]?.shippingCost ?? null,
