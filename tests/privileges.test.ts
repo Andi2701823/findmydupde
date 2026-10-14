@@ -50,6 +50,25 @@ test("compatibility verifies actual identities, effective metadata and non-versi
   for (const identity of [{ database_name: "production" }, { authenticated_user: "other@localhost" }, { login_user: "other@localhost" }, { authenticated_user: "@localhost" }, { version: "8.0.44" }])
     await assert.rejects(() => requireReadOnlyAccount(fixture({ identity }).connection, database, env));
 });
+test("compatibility gives fixed rejection reasons without disclosing grants or identities", async () => {
+  await assert.rejects(
+    () => requireReadOnlyAccount(fixture({ identity: { authenticated_user: "unexpected@127.0.0.1" } }).connection, database, env),
+    /Staging compatibility authenticated user rejected/,
+  );
+  await assert.rejects(
+    () => requireReadOnlyAccount(fixture({ identity: { version: "8.0.44" } }).connection, database, env),
+    /Staging compatibility server version rejected/,
+  );
+  await assert.rejects(
+    () => requireReadOnlyAccount(fixture({ grants: ["GRANT USAGE ON *.* TO 'user'@'%'", grant.replace(scope, database)] }).connection, database, env),
+    /Staging compatibility wildcard grant scope rejected/,
+  );
+  await assert.rejects(
+    () => requireReadOnlyAccount(fixture({ grants: ["GRANT USAGE ON *.* TO 'user'@'%'", grant.replace("SHOW CREATE ROUTINE", "INSERT")] }).connection, database, env),
+    /Staging compatibility grants rejected/,
+  );
+});
+
 test("uncertain metadata, hidden tables and system versioning fail closed", async () => {
   for (const fail of ["SHOW GRANTS", "USER_PRIVILEGES", "SCHEMA_PRIVILEGES", "TABLE_PRIVILEGES", "COLUMN_PRIVILEGES", "information_schema.TABLES ", "SHOW CREATE TABLE"])
     await assert.rejects(() => requireReadOnlyAccount(fixture({ fail }).connection, database, env));
