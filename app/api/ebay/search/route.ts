@@ -82,7 +82,7 @@ export async function GET(request: Request) {
   const market = configuredMarket;
   const searchUrl = new URL("https://api.ebay.com/buy/browse/v1/item_summary/search");
   searchUrl.searchParams.set("q", q);
-  searchUrl.searchParams.set("limit", "10");
+  searchUrl.searchParams.set("limit", "20");
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 8000);
   try {
