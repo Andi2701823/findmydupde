@@ -68,8 +68,14 @@ test("isolated MariaDB Hostinger identity, effective grants, versioned tables an
     await start({ MYSQL_DATABASE: "findmydup_test" });
     assert.equal((await search()).status, 503);
     await administrator.query("REVOKE DELETE HISTORY, SHOW CREATE ROUTINE ON ?? .* FROM ?@'%'", [literalGrantScope, database]);
+    // Production must stay database-disabled even after restoring strict SELECT-only grants.
     await start({ DEPLOYMENT_ENV: "production", HOSTINGER_STAGING_GRANT_COMPATIBILITY: "false" });
-    assert.equal((await search()).status, 200);
-    console.log("PASS: isolated MariaDB 11.4 compatibility account, strict/production rejection, real grants, empty catalog, versioned-table rejection and write/global/cross-database rejection through Next.js.");
+    assert.equal((await search()).status, 503);
+    // Strict staging still works once all extra grants are removed.
+    await start({ DEPLOYMENT_ENV: "staging", HOSTINGER_STAGING_GRANT_COMPATIBILITY: "false" });
+    const strictResult = await search();
+    assert.equal(strictResult.status, 200);
+    assert.deepEqual((await strictResult.json()).offers, []);
+    console.log("PASS: isolated MariaDB 11.4 compatibility account; production always denied, strict staging allowed, real grants and schema checked, cross-database and write privileges rejected.");
   } finally { await stop(); await reader?.end(); await administrator.end(); }
 });
