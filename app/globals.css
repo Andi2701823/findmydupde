@@ -2187,3 +2187,21 @@ select {
  .photo-search-teaser {padding:11px 10px;margin:8px 0;}
  .photo-search-teaser span {font-size:10px;}
 }
+
+/* eBay comparison is intentionally separate from existing affiliate catalog cards. */
+.ebay-comparison-panel{background:#f7f8f2;border:1px solid var(--line);border-radius:16px;padding:22px;margin:18px 0 24px;}
+.ebay-comparison-panel h3{font-size:21px;margin-bottom:10px;}
+.ebay-comparison-panel p{font-size:13px;color:var(--muted);line-height:1.7;}
+.ebay-compare-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:16px 0 10px;}
+.ebay-compare-controls label{font-size:13px;font-weight:700;}
+.ebay-compare-controls input{width:min(205px,100%);padding:10px 13px;border:1px solid #cbd7c9;border-radius:8px;background:#fff;}
+.ebay-compare-controls input[readonly]{background:#ecefeb;color:var(--ink);}
+.ebay-condition-filter{display:flex;align-items:center;gap:10px;margin:12px 0;font-size:12px;font-weight:600;}
+.ebay-condition-filter input{accent-color:var(--leaf);}
+.ebay-comparison-panel .ebay-comparison-summary{margin-top:13px;color:var(--ink);font-size:14px;}
+.ebay-comparison-panel .ebay-selected{font-weight:600;color:var(--ink);}
+.ebay-disclaimer{font-size:11px;color:var(--muted);line-height:1.8;margin:15px 0;}
+.ebay-saving{background:#eff7ea;color:#216142;border-radius:7px;padding:8px;font-size:12px;line-height:1.5;font-weight:700;margin-bottom:12px;}
+.ebay-reference-button{width:100%;margin-top:14px;white-space:normal;}
+.ebay-reference-button[aria-pressed="true"]{border-color:var(--leaf);color:var(--leaf);}
+@media(max-width:600px){.ebay-comparison-panel{padding:16px;}.ebay-compare-controls{align-items:stretch;flex-direction:column;}.ebay-compare-controls input,.ebay-compare-controls button{width:100%;}.ebay-comparison-panel h3{font-size:19px;}}

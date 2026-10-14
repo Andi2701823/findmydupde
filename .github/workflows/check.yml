@@ -35,6 +35,8 @@ jobs:
       - name: Install browser for smoke tests
         run: npx playwright-core install chromium
       - run: npm run test:e2e
+      - name: Test eBay price comparison interface with simulated offer data
+        run: node tests/ebay-browser.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:

@@ -82,6 +82,7 @@ test("staging search returns genuine offer data and does not mislabel placeholde
     }
     assert.equal(new URL(address).pathname, "/buy/browse/v1/item_summary/search");
     assert.equal(new URL(address).searchParams.get("q"), "drone");
+    assert.equal(new URL(address).searchParams.get("limit"), "20");
     assert.equal(headers.get("authorization"), "Bearer fake-token-for-test");
     assert.equal(headers.get("x-ebay-c-enduserctx"), "affiliateCampaignId=1234567890");
     browseCalls++;
