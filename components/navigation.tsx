@@ -11,6 +11,7 @@ export function Navigation() {
       <span className="logo-symbol">f<span>↗</span></span>findmydup<span className="logo-dot">.</span>
     </Link>
     <nav aria-label="Hauptnavigation" className={open ? "nav-links is-open" : "nav-links"}>
+      <Link href="/produkte/" aria-current={path === "/produkte/" ? "page" : undefined} onClick={() => setOpen(false)}>Beauty-Produkte</Link>
       <Link href="/ratgeber/" aria-current={path.startsWith("/ratgeber") ? "page" : undefined} onClick={() => setOpen(false)}>Ratgeber</Link>
       <Link href="/suche/" aria-current={path === "/suche/" ? "page" : undefined} onClick={() => setOpen(false)}>Suche</Link>
       <Link href="/ueber-uns/" aria-current={path === "/ueber-uns/" ? "page" : undefined} onClick={() => setOpen(false)}>Über uns</Link>
