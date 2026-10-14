@@ -10,7 +10,7 @@ export default function AboutPage(){return <main id="main" className="shell lega
   <h2>Unser Maßstab</h2>
   <p>Ähnliche Optik heißt nicht gleiche Qualität. Deshalb stellen wir Produkte nicht ohne überprüfbare Informationen als identisch dar. Wir erfinden weder Händlerpreise noch Bewertungen oder Produkttests.</p>
   <h2>So finanzieren wir uns</h2>
-  <p>FindMyDup möchte künftig genehmigte Händlerangebote und entsprechend gekennzeichnete Affiliate-Links einbinden. Kommt über einen solchen Link ein Kauf zustande, können wir eine Provision erhalten. Die redaktionellen Ratgeber sind unabhängig davon lesbar.</p>
+  <p>FindMyDup zeigt ausgewählte Angebote freigegebener Händler mit entsprechend gekennzeichneten Affiliate-Links. Kommt über einen solchen Link ein Kauf zustande, können wir eine Provision erhalten. Die redaktionellen Ratgeber sind unabhängig davon lesbar.</p>
   <h2>Kontakt</h2>
   <p>Du hast Fragen, Anregungen oder möchtest eine Kooperation besprechen? Schreibe an <a href="mailto:andreas.paul4282@gmail.com">andreas.paul4282@gmail.com</a>.</p>
   <Link href="/ratgeber/" className="button primary">Ratgeber entdecken</Link>
