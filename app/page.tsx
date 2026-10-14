@@ -24,7 +24,7 @@ export default function Home() {
       <div className="hero-copy">
         <span className="eyebrow"><span className="little-star">✳</span> ENTDECKEN. VERSTEHEN. VERGLEICHEN.</span>
         <h1>Dein Stil.<br />Deine <span className="underlined">Wahl.</span></h1>
-        <p className="hero-description">Entdecke echte Beauty-Produkte von unseren Partnern und finde heraus, worauf es beim Vergleichen von Mode, Pflege, Wohnen und Technik ankommt.</p>
+        <p className="hero-description">Entdecke Produkte, die zu dir passen. Unsere Ratgeber helfen dir, Qualität, Eigenschaften und Preise besser einzuschätzen.</p>
         <SearchBox />
       </div>
       <div className="hero-visual" aria-label="Stilisierte Illustrationen von zwei Handtaschen">
