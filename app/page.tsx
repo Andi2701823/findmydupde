@@ -5,6 +5,8 @@ import { SearchBox } from "@/components/search-box";
 import { GuideCard } from "@/components/guide-card";
 import { Icon } from "@/components/icon";
 import { guides } from "@/lib/guides";
+import { affiliateProducts } from "@/lib/affiliate-products";
+import { AffiliateProductCard } from "@/components/affiliate-product-card";
 export const metadata: Metadata = {
   title: "FindMyDup – Bewusster einkaufen und Produkte besser vergleichen",
   description: "FindMyDup hilft dir, Produkte aus Mode, Beauty, Wohnen und Technik besser zu verstehen. Unabhängige Einkaufsratgeber mit praktischen Checklisten.",
@@ -60,6 +62,16 @@ export default function Home() {
           <div><h3>{c.name}</h3><p>{c.sub}</p></div>
           <span className="category-arrow"><Icon name="arrow" /></span>
         </Link>)}
+      </div>
+    </section>
+    <section className="shell section-space showcase" id="beauty-produkte">
+      <div className="section-heading">
+        <div><span className="eyebrow">UNSER ERSTER AFFILIATE-PARTNER</span><h2>Beauty-Produkte von bdr-beauty.</h2>
+          <p>Echte Produkte mit Händlerbildern und klar gekennzeichneten Werbelinks. Die angezeigten Feedpreise können vom aktuellen Shoppreis abweichen.</p></div>
+        <Link href="/produkte/" className="text-link">Alle 63 Produkte ansehen <Icon name="arrow" /></Link>
+      </div>
+      <div className="affiliate-grid affiliate-featured">
+        {affiliateProducts.filter(p => ["1352","269","242","110"].includes(p.id)).map(product => <AffiliateProductCard key={product.id} product={product}/>)}
       </div>
     </section>
     <section className="shell section-space showcase">
