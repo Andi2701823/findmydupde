@@ -49,6 +49,10 @@ try {
     if (!["GET", "HEAD"].includes(req.method())) uploads.push(req.url());
   });
   await page.goto(origin);
+  assert.equal(
+    await page.locator('head meta[name="verification"]').getAttribute("content"),
+    "00fd05c1707e91d286f87c424f566383",
+  );
   await page
     .getByRole("heading", { name: "Dein Stil. Für weniger." })
     .waitFor();
