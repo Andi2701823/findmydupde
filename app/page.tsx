@@ -7,7 +7,7 @@ import { Icon } from "@/components/icon";
 import { products } from "@/lib/catalog";
 import { stagingLiveCatalogEnabled } from "@/server/catalog/live-mode.ts";
 export const metadata: Metadata = {
-  title: "FindMyDup | Produkte entdecken und Alternativen finden",
+  title: { absolute: "FindMyDup | Produkte entdecken und Alternativen finden" },
   description:
     "FindMyDup entwickelt eine transparente Produktsuche für Mode, Beauty, Wohnen und Technik. Erfahre, wie die Suche funktioniert und welche Angebote bereits verfügbar sind.",
 };
@@ -203,6 +203,11 @@ export default function Home() {
                 <p>{step.text}</p>
               </div>
             ))}
+          </div>
+          <div className="how-guide-cta">
+            <Link href="/ratgeber/" className="text-link">
+              Worauf du beim Produktvergleich achten solltest <Icon name="arrow" />
+            </Link>
           </div>
         </div>
       </section>
