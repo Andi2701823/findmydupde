@@ -23,7 +23,7 @@ FindMyDup is a German-language product discovery website for finding visually si
 - Do not present AI matches as identical products. Do not invent prices or availability.
 - Keep the site independent of the owner's other websites.
 
-Status: Phase 1 prototype implemented. Demo catalog only, no live integrations.
+Status: Phase 1 prototype implemented. Production still uses demo data. An explicitly gated eBay Browse API text-search preview is prepared for the isolated staging environment only, with server-side OAuth and no committed keys. It has not yet been deployed or tested on Hostinger; see docs/ebay-staging.md.
 
 ## Phase 1 implementation
 
