@@ -13,19 +13,19 @@ export function SearchBox({ compact = false, initialQuery = "" }: { compact?: bo
     setError("");
     router.push(`/suche/?q=${encodeURIComponent(value)}`);
   }
-  return <section className={`search-box editorial-search ${compact ? "compact" : ""}`} aria-label="Einkaufsratgeber suchen">
+  return <section className={`search-box editorial-search ${compact ? "compact" : ""}`} aria-label="Produkte und Ratgeber suchen">
     <form className="text-search" onSubmit={submit}>
       <label className="sr-only" htmlFor="product-query">Thema oder Produkt suchen</label>
       <Icon name="search" />
       <input id="product-query" type="search" maxLength={120} value={query} onChange={event => {setQuery(event.target.value);setError("");}}
-        placeholder="Worüber möchtest du mehr wissen?" aria-invalid={!!error} aria-describedby={error ? "search-error" : "search-hint"} />
-      <button className="button primary" type="submit">Ratgeber finden <Icon name="arrow" /></button>
+        placeholder="Produkt oder Thema suchen, z. B. Serum" aria-invalid={!!error} aria-describedby={error ? "search-error" : "search-hint"} />
+      <button className="button primary" type="submit">Entdecken <Icon name="arrow" /></button>
     </form>
     <div className="suggestions">
       <span>Oft gesucht:</span>
       {["Gesichtsserum","Sneaker","Kopfhörer"].map(word => <button key={word} type="button" onClick={() => router.push(`/suche/?q=${encodeURIComponent(word)}`)}>{word} ↗</button>)}
     </div>
     {error && <p id="search-error" role="alert" className="error-message">{error}</p>}
-    <p id="search-hint" className="search-note"><Icon name="shield" /> Durchsuche unsere unabhängigen Einkaufsratgeber – kostenlos und ohne Konto.</p>
+    <p id="search-hint" className="search-note"><Icon name="shield" /> Echte Beauty-Produkte und unabhängige Einkaufsratgeber – kostenlos und ohne Konto.</p>
   </section>;
 }
