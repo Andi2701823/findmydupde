@@ -4,7 +4,8 @@ import type { PoolConnection } from "mysql2/promise";
 import { compatibilityEnabled, compatibilityGrants, readOnlyGrants, requireReadOnlyAccount } from "../server/db/privileges.ts";
 const database = "u874339379_findmyduptest";
 const env = { DEPLOYMENT_ENV: "staging", MYSQL_DATABASE: database, MYSQL_USER: database, HOSTINGER_STAGING_GRANT_COMPATIBILITY: "true" };
-const grant = `GRANT SELECT, DELETE HISTORY, SHOW CREATE ROUTINE ON \`${database}\`.* TO 'user'@'%'`;
+const scope = database.replace(/_/g, "\\_");
+const grant = `GRANT SELECT, DELETE HISTORY, SHOW CREATE ROUTINE ON \`${scope}\`.* TO 'user'@'%'`;
 const names = ["categories", "retailers", "products", "offers", "prices", "product_images", "affiliate_links", "feed_runs", "schema_migrations"];
 function fixture(overrides: { identity?: Record<string, unknown>; grants?: string[]; metadata?: Record<string, unknown>[]; globals?: Record<string, unknown>[]; objects?: Record<string, unknown>[]; tables?: Record<string, unknown>[]; definition?: unknown; fail?: string } = {}) {
   const calls: string[] = [];
@@ -34,9 +35,10 @@ test("compatibility is disabled by default and cannot be enabled for other envir
 test("strict grants remain strict, compatible grants are exact and scoped to the fixed schema", () => {
   assert.equal(readOnlyGrants([grant], database), false);
   assert.equal(compatibilityGrants([grant], database), true);
+  assert.equal(compatibilityGrants([grant.replace(scope, database)], database), false);
   for (const privilege of ["INSERT", "UPDATE", "DELETE", "CREATE", "ALTER", "DROP", "EXECUTE", "TRIGGER", "CREATE TEMPORARY TABLES", "FILE", "SUPER", "ALL PRIVILEGES", "SELECT (id)"])
     assert.equal(compatibilityGrants([grant.replace("SELECT, DELETE HISTORY, SHOW CREATE ROUTINE", "SELECT, " + privilege)], database), false);
-  for (const rejected of [grant.replace(database, "foreign"), grant.replace("`" + database + "`.*", "*.*"), grant.replace("`" + database + "`.*", "`" + database + "`.products"), grant + " WITH GRANT OPTION", "GRANT 'role' TO 'user'@'%'", "GRANT USAGE ON foreign.* TO 'user'@'%'"])
+  for (const rejected of [grant.replace(scope, "foreign"), grant.replace("`" + scope + "`.*", "*.*"), grant.replace("`" + scope + "`.*", "`" + database + "`.products"), grant + " WITH GRANT OPTION", "GRANT 'role' TO 'user'@'%'", "GRANT USAGE ON foreign.* TO 'user'@'%'"])
     assert.equal(compatibilityGrants([grant, rejected], database), false);
 });
 test("compatibility verifies actual identities, effective metadata and non-versioned definitions using only SELECT/SHOW", async () => {

@@ -17,7 +17,11 @@ function grantsAllowed(grants: string[], database: string, allowed: Set<string>,
     if (privileges.some((p) => !allowed.has(p))) return false;
     const scope = /^(?:`((?:``|[^`])+)`|([a-zA-Z0-9_]+))\.(\*|`(?:``|[^`])+`|[a-zA-Z0-9_]+)$/.exec(match[2]);
     if (!scope) return false;
-    const schema = (scope[1] || scope[2]).replace(/``/g, "`").replace(/\\([_%])/g, "$1");
+    const rawSchema = scope[1] || scope[2];
+    // In database GRANT scopes, unescaped '_'/'%' are wildcards, even in backticks.
+    // Compatibility requires a literal schema grant, not a pattern matching other DBs.
+    if (schemaOnly && /(?<!\\)[_%]/.test(rawSchema)) return false;
+    const schema = rawSchema.replace(/``/g, "`").replace(/\\([_%])/g, "$1");
     if (schema !== database || (schemaOnly && scope[3] !== "*")) return false;
     if (privileges.includes("SELECT")) select = true;
     return true;

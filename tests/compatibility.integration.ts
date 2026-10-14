@@ -9,6 +9,7 @@ test("isolated MariaDB Hostinger identity, effective grants, versioned tables an
   assert.equal(process.env.MYSQL_HOST, "127.0.0.1");
   assert.equal(process.env.MYSQL_DATABASE, "findmydup_test");
   const database = "u874339379_findmyduptest", password = "ci_ephemeral_compatibility_password";
+  const literalGrantScope = database.replace(/_/g, "\\_");
   const administrator = await mysql.createConnection({ host: "127.0.0.1", port: 3306, user: "root", password: process.env.MYSQL_MIGRATION_PASSWORD, database: "findmydup_test" });
   const env = { ...process.env, DEPLOYMENT_ENV: "staging", MYSQL_HOST: "127.0.0.1", MYSQL_DATABASE: database, MYSQL_USER: database, MYSQL_PASSWORD: password, MYSQL_TLS_MODE: "disabled", HOSTINGER_STAGING_GRANT_COMPATIBILITY: "true", DATABASE_ACCESS_ENABLED: "true", CATALOG_SEARCH_ENABLED: "true", DB_MIGRATIONS_ENABLED: "false", AWIN_IMPORT_ENABLED: "false", IMAGE_SEARCH_ENABLED: "false" };
   let server: ChildProcess | undefined;
@@ -37,7 +38,7 @@ test("isolated MariaDB Hostinger identity, effective grants, versioned tables an
     await administrator.query("CREATE USER ?@'%' IDENTIFIED BY ?", [database, password]);
     const bundle = await readFile("db/staging/hostinger-initial-schema.sql", "utf8");
     for (const sql of bundle.split("-- statement-breakpoint").map((s) => s.trim()).filter(Boolean)) await administrator.query(sql);
-    await administrator.query("GRANT SELECT, DELETE HISTORY, SHOW CREATE ROUTINE ON ?? .* TO ?@'%'", [database, database]);
+    await administrator.query("GRANT SELECT, DELETE HISTORY, SHOW CREATE ROUTINE ON ?? .* TO ?@'%'", [literalGrantScope, database]);
     reader = await mysql.createConnection({ host: "127.0.0.1", user: database, password, database });
     assert.equal(await requireReadOnlyAccount(reader, database, env), "staging-compatibility");
     await assert.rejects(() => requireReadOnlyAccount(reader!, database, { ...env, HOSTINGER_STAGING_GRANT_COMPATIBILITY: "false" }));
@@ -66,7 +67,7 @@ test("isolated MariaDB Hostinger identity, effective grants, versioned tables an
     assert.equal((await search()).status, 503);
     await start({ MYSQL_DATABASE: "findmydup_test" });
     assert.equal((await search()).status, 503);
-    await administrator.query("REVOKE DELETE HISTORY, SHOW CREATE ROUTINE ON ?? .* FROM ?@'%'", [database, database]);
+    await administrator.query("REVOKE DELETE HISTORY, SHOW CREATE ROUTINE ON ?? .* FROM ?@'%'", [literalGrantScope, database]);
     await start({ DEPLOYMENT_ENV: "production", HOSTINGER_STAGING_GRANT_COMPATIBILITY: "false" });
     assert.equal((await search()).status, 200);
     console.log("PASS: isolated MariaDB 11.4 compatibility account, strict/production rejection, real grants, empty catalog, versioned-table rejection and write/global/cross-database rejection through Next.js.");

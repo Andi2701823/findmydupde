@@ -292,7 +292,12 @@ physischen DB-Verbindung wie die anschließende Suche:
    dieser Datenbank, einschließlich eines vollständigen schemaweiten SELECT.
    USAGE auf *.* ist zulässig, da es kein Datenzugriffsrecht erteilt. Weitere
    globale Rechte, andere Datenbanken, GRANT OPTION, Rollen/Proxy-Zuweisungen und
-   zusätzliche objekt-/spaltenbezogene Rechte werden nicht akzeptiert.
+   zusätzliche objekt-/spaltenbezogene Rechte werden nicht akzeptiert. Unterstriche
+   im Datenbanknamen müssen im tatsächlichen GRANT-Scope als \_ maskiert sein:
+   unmaskierte _/% sind dort Datenbank-Wildcards und werden abgewiesen. Das Opt-in
+   hebt diese Prüfung nicht auf; gegebenenfalls muss Hostinger den literal auf
+   diese DB begrenzten Scope bestätigen/herstellen. Es wird nicht vorausgesetzt,
+   dass der konkrete Hostinger-Scope bereits korrekt maskiert ist.
 3. Vollständiges information_schema.TABLES-Inventar mit allen neun Katalog- und
    Migrationstabellen und höchstens 256 Objekten. Ausschließlich BASE TABLE ist
    erlaubt; SYSTEM VERSIONED, Views, Sequenzen und unbekannte Typen werden abgewiesen.
