@@ -1988,7 +1988,7 @@ select {
 .guide-category-section {scroll-margin-top:100px;margin:45px 0 70px;}
 .guide-category-section .section-heading {margin-bottom:26px;}
 .guide-category-section .section-heading h2 {font-size:32px;}
-.editorial-contact,.editorial-partner {background:var(--cream);border-radius:20px;padding:38px 43px;margin:36px 0 45px;}
+.editorial-contact,.editorial-partner {background:var(--cream);border-radius:20px;padding:38px 43px;margin-block:36px 45px;}
 .editorial-contact h2,.editorial-partner h2 {font-size:28px;line-height:1.25;letter-spacing:-.5px;margin:10px 0;}
 .editorial-contact p,.editorial-partner p {font-size:13px;line-height:1.8;color:var(--muted);max-width:660px;margin-bottom:18px;}
 .editorial-contact .button {display:inline-flex;align-items:center;gap:10px;}
