@@ -209,9 +209,13 @@ jobs:
             -e POSTGRES_PASSWORD=ci_ephemeral_only \
             -e POSTGRES_DB=findmydup_ci postgres:16
           trap 'docker rm -f findmydup-supabase-ci >/dev/null 2>&1 || true' EXIT
+          # The postgres:16 entrypoint briefly exposes a temporary server during
+          # database initialization. pg_isready alone can succeed just before
+          # that temporary server shuts down, racing the CREATE ROLE command.
           ready=0
-          for attempt in $(seq 1 45); do
-            if docker exec findmydup-supabase-ci pg_isready -U postgres -d findmydup_ci >/dev/null 2>&1; then
+          for attempt in $(seq 1 60); do
+            if docker logs findmydup-supabase-ci 2>&1 | grep -q 'PostgreSQL init process complete;' &&
+               docker exec findmydup-supabase-ci pg_isready -U postgres -d findmydup_ci >/dev/null 2>&1; then
               ready=1
               break
             fi
