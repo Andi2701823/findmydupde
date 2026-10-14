@@ -9,9 +9,11 @@ import { Icon } from "./icon";
 export function SearchBox({
   compact = false,
   initialQuery = "",
+  liveCatalog = false,
 }: {
   compact?: boolean;
   initialQuery?: string;
+  liveCatalog?: boolean;
 }) {
   const router = useRouter();
   const [tab, setTab] = useState<"text" | "image">("text");
@@ -238,8 +240,9 @@ export function SearchBox({
         </p>
       )}
       <p id="demo-hint" className="search-note">
-        <Icon name="shield" /> Kostenlos ausprobieren · Nur Demoprodukte, keine
-        Live-Suche
+        <Icon name="shield" /> {liveCatalog
+          ? "Textsuche mit echten Katalogangeboten · Bildsuche weiterhin Demo"
+          : "Kostenlos ausprobieren · Nur Demoprodukte, keine Live-Suche"}
       </p>
     </section>
   );
