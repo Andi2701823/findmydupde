@@ -339,10 +339,15 @@ Die Zeile enthält nur `stage=configuration|connection|privileges|catalog-query`
 und `reason=` aus einer festen Positivliste. Keine Rohfehler, Query-Texte,
 Nutzeranfragen, Passwörter, Grants oder DB-Hosts werden geloggt.
 Die öffentliche API-Antwort bleibt immer generisch, ohne zusätzliche Details.
-`stage=privileges` mit `reason=Staging compatibility identity or grants rejected`
-deutet auf Benutzeridentität, Version oder Grant-Scope hin. Insbesondere müssen
-Unterstriche des DB-Namens im echten SHOW GRANTS-Scope korrekt maskiert sein;
-diese Bedingung nicht umgehen. `stage=connection` mit
+`stage=privileges` wird sicher nach Ursachen unterschieden:
+`Staging compatibility authenticated user rejected` (Kontoname),
+`Staging compatibility server version rejected` (MariaDB-Version),
+`Staging compatibility wildcard grant scope rejected` (unmaskierte Unterstriche
+im Datenbank-Grant) oder `Staging compatibility grants rejected` (sonstige
+unzulässige Rechte/Grant-Form). Die Logzeile enthält niemals den eigentlichen
+Grant. Ein Wildcard-Grant kann über mehrere Datenbanken wirken und darf nicht
+durch Lockern der Prüfung freigegeben werden. Hostinger muss in diesem Fall
+einen explizit literal auf diese Testdatenbank begrenzten Scope bereitstellen. `stage=connection` mit
 `reason=ER_ACCESS_DENIED_ERROR` verweist dagegen auf Zugangsdaten.
 Nach dem Test `STAGING_CATALOG_DIAGNOSTICS=false` setzen und neu starten.
 Die Diagnose aktiviert weder Datenbankzugriff noch Schreibrechte und ist
