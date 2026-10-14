@@ -15,6 +15,7 @@ export function Footer() {
           <div className="footer-links">
             <Link href="/suche/">Entdecken</Link>
             <Link href="/ueber-uns/">Über FindMyDup</Link>
+            <Link href="/ratgeber/">Ratgeber</Link>
             <Link href="/partner/">Für Händler</Link>
             <Link href="/datenschutz/">Datenschutz</Link>
             <Link href="/impressum/">Impressum</Link>
