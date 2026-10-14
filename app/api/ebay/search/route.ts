@@ -1,5 +1,5 @@
 import "server-only";
-import { createRateLimiter, requestQuotaKey } from "@/server/http/rate-limit";
+import { createRateLimiter, requestQuotaKey } from "../../../../server/http/rate-limit.ts";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
