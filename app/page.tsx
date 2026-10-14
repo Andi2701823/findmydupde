@@ -23,8 +23,8 @@ export default function Home() {
     <section className="hero shell">
       <div className="hero-copy">
         <span className="eyebrow"><span className="little-star">✳</span> ENTDECKEN. VERSTEHEN. VERGLEICHEN.</span>
-        <h1>Dein Stil.<br />Deine <span className="underlined">Entscheidung.</span></h1>
-        <p className="hero-description">Was macht ein gutes Produkt aus? FindMyDup zeigt dir, worauf du beim Einkaufen achten solltest – von Inhaltsstoffen über Passform bis zum fairen Gesamtpreis.</p>
+        <h1>Dein Stil.<br />Deine <span className="underlined">Wahl.</span></h1>
+        <p className="hero-description">Entdecke echte Beauty-Produkte von unseren Partnern und finde heraus, worauf es beim Vergleichen von Mode, Pflege, Wohnen und Technik ankommt.</p>
         <SearchBox />
       </div>
       <div className="hero-visual" aria-label="Stilisierte Illustrationen von zwei Handtaschen">
