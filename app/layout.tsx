@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   description:
     "Entdecke den FindMyDup-Prototyp: Produktsuche per Name oder Foto mit klar gekennzeichneten Demoprodukten.",
   robots: { index: false, follow: false },
+  other: { verification: "00fd05c1707e91d286f87c424f566383" },
 };
 export default function RootLayout({
   children,
