@@ -198,3 +198,29 @@ jobs:
       - run: npm run build
       - name: Verify opt-in policy using disposable MariaDB and actual Next.js API
         run: npm run test:compat
+
+  supabase-schema:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Execute PostgreSQL schema and RLS authorization tests
+        run: |
+          docker run -d --name findmydup-supabase-ci \
+            -e POSTGRES_PASSWORD=ci_ephemeral_only \
+            -e POSTGRES_DB=findmydup_ci postgres:16
+          trap 'docker rm -f findmydup-supabase-ci >/dev/null 2>&1 || true' EXIT
+          ready=0
+          for attempt in $(seq 1 45); do
+            if docker exec findmydup-supabase-ci pg_isready -U postgres -d findmydup_ci >/dev/null 2>&1; then
+              ready=1
+              break
+            fi
+            sleep 1
+          done
+          test "$ready" -eq 1
+          docker exec findmydup-supabase-ci psql -v ON_ERROR_STOP=1 -U postgres -d findmydup_ci \
+            -c 'CREATE ROLE anon NOLOGIN; CREATE ROLE authenticated NOLOGIN;'
+          docker cp db/supabase/001_catalog.sql findmydup-supabase-ci:/tmp/catalog.sql
+          docker cp tests/supabase-security.sql findmydup-supabase-ci:/tmp/security.sql
+          docker exec findmydup-supabase-ci psql -v ON_ERROR_STOP=1 -U postgres -d findmydup_ci -f /tmp/catalog.sql
+          docker exec findmydup-supabase-ci psql -v ON_ERROR_STOP=1 -U postgres -d findmydup_ci -f /tmp/security.sql
