@@ -24,7 +24,7 @@ function outbound(value: unknown): string | null {
   if (typeof value !== "string") return null;
   try {
     const url = new URL(value);
-    return url.protocol === "https:" && (["ebay.com", "ebay.de"].some((host) => url.hostname === host || url.hostname.endsWith("." + host))) ? url.toString() : null;
+    return url.protocol === "https:" && !url.username && !url.password && !url.port && (["ebay.com", "ebay.de"].some((host) => url.hostname === host || url.hostname.endsWith("." + host))) ? url.toString() : null;
   } catch { return null; }
 }
 
