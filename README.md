@@ -100,7 +100,9 @@ Runtime flags are read per request. Build/start do not open a connection, migrat
 import a feed or call OpenAI. The UI, components and styles are unchanged.
 
 The reviewed schema/migrations live in `db/migrations/` and `server/db/`. Runtime,
-import and migration accounts are separate, with no privileged fallback.
+import and migration credential namespaces are explicit, with no privileged fallback.
+Hostinger staging uses one account sequentially with temporary maintenance rights
+and SELECT-only runtime rights; see the staging runbook.
 `.env.example` and `.env.staging.example` have no passwords and all access gates
 false. No production database was connected.
 
@@ -116,3 +118,11 @@ settings, a blank staging environment template, read-only connection checks,
 migration compatibility checks and rollback. The new `npm run db:check` command
 requires an explicitly confirmed staging database and rejects the known production
 database. No database probes, migrations or imports run on application startup.
+
+The confirmed staging database/user is `u874339379_findmyduptest`. Verification
+accepts this exact name and rejects `u874339379_findmydupde` in staging. A prepared
+[initial phpMyAdmin bundle](db/staging/hostinger-initial-schema.sql) copies the
+reviewed empty schema and records its migration checksum. It is for first staging
+initialization only, is not automatically executed and contains no product seeds.
+The staging search API also refuses catalog reads until the shared account has
+only SELECT/USAGE grants. All integration flags remain disabled by default.

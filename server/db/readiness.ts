@@ -4,6 +4,9 @@ import { readdir, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import type { PoolConnection, RowDataPacket } from "mysql2/promise";
 import { databaseOptions } from "./config.ts";
+import { isStagingDatabase } from "./staging-target.ts";
+import { requireReadOnlyAccount } from "./privileges.ts";
+export { readOnlyGrants } from "./privileges.ts";
 
 export function stagingTestOptions(
   args: string[],
@@ -17,8 +20,7 @@ export function stagingTestOptions(
     args.filter((arg) => arg.startsWith("--database=")).length !== 1 ||
     args.some((arg) => !["--confirm", "--schema"].includes(arg) && !arg.startsWith("--database=")) ||
     !target || target !== env.MYSQL_DATABASE ||
-    !/(?:^|_)staging(?:_|$)|^findmydup_test$/.test(target) ||
-    target === "u874339379_findmydupde" ||
+    !isStagingDatabase(target) ||
     env.DB_MIGRATIONS_ENABLED === "true" || env.AWIN_IMPORT_ENABLED === "true"
   ) throw new Error("Staging connection test blocked");
   return databaseOptions("read", env);
@@ -35,19 +37,6 @@ export function supportedDatabase(version: string) {
     : major >= 8;
 }
 
-export function readOnlyGrants(grants: string[], database: string) {
-  let select = false;
-  return grants.length > 0 && grants.every((grant) => {
-    const match = /^GRANT (USAGE|SELECT) ON (.+?) TO /i.exec(grant);
-    if (!match || /WITH GRANT OPTION/i.test(grant)) return false;
-    if (match[1].toUpperCase() === "USAGE") return true;
-    const scope = match[2].replace(/`/g, "").replace(/\\([_%])/g, "$1");
-    if (!scope.startsWith(database + ".")) return false;
-    select = true;
-    return true;
-  }) && select;
-}
-
 export async function checkStagingConnection(connection: PoolConnection, database: string, schema: boolean) {
   const query = async (sql: string, values: string[] = []) => {
     const [rows] = await connection.execute<RowDataPacket[]>({ sql, timeout: 3000 }, values);
@@ -56,9 +45,7 @@ export async function checkStagingConnection(connection: PoolConnection, databas
   const identity = await query("SELECT DATABASE() AS database_name, VERSION() AS version, 1 AS connected");
   if (identity[0]?.database_name !== database || !supportedDatabase(String(identity[0]?.version)))
     throw new Error("Database identity or version check failed");
-  const [rows] = await connection.query<RowDataPacket[]>({ sql: "SHOW GRANTS FOR CURRENT_USER", timeout: 3000 });
-  if (!readOnlyGrants(rows.map((row) => String(Object.values(row)[0])), database))
-    throw new Error("Runtime account must have only SELECT and USAGE grants");
+  await requireReadOnlyAccount(connection, database);
   if (schema) {
     const tables = ["categories", "retailers", "products", "offers", "prices", "product_images", "affiliate_links", "feed_runs", "schema_migrations"];
     for (const table of tables) await query(`SELECT 1 FROM \`${table}\` LIMIT 0`);

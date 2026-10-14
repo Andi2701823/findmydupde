@@ -52,7 +52,7 @@ After reviewing a **staging** target and backup, the explicit migration command 
 
 ```sh
 # Requires DATABASE_ACCESS_ENABLED=true, DB_MIGRATIONS_ENABLED=true,
-# and a separate MYSQL_MIGRATION_USER / MYSQL_MIGRATION_PASSWORD.
+# and explicitly configured MYSQL_MIGRATION_USER / MYSQL_MIGRATION_PASSWORD.
 npm run db:migrate -- --confirm
 ```
 
@@ -62,13 +62,21 @@ Migration or import commands are never invoked by `npm run build`, application s
 
 `.env.example` contains only the provided database/account names and blank password fields. All access flags default to false. Runtime credentials are server-only, never `NEXT_PUBLIC_*`. Set the actual database hostname from the account's Hostinger database settings; do not assume a Node.js deployment can access every database via the same localhost address.
 
-Use separate users:
+Separate database users are preferred where the hosting plan supports them.
+Hostinger permits one user per database in this staging setup. Use the confirmed
+u874339379_findmyduptest database/user sequentially: temporary CREATE/REFERENCES/
+SELECT/INSERT for the empty migration, then SELECT-only for the Next.js runtime.
+The exact hPanel steps, password rotation, prepared phpMyAdmin SQL bundle and
+later bounded import windows are in [the staging runbook](hostinger-staging.md).
 
-- Runtime user: SELECT on the catalog tables only.
-- Import user: SELECT, INSERT, UPDATE and DELETE on catalog/import tables, no schema privileges.
-- Migration user: reviewed DDL and migration-history privileges only, used outside the web process.
-
-Do not use the public web account for migrations or imports. The code does not fall back to runtime credentials for privileged roles. Provision these users/permissions through authorized Hostinger/database administration when staging activation is approved. The existing account name alone does not prove that it currently has read-only grants.
+The role-specific environment prefixes remain explicit and do not fall back to
+runtime credentials. The same username can be supplied to a maintenance process;
+that does not isolate its privileges from the web process. Disable web database
+access, remove its password and restart before elevating the shared account.
+Return to SELECT-only, rotate the password and verify before enabling web reads.
+Never leave a shared account elevated for unattended imports. The staging API
+checks actual SELECT-only grants per search; disabled APIs do not open a pool.
+All staging roles reject the known production target before connecting.
 
 Local MySQL may use a local socket/TCP connection without TLS. Remote connections require certificate-verified TLS; the code rejects explicitly disabled remote TLS. Configure the trusted CA when required. Never disable certificate verification. Pool connections, queues and query timeouts are bounded to fit a lean hosting plan.
 

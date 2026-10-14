@@ -1,4 +1,5 @@
 import "server-only";
+import { isStagingDatabase } from "./staging-target.ts";
 export type DatabaseRole = "read" | "import" | "migration";
 export class DatabaseUnavailable extends Error {
   constructor() {
@@ -38,6 +39,9 @@ export function databaseOptions(
   const host = required(env, "MYSQL_HOST");
   const database = required(env, "MYSQL_DATABASE");
   if (!/^[a-zA-Z0-9_]{1,64}$/.test(database)) throw new DatabaseUnavailable();
+  // Applies to read, migration and import roles, before any pool/connection exists.
+  if (env.DEPLOYMENT_ENV === "staging" && !isStagingDatabase(database))
+    throw new DatabaseUnavailable();
   const local = ["localhost", "127.0.0.1", "::1"].includes(host);
   const tls = env.MYSQL_TLS_MODE || (local ? "disabled" : "required");
   if (!["required", "disabled"].includes(tls) || (!local && tls !== "required"))

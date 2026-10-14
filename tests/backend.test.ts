@@ -217,3 +217,17 @@ test("image endpoint remains disabled and does not consume uploaded bodies", asy
     /not implemented/,
   );
 });
+
+test("one explicitly configured staging user can serve maintenance roles without credential fallback", () => {
+  const shared = { ...env, MYSQL_USER: "u874339379_findmyduptest", MYSQL_DATABASE: "u874339379_findmyduptest" };
+  assert.throws(() => databaseOptions("migration", { ...shared, DB_MIGRATIONS_ENABLED: "true" }));
+  assert.throws(() => databaseOptions("import", { ...shared, AWIN_IMPORT_ENABLED: "true" }));
+  assert.equal(databaseOptions("migration", { ...shared, DB_MIGRATIONS_ENABLED: "true", MYSQL_MIGRATION_USER: shared.MYSQL_USER, MYSQL_MIGRATION_PASSWORD: shared.MYSQL_PASSWORD }).user, shared.MYSQL_USER);
+  assert.equal(databaseOptions("import", { ...shared, AWIN_IMPORT_ENABLED: "true", MYSQL_IMPORT_USER: shared.MYSQL_USER, MYSQL_IMPORT_PASSWORD: shared.MYSQL_PASSWORD }).user, shared.MYSQL_USER);
+});
+
+test("staging database roles reject the production target before connecting", () => {
+  const production = { ...env, DEPLOYMENT_ENV: "staging", MYSQL_DATABASE: "u874339379_findmydupde", DB_MIGRATIONS_ENABLED: "true", AWIN_IMPORT_ENABLED: "true", MYSQL_MIGRATION_USER: "test", MYSQL_MIGRATION_PASSWORD: "dummy-test-only", MYSQL_IMPORT_USER: "test", MYSQL_IMPORT_PASSWORD: "dummy-test-only" };
+  for (const role of ["read", "migration", "import"] as const)
+    assert.throws(() => databaseOptions(role, production));
+});

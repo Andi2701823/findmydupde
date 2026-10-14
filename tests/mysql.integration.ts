@@ -3,7 +3,9 @@ import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
-import type { RowDataPacket } from "mysql2/promise";
+import { readFile } from "node:fs/promises";
+import mysql, { type RowDataPacket } from "mysql2/promise";
+import { databaseOptions } from "../server/db/config.ts";
 import { getDatabase, closeDatabases } from "../server/db/connection.ts";
 import { migrate } from "../server/db/migrations.ts";
 import { checkStagingConnection } from "../server/db/readiness.ts";
@@ -23,6 +25,36 @@ test(
     assert.equal(process.env.MYSQL_HOST, "127.0.0.1");
     const connection = await getDatabase("migration").getConnection();
     try {
+      // Single-user cycle, using ONLY this disposable CI database.
+      const singleUser = "findmydup_test_single";
+      const singlePassword = "ci_ephemeral_single_password";
+      await connection.query("CREATE USER ?@'%' IDENTIFIED BY ?", [singleUser, singlePassword]);
+      await connection.query("GRANT SELECT,INSERT,CREATE,REFERENCES ON ?? .* TO ?@'%'", ["findmydup_test", singleUser]);
+      const singleOptions = databaseOptions("migration", { ...process.env, MYSQL_MIGRATION_USER: singleUser, MYSQL_MIGRATION_PASSWORD: singlePassword });
+      const maintenance = mysql.createPool(singleOptions);
+      const elevated = await maintenance.getConnection();
+      try {
+        // Exercise the prepared phpMyAdmin bundle on the disposable CI target only.
+        const bundle = await readFile("db/staging/hostinger-initial-schema.sql", "utf8");
+        assert.ok(bundle.includes("USE `u874339379_findmyduptest`;"));
+        const isolatedBundle = bundle.replace("USE `u874339379_findmyduptest`;", "USE `findmydup_test`;");
+        for (const statement of isolatedBundle.split("-- statement-breakpoint").map((sql) => sql.trim()).filter(Boolean))
+          await elevated.execute(statement);
+        await migrate(elevated);
+        await assert.rejects(() => checkStagingConnection(elevated, "findmydup_test", true), /SELECT/);
+      } finally { elevated.release(); await maintenance.end(); }
+      await connection.query("REVOKE ALL PRIVILEGES, GRANT OPTION FROM ?@'%'", [singleUser]);
+      await connection.query("GRANT SELECT ON ?? .* TO ?@'%'", ["findmydup_test", singleUser]);
+      const runtime = mysql.createPool({ ...singleOptions, user: singleUser, password: singlePassword });
+      const restricted = await runtime.getConnection();
+      try {
+        assert.equal((await checkStagingConnection(restricted, "findmydup_test", true)).privileges, "read-only");
+        await assert.rejects(() => restricted.execute("DELETE FROM products"));
+        await assert.rejects(() => restricted.execute("CREATE TABLE forbidden_write (id INT)"));
+        const [empty] = await restricted.execute<RowDataPacket[]>("SELECT COUNT(*) n FROM products");
+        assert.equal(Number(empty[0].n), 0);
+      } finally { restricted.release(); await runtime.end(); }
+      console.log("PASS: same CI user applied empty migrations, elevated grants rejected, privileges reduced to SELECT, fresh read-only connection and denied DDL/DML.");
       await migrate(connection);
       await migrate(connection);
       const [tables] = await connection.query<RowDataPacket[]>("SHOW TABLES");

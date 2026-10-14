@@ -1,6 +1,6 @@
 # FindMyDup: sichere Hostinger-Staging-Konfiguration
 
-Stand: 13.10.2026. Diese Anleitung bereitet die Aktivierung vor. Sie führt keine
+Stand: 14.10.2026. Diese Anleitung bereitet die Aktivierung vor. Sie führt keine
 Hostinger-Aktion aus. `findmydup.de`, DNS, `public_html` und die vorhandene
 Produktionsdatenbank bleiben unverändert. Keine neue Produktionswebsite oder
 gekaufte Domain ist nötig.
@@ -96,121 +96,188 @@ Die Vorschau vor öffentlicher Nutzung durch Hostinger-Zugriffsschutz schützen,
 falls verfügbar. Andernfalls ausschließlich die Tests in CI/lokal nutzen, bis
 ein geeigneter Schutz bestätigt ist. `noindex` ist kein Zugriffsschutz.
 
-## 4. Separate leere Staging-Datenbank
+## 4. Bestätigte Staging-Datenbank, ein Benutzer
 
-Erst im nächsten manuellen Schritt unter Databases → Management eine getrennte
-Staging-Datenbank und getrennte Benutzer vorbereiten. Der Name muss einen eigenen
-`staging`-Abschnitt enthalten, beispielsweise `u874339379_findmydup_staging`.
-Das ist ein vorgeschlagener Name, keine bereits angelegte Datenbank.
+Hostinger erlaubt hier einen Benutzer pro Datenbank. Wir verwenden ausschließlich:
 
-Nicht `u874339379_findmydupde` und nicht deren vorhandenen Benutzer für Staging
-verwenden. Die Vorlage `.env.staging.example` hat absichtlich leere DB-Felder.
+- Datenbank: `u874339379_findmyduptest`
+- Benutzer: `u874339379_findmyduptest`
+- Produktionsdatenbank `u874339379_findmydupde`: nicht verwenden oder bearbeiten.
 
-| Variable | Staging-Wert |
+Der konkrete Testname ist ausdrücklich zugelassen, ohne beliebige Namen mit
+"test" freizugeben. Mit DEPLOYMENT_ENV=staging werden Produktions-/unbestätigte
+Ziele schon vor einer Verbindung für Lesen, Migration und Import abgewiesen.
+Der CLI-Test braucht weiterhin --confirm und exakt den konfigurierten DB-Namen.
+
+Die drei Credential-Präfixe beschreiben getrennte **Prozesse**, nicht zwingend
+verschiedene MySQL-Konten. Derselbe Staging-Benutzer darf im Wartungsprozess
+explizit als MYSQL_MIGRATION_USER bzw. später MYSQL_IMPORT_USER gesetzt werden.
+Es gibt weiterhin keinen automatischen Fallback auf MYSQL_USER/MYSQL_PASSWORD.
+Rechte desselben Kontos gelten für alle seine Verbindungen. Eine Trennung allein
+über Env-Variablen isoliert diese Rechte nicht.
+
+| Variable in der Staging-Web-App | Wert |
 | --- | --- |
-| `MYSQL_HOST` | Der in Hostinger bestätigte Hostname, häufig `localhost` |
-| `MYSQL_PORT` | `3306`, sofern Hostinger nichts anderes nennt |
-| `MYSQL_DATABASE` | Vollständiger Name der separaten Staging-Datenbank |
-| `MYSQL_USER` | Separater Benutzer mit ausschließlich SELECT-Rechten |
-| `MYSQL_PASSWORD` | Neues Passwort, nur privat in hPanel eintragen |
-| `MYSQL_CONNECTION_LIMIT` | `2` |
-| `MYSQL_TLS_MODE` | `disabled` nur bei `localhost`/Loopback, sonst `required` |
-| `MYSQL_SSL_CA` | Bei Remote-TLS die vertrauenswürdige PEM-CA, falls erforderlich |
-| `CATALOG_MAX_AGE_DAYS` | `3` |
+| DEPLOYMENT_ENV | staging |
+| MYSQL_HOST | Bestätigter Hostname aus Hostinger, häufig localhost |
+| MYSQL_PORT | 3306, sofern Hostinger nichts anderes nennt |
+| MYSQL_DATABASE | u874339379_findmyduptest |
+| MYSQL_USER | u874339379_findmyduptest |
+| MYSQL_PASSWORD | Erst nach SELECT-only privat in hPanel eintragen |
+| MYSQL_CONNECTION_LIMIT | 2 |
+| MYSQL_TLS_MODE | disabled nur bei localhost/Loopback, sonst required |
+| MYSQL_SSL_CA | Vertrauenswürdige PEM-CA für Remote-TLS, falls erforderlich |
+| CATALOG_MAX_AGE_DAYS | 3 |
 
-Falls hPanel keine getrennten SELECT-only-Rechte ermöglicht, mit Hostinger klären.
-Der vorhandene Benutzername beweist keine passenden Rechte. Den Laufzeitbenutzer
-nicht mit ALL PRIVILEGES einsetzen. Migrationen brauchen einen separaten Account;
-dessen Zugangsdaten gehören nicht in die öffentliche Web-App.
+.env.staging.example enthält die bestätigten Namen, aber kein Passwort. Alle
+Aktivierungsflags sind false. Zugangsdaten sind server-only, niemals NEXT_PUBLIC.
+Remote-Verbindungen prüfen Zertifikate. Keine Änderung an der Produktions-App.
 
-Die Verbindung verwendet server-only-Module, vorbereitete SQL-Werte, Zeitlimits
-und einen kleinen Pool. Es gibt keine `NEXT_PUBLIC_*`-Zugangsdaten. Remote-TLS
-prüft Zertifikate. `rejectUnauthorized=false` wird nicht verwendet.
+## 5. Stufe 1: leere Schema-Migration mit temporären Rechten
 
-## 5. Verbindungstest vor Migrationen
+**Diese Schritte sind vorbereitet, nicht ausgeführt.** Erst nach gesonderter
+Staging-Freigabe ausführen. Die Staging-Web-App darf während der Rechteerhöhung
+keine DB-Verbindung oder gültige Wartungszugangsdaten besitzen.
 
-Der Test ist ein CLI-Werkzeug, keine öffentliche Diagnose-URL und kein Startup-Hook.
-Er läuft in einem vertrauenswürdigen Wartungsumfeld mit vollständigem Repository,
-Node 22.13+ und `npm ci`. Hostinger dokumentiert, dass npm auf Business nicht
-über SSH ausführbar ist. Daher nicht von einem verfügbaren hPanel-Terminal ausgehen.
-Ein eigener Rechner darf nur mit ausdrücklich freigegebener Staging-Verbindung,
-IP-Beschränkung und verifiziertem Remote-TLS verbinden. Kein allgemeines `%`-
-Remote-Allowlisting. Wenn Hostinger diesen Weg nicht unterstützt, zunächst mit
-Support einen sicheren einmaligen Wartungszugang vereinbaren.
+1. In der Staging-App DATABASE_ACCESS_ENABLED, CATALOG_SEARCH_ENABLED,
+   DB_MIGRATIONS_ENABLED, AWIN_IMPORT_ENABLED, IMAGE_SEARCH_ENABLED und
+   DB_CONNECTION_TEST_ENABLED auf false belassen/setzen. MYSQL_PASSWORD entfernen;
+   MYSQL_MIGRATION_* und MYSQL_IMPORT_* müssen dort fehlen. App neu starten, um
+   bestehende Pools zu schließen. Such-API muss CATALOG_DISABLED/503 liefern.
+2. hPanel → Websites → Dashboard → Databases → Management öffnen. Nur die Zeile
+   `u874339379_findmyduptest` auswählen. Bei einem bereits vorhandenen Schema nicht
+   blind initialisieren: über phpMyAdmin prüfen und zuvor eine Staging-Sicherung
+   herunterladen. Der vorbereitete Initialisierungsweg ist nur für eine leere DB.
+3. In dieser Zeile über ⋮ → Change Password ein Wartungspasswort setzen, das
+   ausschließlich im privaten Wartungsumfeld/phpMyAdmin verwendet wird. Dadurch
+   ist ein früheres Passwort aus der Web-App nicht für neue erhöhte Verbindungen
+   nutzbar. Andere Prozesse mit diesem Konto vorher ebenfalls schließen.
+4. ⋮ → Change Permissions: nur SELECT, INSERT, CREATE und REFERENCES temporär
+   aktivieren, alle anderen Häkchen einschließlich ALL PRIVILEGES/GRANT OPTION
+   entfernen, dann Update. Diese Rechte genügen für die bestehende Migration 001
+   und ihre Historie. Kein DROP, ALTER, UPDATE, DELETE oder Admin-Recht erforderlich.
+5. Enter phpMyAdmin für exakt diese Staging-Zeile öffnen. Datenbankname bestätigen
+   und sicherstellen, dass noch keine Anwendungstabellen vorhanden sind.
+6. Die eingecheckte Datei [hostinger-initial-schema.sql](../db/staging/hostinger-initial-schema.sql)
+   herunterladen und in phpMyAdmin über Import → Datei auswählen → SQL importieren.
+   Bei der ersten Fehlermeldung stoppen, keine Einstellung zum Ignorieren von
+   Fehlern einschalten und keine erfolgreichen Teilschritte blind erneut ausführen.
 
-Im privaten Wartungsumfeld die bestätigten Staging-DB-Werte setzen, dazu:
+Die Datei setzt ausdrücklich USE `u874339379_findmyduptest`, enthält unverändert
+001_catalog.sql sowie schema_migrations und genau einen Metadaten-Eintrag mit
+Dateiprüfsumme. Sie legt neun leere Katalog-/Import-/Historientabellen an, keine
+Produkte, Händler, Preise oder Affiliate-Links. Sie erstellt keine Benutzer und
+ändert keine Rechte. CREATE TABLE ist absichtlich ohne IF NOT EXISTS, damit ein
+bestehendes/teilweise angelegtes Schema nicht verdeckt wird. MySQL-DDL ist nicht
+atomar. Bei Fehlern Rechte nicht erhöht lassen; Bestand/Sicherung prüfen und
+kontrollierte Wiederherstellung mit Hostinger klären. Kein Produktionszugriff.
+
+**Alternative zum einmaligen phpMyAdmin-Import:** In einem vertrauenswürdigen
+Wartungsumfeld mit vollständigem Repository, Node 22.13+ und npm ci --include=dev
+kann der bestehende Migrationsrunner verwendet werden. Nicht beide Wege anwenden.
+Privat konfigurieren:
 
 ```dotenv
 DEPLOYMENT_ENV=staging
+MYSQL_DATABASE=u874339379_findmyduptest
+MYSQL_MIGRATION_USER=u874339379_findmyduptest
+MYSQL_MIGRATION_PASSWORD=   # privates Wartungspasswort, nicht in git
 DATABASE_ACCESS_ENABLED=true
-DB_CONNECTION_TEST_ENABLED=true
-DB_MIGRATIONS_ENABLED=false
+DB_MIGRATIONS_ENABLED=true
+CATALOG_SEARCH_ENABLED=false
 AWIN_IMPORT_ENABLED=false
 IMAGE_SEARCH_ENABLED=false
-CATALOG_SEARCH_ENABLED=false
+DB_CONNECTION_TEST_ENABLED=false
 ```
 
-Dann, mit dem tatsächlich angelegten Namen:
-
-```sh
-npm run db:check -- --confirm --database=u874339379_findmydup_staging
-```
-
-Erwartet: JSON mit `connection: "ok"`, `version: "supported"`,
-`privileges: "read-only"`, `schema: "not-checked"`. Das Werkzeug macht ausschließlich
-SELECT/SHOW-Abfragen. Es prüft die ausgewählte Datenbank, MySQL 8+ oder MariaDB
-10.6+ und SELECT-only/USAGE-Grants. Rollen, globale SELECT-Rechte und GRANT OPTION
-werden vorsichtshalber abgewiesen. Bei Fehlern: Exit 1 und ein allgemeiner Hinweis,
-keine Passwörter, Hostnamen, SQL-Fehler oder rohe Grant-Ausgaben.
-
-Ohne Staging-Flag, bestätigten Staging-Namen oder bei aktivierten Schreibflags
-wird vor der Verbindung abgebrochen. Die bekannte Produktionsdatenbank wird
-ausdrücklich abgewiesen. Ein erfolgreicher lokaler Test ersetzt nicht die Prüfung
-der Erreichbarkeit aus dem Hostinger-Node-Prozess.
-
-## 6. Leeres Schema und API auf Staging prüfen
-
-Die Migration nutzt InnoDB, utf8mb4_unicode_ci, Fremdschlüssel, DATETIME(3),
-UUID-Zeichenfelder und ganzzahlige Centbeträge. Sie enthält keine Produkt-Seeds,
-keine CREATE USER-/GRANT-Anweisungen und keine Anforderungen an SUPER-Rechte.
-CI prüft MySQL 8.0 und MariaDB 10.11. Die tatsächliche Hostinger-Version bleibt
-vor Ort zu bestätigen. Beim bestehenden Produktionsschema nichts ausprobieren.
-
-Im getrennten Wartungsumfeld, ausschließlich mit Staging-Ziel und nach dessen
-Sicherung, `DATABASE_ACCESS_ENABLED=true`, `DB_MIGRATIONS_ENABLED=true` und
-separate `MYSQL_MIGRATION_USER`/`MYSQL_MIGRATION_PASSWORD` setzen. Der Account
-braucht CREATE, REFERENCES sowie SELECT und INSERT für `schema_migrations`.
-Dann:
+Dazu den bestätigten DB-Host, Port und TLS setzen. Dann ausschließlich dort:
 
 ```sh
 npm run db:migrate -- --confirm
 ```
 
-Danach Schreibflag wieder false, Wartungszugänge entfernen und den SELECT-only-
-Account einsetzen:
+Kein Migrationsaufruf beim Build/Start und keine privilegierten Credentials in der
+Web-App. Hostinger dokumentiert, dass npm auf Business nicht über SSH verfügbar
+ist. Für externe Wartung nur gezielt freigegebenen Staging-Zugang mit IP-Limit und
+verifiziertem Remote-TLS verwenden. Ist das nicht möglich, den phpMyAdmin-Weg
+nutzen oder mit Support einen sicheren Wartungszugang klären. Spätere Versionen
+mit dem Runner anwenden; die Initial-SQL-Datei nie erneut oder für Updates nutzen.
+
+## 6. Stufe 2: dasselbe Konto auf SELECT begrenzen und API prüfen
+
+1. Wartungsverbindungen/phpMyAdmin-Sitzungen schließen. Wartungsflags deaktivieren
+   und die Wartungs-Credentials aus dem privaten Prozess entfernen.
+2. hPanel → Databases → Management → Staging-Zeile → ⋮ → Change Permissions.
+   Nur SELECT angehakt lassen, alle anderen Rechte entfernen, Update. USAGE kann
+   intern weiterhin erscheinen; das ist kein Schreibrecht. Das Konto darf keine
+   Rechte auf anderen Datenbanken, globale SELECT-Rechte oder GRANT OPTION haben.
+3. Über Change Password ein neues Laufzeitpasswort setzen. Das Wartungspasswort
+   nicht in die Web-App übernehmen. Die Rolle bleibt dasselbe MySQL-Konto.
+4. Erst jetzt die DB-Werte aus Abschnitt 4 und das Laufzeitpasswort privat in der
+   Staging-App eintragen. DEPLOYMENT_ENV=staging setzen. Alle Migrations-/Import-
+   Credential-Felder entfernen. Nur DATABASE_ACCESS_ENABLED und
+   CATALOG_SEARCH_ENABLED nach Freigabe true setzen, die übrigen Flags false.
+   In hPanel die Staging-App neu starten, damit frische Verbindungen verwendet werden.
+5. Auf der Staging-Vorschau GET `/api/products/search/?q=tasche` aufrufen.
+   Erwartet: HTTP 200, source=catalog und offers=[]. Keine Demo-Daten in der DB.
+
+Die Next.js-Such-API prüft bei DEPLOYMENT_ENV=staging vor jeder Katalogabfrage
+SHOW GRANTS FOR CURRENT_USER. Nur SELECT/USAGE auf dem Staging-Ziel sind zulässig.
+Verbliebene Schreib-/Schemarechte, nicht prüfbare Grants und ein Produktionsziel
+führen zu einer allgemeinen 503-Antwort CATALOG_UNAVAILABLE. Keine rohen Grants,
+SQL-Fehler oder Credentials gelangen zur Antwort. HTTP 200 bestätigt somit auch
+die SELECT-only-Prüfung aus dem tatsächlichen Next.js-Prozess. Ungültiges q=x
+muss 400 liefern; POST /api/image-search/ bleibt 503. Kein öffentlicher Schreibtest.
+
+Optional zusätzlich in einem privaten Wartungsumfeld mit den neuen SELECT-only-
+Zugangsdaten, DATABASE_ACCESS_ENABLED=true, DB_CONNECTION_TEST_ENABLED=true,
+DEPLOYMENT_ENV=staging und allen Schreib-/Bildflags false:
 
 ```sh
-npm run db:check -- --confirm --database=u874339379_findmydup_staging --schema
+npm run db:check -- --confirm --database=u874339379_findmyduptest --schema
 ```
 
-Jetzt muss `schema: "verified"` erscheinen. Der Test liest alle neun Tabellen
-und vergleicht die Migrationshistorie mit den eingecheckten Dateiprüfsummen.
-Die Migration erzeugt nur leere Tabellen. Keine Tests mit Demo-Angeboten gegen
-Hostinger ausführen; `test:db` schreibt Fixtures nur in die isolierte CI-Datenbank.
+Erwartet: connection=ok, version=supported, privileges=read-only, schema=verified.
+Der CLI-Test führt ausschließlich SELECT/SHOW aus und vergleicht die Historie mit
+Migrationsdateien. Keine DDL/DML-Rechte werden durch Test-Schreibversuche geprüft.
+Nach Abschluss Diagnoseflag wieder false setzen und den Wartungsprozess schließen.
 
-In der Staging-Web-App die SELECT-only-DB-Werte eintragen, lediglich
-`DATABASE_ACCESS_ENABLED=true` und `CATALOG_SEARCH_ENABLED=true` setzen und die
-App in hPanel neu starten. Alle Schreib-/Bildflags und der Diagnose-Schalter
-bleiben false. `GET /api/products/search/?q=tasche` muss HTTP 200 mit einem leeren
-Katalog liefern. Das bestätigt Erreichbarkeit, Schema und Leserechte aus der
-Web-App. Ungültiges `q=x` muss 400 liefern. Image-POST bleibt 503. Fehlerdetails
-werden bewusst nicht öffentlich ausgegeben.
+Die UI verwendet weiterhin gekennzeichnete Demo-Produkte. API-Aktivierung allein
+schaltet die sichtbare Suche nicht auf echte Angebote um. Die Tests, die absichtlich
+Schreibzugriffe versuchen oder Fixtures importieren, laufen ausschließlich in CI.
+Sie dürfen nie mit Hostinger-Credentials gestartet werden.
 
-Die sichtbare Suche bleibt weiterhin die gekennzeichnete Demo. Das Aktivieren
-der DB verbindet nicht automatisch die Oberfläche mit Live-Produkten. Ohne
-autorisierten Feed gibt es keine echten Angebote. Awin/OpenAI bleiben deaktiviert.
+## 7. Spätere Awin-Importe mit nur einem Benutzer
 
-## 7. Produktionsfreigabe und Rückweg
+Jetzt keine Imports aktivieren. Ein gemeinsames Konto erlaubt keine gleichzeitig
+privilegierte Importverbindung und nachweislich SELECT-only-Webverbindung.
+Ein unbeaufsichtigter Import mit dauerhaftem Schreibrecht ist deshalb nicht der
+vorbereitete Betriebsmodus. Später, nur nach separater Importfreigabe:
+
+1. Staging-Katalogzugriff deaktivieren, Passwort aus der Web-App entfernen und
+   die App neu starten. Die Oberfläche bleibt nutzbar, die Katalog-API meldet 503.
+2. Konto auf ein privates Wartungspasswort umstellen und temporär SELECT, INSERT,
+   UPDATE und DELETE auf dieser DB gewähren. Kein CREATE, ALTER, DROP oder GRANT
+   OPTION. DELETE ist für den Ersatz von product_images im bestehenden Importer nötig.
+3. Nur im isolierten Importprozess denselben Benutzer explizit als MYSQL_IMPORT_USER
+   und das Wartungspasswort als MYSQL_IMPORT_PASSWORD setzen. Dort ausschließlich
+   DATABASE_ACCESS_ENABLED und AWIN_IMPORT_ENABLED aktivieren. Keine Import-
+   Variablen, privaten Feed-URLs oder Tokens im öffentlichen Web-Prozess belassen.
+4. Erst freigegebene Händler/Kategorien und Quellen prüfen, dann einen genehmigten,
+   begrenzten echten Feed-Batch importieren. Keine Demo-Fixtures. Der aktuelle
+   Importer lädt selbst keinen Feed herunter und besitzt keinen Scheduler.
+5. Auch bei Fehlschlag Verbindungen schließen, Schreibrechte entziehen, nur SELECT
+   behalten, Importflag deaktivieren, Credentials entfernen und ein neues
+   Laufzeitpasswort setzen. Danach CLI/API-Prüfung aus Stufe 2 und erst bei Erfolg
+   den Katalogzugriff wieder freigeben. Bei unklarer Rechtebereinigung deaktiviert lassen.
+
+Dasselbe Vorgehen gilt für spätere Schemaänderungen, mit den konkret dafür
+geprüften DDL-Rechten. Die Wahl der Env-Präfixe ändert die Datenbankrechte nicht.
+Für kontinuierliche Imports ohne Wartungsfenster wäre später eine echte Trennung
+von MySQL-Konten/Privilegien erforderlich. Diese Vorbereitung benötigt keinen
+neuen kostenpflichtigen Dienst. OpenAI bleibt unabhängig davon deaktiviert.
+
+## 8. Produktionsfreigabe und Rückweg
 
 Noch kein Produktionszugriff. Vor einem späteren freigegebenen Wechsel:
 
@@ -267,4 +334,6 @@ Server-Browsertests und npm audit (einschließlich separatem Produktions-Audit).
 `npm run test:db` und `npm run test:server` nicht mit Hostinger-Zugangsdaten starten.
 
 Quellen: [Hostinger Node.js inklusive Standarderkennung und SSH-Grenzen](https://www.hostinger.com/support/how-to-deploy-a-nodejs-website-in-hostinger/),
-[Hostinger MySQL und Neustart nach Env-Änderungen](https://www.hostinger.com/support/connecting-a-hostinger-mysql-database-to-a-node-js-application/).
+[Hostinger MySQL und Neustart nach Env-Änderungen](https://www.hostinger.com/support/connecting-a-hostinger-mysql-database-to-a-node-js-application/),
+[Hostinger Benutzerrechte ändern](https://www.hostinger.com/support/4564363-how-to-change-permissions-for-a-database-user-in-hostinger/),
+[Hostinger: ein Benutzer je Datenbank](https://www.hostinger.com/support/1583542-how-to-create-a-new-mysql-database-in-hostinger/).

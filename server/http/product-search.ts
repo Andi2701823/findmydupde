@@ -1,6 +1,7 @@
 import "server-only";
 import type { RowDataPacket } from "mysql2/promise";
 import { getDatabase } from "../db/connection.ts";
+import { requireReadOnlyAccount } from "../db/privileges.ts";
 import {
   parseSearch,
   InvalidSearch,
@@ -61,9 +62,16 @@ export const handleProductSearch = productSearchHandler({
   allow: quota,
   trustProxy: process.env.TRUST_PROXY_HEADERS === "true",
   async search(input) {
+    const staging = process.env.DEPLOYMENT_ENV === "staging";
+    const database = process.env.MYSQL_DATABASE || "";
+    // The configuration guard rejects a mistaken production target before pool creation.
+    const pool = getDatabase("read");
+    // A successful SELECT alone does not prove that write/schema rights were revoked.
+    // Check actual grants on every staging search, without caching privilege elevation.
+    if (staging) await requireReadOnlyAccount(pool, database);
     const days = Number(process.env.CATALOG_MAX_AGE_DAYS || 3);
     return catalogRepository(async (sql, values) => {
-      const [rows] = await getDatabase("read").execute<
+      const [rows] = await pool.execute<
         (CatalogRow & RowDataPacket)[]
       >({ sql, timeout: 3000 }, values);
       return rows;

@@ -1,5 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import { stagingTestOptions, supportedDatabase, readOnlyGrants } from "../server/db/readiness.ts";
 const env = {
   DEPLOYMENT_ENV: "staging", DB_CONNECTION_TEST_ENABLED: "true",
@@ -25,4 +27,26 @@ test("readiness requires SELECT-only grants on the staging catalog and does not 
   for (const grant of ["GRANT ALL PRIVILEGES ON `findmydup_staging`.* TO 'reader'@'%'", "GRANT SELECT, INSERT ON `findmydup_staging`.* TO 'reader'@'%'", "GRANT SELECT ON *.* TO 'reader'@'%'", select + " WITH GRANT OPTION", "GRANT 'admin'@'%' TO 'reader'@'%'"])
     assert.equal(readOnlyGrants([grant], "findmydup_staging"), false);
   assert.equal(readOnlyGrants([], "findmydup_staging"), false);
+});
+
+test("Hostinger staging name is explicitly accepted without broadening test-name matching", () => {
+  const target = "u874339379_findmyduptest";
+  const options = stagingTestOptions(["--confirm", "--database=" + target], { ...env, MYSQL_DATABASE: target, MYSQL_USER: target });
+  assert.equal(options.database, target);
+  assert.equal(options.user, target);
+  for (const database of ["u874339379_findmydupde", "u874339379_findmyduptest_backup", "u874339379_findmyduptest2", "other_test"])
+    assert.throws(() => stagingTestOptions(["--confirm", "--database=" + database], { ...env, MYSQL_DATABASE: database }));
+});
+
+test("offline phpMyAdmin bundle preserves the reviewed migration and recorded checksum and targets staging only", async () => {
+  const migration = await readFile("db/migrations/001_catalog.sql", "utf8");
+  const bundle = await readFile("db/staging/hostinger-initial-schema.sql", "utf8");
+  assert.ok(bundle.includes(migration));
+  assert.ok(bundle.includes(createHash("sha256").update(migration).digest("hex")));
+  assert.match(bundle, /USE `u874339379_findmyduptest`;/);
+  assert.equal(bundle.includes("u874339379_findmydupde"), false);
+  assert.equal((bundle.match(/INSERT INTO/g) || []).length, 1);
+  assert.match(bundle, /INSERT INTO schema_migrations/);
+  assert.equal(bundle.includes("CREATE USER"), false);
+  assert.equal(bundle.includes("GRANT "), false);
 });
