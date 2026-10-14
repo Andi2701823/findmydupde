@@ -31,7 +31,9 @@ try {
   assert.equal((await verification.text()).trim(),'Validation content="00fd05c1707e91d286f87c424f566383"');
   const sitemap=await fetch(`${origin}/sitemap.xml`);
   assert.equal(sitemap.status,200);
-  assert.match(await sitemap.text(),/gesichtsserum-vergleichen/);
+  const sitemapContent=await sitemap.text();
+  assert.match(sitemapContent,/gesichtsserum-vergleichen/);
+  assert.equal((sitemapContent.match(/<loc>https:\/\/findmydup\.de\/produkte\/[^<]+<\/loc>/g)||[]).length,63);
   await page.getByRole("searchbox",{name:"Thema oder Produkt suchen"}).fill("Serum");
   await page.getByRole("button",{name:"Entdecken"}).click();
   await page.getByRole("heading",{name:"Funde zu „Serum“"}).waitFor();
@@ -62,6 +64,19 @@ try {
   await page.waitForFunction(()=>document.querySelectorAll(".affiliate-card").length>0 && document.querySelectorAll(".affiliate-card").length<63);
   await page.getByRole("searchbox",{name:"Produkte suchen"}).fill("");
   await page.waitForFunction(()=>document.querySelectorAll(".affiliate-card").length===63);
+  await page.goto(`${origin}/produkte/dermalumin-c-melanin-correcting-serum-1352/`,{waitUntil:"domcontentloaded"});
+  await page.getByRole("heading",{name:"DermaLumin-C Melanin Correcting Serum",exact:true}).waitFor();
+  assert.match(await page.locator(".product-description").innerText(),/Vitamin-C Ampullenkur/);
+  assert.match(await page.locator("meta[name='description']").getAttribute("content"),/DermaLumin-C/);
+  assert.equal(await page.locator("link[rel='canonical']").getAttribute("href"),
+    "https://findmydup.de/produkte/dermalumin-c-melanin-correcting-serum-1352/");
+  assert.equal(await page.locator("a[rel*='sponsored']").count()>0,true);
+  const seoJson=await page.locator('script[type="application/ld+json"]').allTextContents();
+  assert.equal(seoJson.length,2);
+  const productSchema=JSON.parse(seoJson[0]);
+  assert.equal(productSchema["@type"],"Product");
+  assert.equal(productSchema.sku,"1352");
+  assert.equal("offers" in productSchema,false,"No stale feed price in structured Offer");
   await page.goto(`${origin}/ueber-uns/`,{waitUntil:"domcontentloaded"});
   await page.getByRole("heading",{name:"Mehr wissen, bevor du kaufst."}).waitFor();
   await page.goto(`${origin}/partner/`,{waitUntil:"domcontentloaded"});
@@ -73,7 +88,7 @@ try {
   mkdirSync("test-artifacts",{recursive:true});
   for(const width of [375,390,768,1440]){
     await page.setViewportSize({width,height:900});
-    for(const route of ["/","/produkte/","/ratgeber/","/ratgeber/gesichtsserum-vergleichen/","/suche/","/merkliste/","/datenschutz/","/impressum/","/ueber-uns/","/partner/"]){
+    for(const route of ["/","/produkte/","/produkte/dermalumin-c-melanin-correcting-serum-1352/","/ratgeber/","/ratgeber/gesichtsserum-vergleichen/","/suche/","/merkliste/","/datenschutz/","/impressum/","/ueber-uns/","/partner/"]){
       await page.goto(origin+route,{waitUntil:"domcontentloaded"});
       await page.locator("main").waitFor();
       assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,`${route} overflows at ${width}px`);
