@@ -36,10 +36,10 @@ try {
   await page.getByRole("button",{name:"Entdecken"}).click();
   await page.getByRole("heading",{name:"Funde zu „Serum“"}).waitFor();
   assert.equal(await page.locator(".guide-card").count(),1);
+  await page.getByRole("button",{name:/Gesichtsserum vergleichen.*merken/}).click();
   await page.getByRole("link",{name:/Ratgeber lesen: Gesichtsserum/}).click();
   await page.getByRole("heading",{name:/Gesichtsserum vergleichen/}).waitFor();
   await page.getByRole("heading",{name:"Inhaltsstoffliste richtig einordnen"}).waitFor();
-  await page.getByRole("button",{name:/Gesichtsserum vergleichen.*merken/}).click();
   await page.getByRole("link",{name:"Merkliste"}).click();
   await page.getByRole("heading",{name:"Deine Lieblingsratgeber."}).waitFor();
   assert.equal(await page.locator(".guide-card").count(),1);
