@@ -39,7 +39,9 @@ test(
         assert.ok(bundle.includes("USE `u874339379_findmyduptest`;"));
         const isolatedBundle = bundle.replace("USE `u874339379_findmyduptest`;", "USE `findmydup_test`;");
         for (const statement of isolatedBundle.split("-- statement-breakpoint").map((sql) => sql.trim()).filter(Boolean))
-          await elevated.execute(statement);
+          // phpMyAdmin uses the text protocol; MySQL cannot prepare USE statements.
+          // Only reviewed local SQL is executed here, with multipleStatements disabled.
+          await elevated.query(statement);
         await migrate(elevated);
         await assert.rejects(() => checkStagingConnection(elevated, "findmydup_test", true), /SELECT/);
       } finally { elevated.release(); await maintenance.end(); }
