@@ -12,6 +12,7 @@ export function Footer() {
           </div>
           <div className="footer-links">
             <Link href="/suche/">Entdecken</Link>
+            <Link href="/ueber-uns/">Über FindMyDup</Link>
             <Link href="/datenschutz/">Datenschutz</Link>
             <Link href="/impressum/">Impressum</Link>
           </div>
