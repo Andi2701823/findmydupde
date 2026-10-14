@@ -327,6 +327,27 @@ systemversionierter Tabellen und API-Tests. Es verbindet sich nicht mit Hostinge
 Quellen: [MariaDB systemversionierte Tabellen](https://mariadb.com/docs/server/reference/sql-structure/temporal-tables/system-versioned-tables),
 [MariaDB TABLE_TYPE](https://mariadb.com/docs/server/reference/system-tables/information-schema/information-schema-tables/information-schema-tables-table).
 
+### Gezielte Fehlerdiagnose der Staging-API
+
+Wenn die Startseite funktioniert, aber die aktivierte Test-Katalog-API
+`CATALOG_UNAVAILABLE` meldet, in der **Staging-App** vorübergehend
+`STAGING_CATALOG_DIAGNOSTICS=true` setzen und die neue Version bereitstellen.
+Nach genau einem Aufruf von `/api/products/search/?q=tasche` in Hostingers
+**Node.js-Laufzeit-/Anwendungslogs** nach `[FindMyDup staging catalog]` suchen.
+
+Die Zeile enthält nur `stage=configuration|connection|privileges|catalog-query`
+und `reason=` aus einer festen Positivliste. Keine Rohfehler, Query-Texte,
+Nutzeranfragen, Passwörter, Grants oder DB-Hosts werden geloggt.
+Die öffentliche API-Antwort bleibt immer generisch, ohne zusätzliche Details.
+`stage=privileges` mit `reason=Staging compatibility identity or grants rejected`
+deutet auf Benutzeridentität, Version oder Grant-Scope hin. Insbesondere müssen
+Unterstriche des DB-Namens im echten SHOW GRANTS-Scope korrekt maskiert sein;
+diese Bedingung nicht umgehen. `stage=connection` mit
+`reason=ER_ACCESS_DENIED_ERROR` verweist dagegen auf Zugangsdaten.
+Nach dem Test `STAGING_CATALOG_DIAGNOSTICS=false` setzen und neu starten.
+Die Diagnose aktiviert weder Datenbankzugriff noch Schreibrechte und ist
+außerhalb DEPLOYMENT_ENV=staging inaktiv.
+
 ## 7. Spätere Awin-Importe mit nur einem Benutzer
 
 Jetzt keine Imports aktivieren. Ein gemeinsames Konto erlaubt keine gleichzeitig
