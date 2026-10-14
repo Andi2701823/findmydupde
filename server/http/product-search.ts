@@ -55,6 +55,35 @@ export function productSearchHandler(deps: {
     }
   };
 }
+// Only fixed diagnostic labels are ever logged. Never log raw driver errors,
+// SQL statements, credentials, grant text or a request's search term.
+const knownStagingFailures = new Set([
+  "Database identity rejected",
+  "Runtime account must have only SELECT and USAGE grants",
+  "Staging compatibility configuration rejected",
+  "Staging compatibility identity or grants rejected",
+  "Global privileges rejected",
+  "Effective schema privileges rejected",
+  "Object-specific privileges rejected",
+  "Non-versioned schema inventory not established",
+  "Non-versioned table definition not established",
+]);
+const knownDriverCodes = new Set([
+  "ECONNREFUSED", "ENOTFOUND", "ETIMEDOUT", "EHOSTUNREACH",
+  "ECONNRESET", "PROTOCOL_CONNECTION_LOST", "ER_ACCESS_DENIED_ERROR",
+  "ER_DBACCESS_DENIED_ERROR", "ER_BAD_DB_ERROR", "ER_NO_SUCH_TABLE",
+  "ER_TABLEACCESS_DENIED_ERROR", "ER_PARSE_ERROR",
+  "CERT_HAS_EXPIRED", "UNABLE_TO_VERIFY_LEAF_SIGNATURE",
+]);
+export function stagingCatalogDiagnosticReason(error: unknown): string {
+  if (error && typeof error === "object" && "code" in error &&
+      typeof error.code === "string" && knownDriverCodes.has(error.code))
+    return error.code;
+  if (error instanceof Error && knownStagingFailures.has(error.message))
+    return error.message;
+  return "unclassified";
+}
+
 export const handleProductSearch = productSearchHandler({
   enabled: () =>
     process.env.CATALOG_SEARCH_ENABLED === "true" &&
@@ -62,19 +91,31 @@ export const handleProductSearch = productSearchHandler({
   allow: quota,
   trustProxy: process.env.TRUST_PROXY_HEADERS === "true",
   async search(input) {
-    const database = process.env.MYSQL_DATABASE || "";
-    const connection = await getDatabase("read").getConnection();
+    let stage = "configuration";
     try {
-      // Validate identities, privileges and (when opted in) schema on this same
-      // physical connection used by the prepared catalog query, including production.
-      await requireReadOnlyAccount(connection, database);
-      const days = Number(process.env.CATALOG_MAX_AGE_DAYS || 3);
-      return await catalogRepository(async (sql, values) => {
-        const [rows] = await connection.execute<(CatalogRow & RowDataPacket)[]>({ sql, timeout: 3000 }, values);
-        return rows;
-      }).search(input, days);
-    } finally {
-      connection.release();
+      const database = process.env.MYSQL_DATABASE || "";
+      const pool = getDatabase("read");
+      stage = "connection";
+      const connection = await pool.getConnection();
+      try {
+        // Check grants and schema on the same physical connection as the catalog query.
+        stage = "privileges";
+        await requireReadOnlyAccount(connection, database);
+        stage = "catalog-query";
+        const days = Number(process.env.CATALOG_MAX_AGE_DAYS || 3);
+        return await catalogRepository(async (sql, values) => {
+          const [rows] = await connection.execute<(CatalogRow & RowDataPacket)[]>({ sql, timeout: 3000 }, values);
+          return rows;
+        }).search(input, days);
+      } finally {
+        connection.release();
+      }
+    } catch (error) {
+      if (process.env.DEPLOYMENT_ENV === "staging" && process.env.STAGING_CATALOG_DIAGNOSTICS === "true") {
+        console.error("[FindMyDup staging catalog] stage=" + stage +
+          " reason=" + stagingCatalogDiagnosticReason(error));
+      }
+      throw error;
     }
   },
 });
