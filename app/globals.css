@@ -2108,3 +2108,14 @@ select {
     padding: 15px 0;
   }
 }
+
+.how-guide-cta {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+  text-align: center;
+}
+.how-guide-cta a {
+  justify-content: center;
+  max-width: 100%;
+}
