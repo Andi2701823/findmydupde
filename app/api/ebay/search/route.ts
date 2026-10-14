@@ -1,5 +1,6 @@
 import "server-only";
 import { createRateLimiter, requestQuotaKey } from "../../../../server/http/rate-limit.ts";
+import { stagingEbaySearchEnabled } from "../../../../server/catalog/live-mode.ts";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -59,7 +60,7 @@ async function token(): Promise<string> {
 }
 
 export async function GET(request: Request) {
-  if (process.env.DEPLOYMENT_ENV !== "staging" || process.env.EBAY_SEARCH_ENABLED !== "true") {
+  if (!stagingEbaySearchEnabled()) {
     return Response.json({ error: "EBAY_DISABLED" }, { status: 503, headers: responseHeaders });
   }
   if (!allow(requestQuotaKey(request, process.env.TRUST_PROXY_HEADERS === "true"))) {
