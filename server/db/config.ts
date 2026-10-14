@@ -31,6 +31,10 @@ export function databaseOptions(
   role: DatabaseRole,
   env: Readonly<Record<string, string | undefined>> = process.env,
 ) {
+  // Production catalog/database activation needs a separate, explicitly reviewed release.
+  // This staging-to-production preparation is intentionally demo-only and must never
+  // connect to the existing production MySQL database, even with accidentally enabled flags.
+  if (env.DEPLOYMENT_ENV === "production") throw new DatabaseUnavailable();
   if (env.DATABASE_ACCESS_ENABLED !== "true") throw new DatabaseUnavailable();
   if (role === "migration" && env.DB_MIGRATIONS_ENABLED !== "true")
     throw new DatabaseUnavailable();
