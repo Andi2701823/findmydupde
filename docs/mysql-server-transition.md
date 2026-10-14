@@ -126,3 +126,14 @@ This development branch must not be merged or deployed to production without
 separate release approval. Keep all integrations false for initial staging.
 
 References: [Hostinger Node.js apps](https://www.hostinger.com/support/how-to-deploy-a-nodejs-website-in-hostinger/), [Hostinger MySQL for Node.js](https://www.hostinger.com/support/connecting-a-hostinger-mysql-database-to-a-node-js-application/), [Next.js Node deployment](https://nextjs.org/docs/app/getting-started/deploying), [mysql2 prepared statements/pools](https://sidorares.github.io/node-mysql2/docs).
+
+## Restricted staging grant compatibility
+
+The default and production API policy is strict SELECT/USAGE. The explicit
+HOSTINGER_STAGING_GRANT_COMPATIBILITY flag is false by default. Only the exact
+Hostinger staging database/account, DEPLOYMENT_ENV=staging and disabled maintenance/
+image flags can use the exception described in the staging runbook. It validates
+actual identities, effective grants and every non-versioned base table using the
+same connection as the catalog SELECT. The exception is not a strictly read-only
+MySQL account, and CLI diagnostics label it staging-compatibility. No write or
+DELETE HISTORY operation is executed by the web application.

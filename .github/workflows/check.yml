@@ -162,3 +162,39 @@ jobs:
       - run: npm ci
       - name: Test migrations and read-only connection probe on isolated MariaDB
         run: npm run test:db
+
+  staging-compatibility:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mariadb:11.4
+        env:
+          MARIADB_ROOT_PASSWORD: ci_ephemeral_root_password
+          MARIADB_DATABASE: findmydup_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=10s --health-timeout=5s --health-retries=10
+    env:
+      NODE_ENV: production
+      NPM_CONFIG_INCLUDE: dev
+      TEST_HOSTINGER_COMPATIBILITY_ENABLED: "true"
+      MYSQL_HOST: 127.0.0.1
+      MYSQL_DATABASE: findmydup_test
+      MYSQL_MIGRATION_PASSWORD: ci_ephemeral_root_password
+      DATABASE_ACCESS_ENABLED: "false"
+      CATALOG_SEARCH_ENABLED: "false"
+      DB_MIGRATIONS_ENABLED: "false"
+      AWIN_IMPORT_ENABLED: "false"
+      IMAGE_SEARCH_ENABLED: "false"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Verify opt-in policy using disposable MariaDB and actual Next.js API
+        run: npm run test:compat

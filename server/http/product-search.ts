@@ -62,19 +62,19 @@ export const handleProductSearch = productSearchHandler({
   allow: quota,
   trustProxy: process.env.TRUST_PROXY_HEADERS === "true",
   async search(input) {
-    const staging = process.env.DEPLOYMENT_ENV === "staging";
     const database = process.env.MYSQL_DATABASE || "";
-    // The configuration guard rejects a mistaken production target before pool creation.
-    const pool = getDatabase("read");
-    // A successful SELECT alone does not prove that write/schema rights were revoked.
-    // Check actual grants on every staging search, without caching privilege elevation.
-    if (staging) await requireReadOnlyAccount(pool, database);
-    const days = Number(process.env.CATALOG_MAX_AGE_DAYS || 3);
-    return catalogRepository(async (sql, values) => {
-      const [rows] = await pool.execute<
-        (CatalogRow & RowDataPacket)[]
-      >({ sql, timeout: 3000 }, values);
-      return rows;
-    }).search(input, days);
+    const connection = await getDatabase("read").getConnection();
+    try {
+      // Validate identities, privileges and (when opted in) schema on this same
+      // physical connection used by the prepared catalog query, including production.
+      await requireReadOnlyAccount(connection, database);
+      const days = Number(process.env.CATALOG_MAX_AGE_DAYS || 3);
+      return await catalogRepository(async (sql, values) => {
+        const [rows] = await connection.execute<(CatalogRow & RowDataPacket)[]>({ sql, timeout: 3000 }, values);
+        return rows;
+      }).search(input, days);
+    } finally {
+      connection.release();
+    }
   },
 });

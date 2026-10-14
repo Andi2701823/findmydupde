@@ -18,7 +18,8 @@
     "db:check": "node --env-file-if-exists=.env --conditions=react-server --experimental-strip-types scripts/check-db.ts",
     "start": "next start --hostname 0.0.0.0",
     "build:static": "node scripts/prepare-static.mjs && next build static-app --webpack",
-    "test:static": "node tests/browser.mjs --static"
+    "test:static": "node tests/browser.mjs --static",
+    "test:compat": "node --conditions=react-server --experimental-strip-types --test tests/compatibility.integration.ts"
   },
   "dependencies": {
     "mysql2": "3.24.6",

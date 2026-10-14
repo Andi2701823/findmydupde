@@ -45,7 +45,7 @@ export async function checkStagingConnection(connection: PoolConnection, databas
   const identity = await query("SELECT DATABASE() AS database_name, VERSION() AS version, 1 AS connected");
   if (identity[0]?.database_name !== database || !supportedDatabase(String(identity[0]?.version)))
     throw new Error("Database identity or version check failed");
-  await requireReadOnlyAccount(connection, database);
+  const privileges = await requireReadOnlyAccount(connection, database);
   if (schema) {
     const tables = ["categories", "retailers", "products", "offers", "prices", "product_images", "affiliate_links", "feed_runs", "schema_migrations"];
     for (const table of tables) await query(`SELECT 1 FROM \`${table}\` LIMIT 0`);
@@ -59,5 +59,5 @@ export async function checkStagingConnection(connection: PoolConnection, databas
         throw new Error("Migration history mismatch");
     }
   }
-  return { connection: "ok", version: "supported", privileges: "read-only", schema: schema ? "verified" : "not-checked" };
+  return { connection: "ok", version: "supported", privileges, schema: schema ? "verified" : "not-checked" };
 }

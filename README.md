@@ -126,3 +126,11 @@ reviewed empty schema and records its migration checksum. It is for first stagin
 initialization only, is not automatically executed and contains no product seeds.
 The staging search API also refuses catalog reads until the shared account has
 only SELECT/USAGE grants. All integration flags remain disabled by default.
+
+A narrowly scoped Hostinger staging grant exception is prepared and disabled by
+`HOSTINGER_STAGING_GRANT_COMPATIBILITY=false`. Opt-in is valid only for the exact
+confirmed staging database/account. It checks actual connection identities,
+effective grants and a complete non-versioned schema inventory before searching.
+This exception is not a strictly read-only account. Production and default
+operation enforce SELECT/USAGE; imports, migrations and OpenAI stay disabled.
+See the staging runbook for the exact environment setting and limitations.

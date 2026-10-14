@@ -223,7 +223,7 @@ mit dem Runner anwenden; die Initial-SQL-Datei nie erneut oder für Updates nutz
 
 Die Next.js-Such-API prüft bei DEPLOYMENT_ENV=staging vor jeder Katalogabfrage
 SHOW GRANTS FOR CURRENT_USER. Nur SELECT/USAGE auf dem Staging-Ziel sind zulässig.
-Verbliebene Schreib-/Schemarechte, nicht prüfbare Grants und ein Produktionsziel
+Ohne die unten beschriebene explizite Ausnahme: verbliebene Schreib-/Schemarechte, nicht prüfbare Grants und ein Produktionsziel
 führen zu einer allgemeinen 503-Antwort CATALOG_UNAVAILABLE. Keine rohen Grants,
 SQL-Fehler oder Credentials gelangen zur Antwort. HTTP 200 bestätigt somit auch
 die SELECT-only-Prüfung aus dem tatsächlichen Next.js-Prozess. Ungültiges q=x
@@ -246,6 +246,81 @@ Die UI verwendet weiterhin gekennzeichnete Demo-Produkte. API-Aktivierung allein
 schaltet die sichtbare Suche nicht auf echte Angebote um. Die Tests, die absichtlich
 Schreibzugriffe versuchen oder Fixtures importieren, laufen ausschließlich in CI.
 Sie dürfen nie mit Hostinger-Credentials gestartet werden.
+
+## Eng begrenzte Hostinger-Staging-Ausnahme
+
+Hostinger hat für dieses Konto zusätzliche Rechte DELETE HISTORY und SHOW CREATE
+ROUTINE bestätigt, die hPanel trotz allein aktiviertem SELECT nicht entfernt.
+Der Standard bleibt streng SELECT/USAGE. Diese zusätzlichen Rechte werden nicht
+pauschal als read-only behandelt. **Der Kompatibilitätsmodus ist kein strikt
+schreibgeschütztes MySQL-Konto.** DELETE HISTORY ist ein Recht zum Entfernen von
+Historie systemversionierter Tabellen, SHOW CREATE ROUTINE erlaubt Einsicht in
+Routinen. Die Web-App nutzt beide Rechte nicht als Operationen.
+
+Nur nach ausdrücklicher Staging-Freigabe unter Environment Variables der
+**Staging-App**, niemals der Produktions-App:
+
+```dotenv
+DEPLOYMENT_ENV=staging
+MYSQL_DATABASE=u874339379_findmyduptest
+MYSQL_USER=u874339379_findmyduptest
+HOSTINGER_STAGING_GRANT_COMPATIBILITY=true
+DB_MIGRATIONS_ENABLED=false
+AWIN_IMPORT_ENABLED=false
+IMAGE_SEARCH_ENABLED=false
+DB_CONNECTION_TEST_ENABLED=false
+```
+
+Das neue Flag ist in beiden Env-Vorlagen false. Es aktiviert weder Datenbankzugriff
+noch Katalogsuche. Host/Passwort bleiben private serverseitige Einstellungen.
+DATABASE_ACCESS_ENABLED und CATALOG_SEARCH_ENABLED bleiben bis zu einer separaten
+Freigabe false. Für einen freigegebenen Katalogtest beide true setzen, die
+Staging-App neu starten und GET /api/products/search/?q=tasche prüfen. Erwartet
+bei leerem Katalog: 200, source=catalog, offers=[]. Es wurde kein Hostinger-Zugriff
+oder Env-Update durch diese Implementierung ausgeführt.
+
+Der Modus gilt nur für den exakten Datenbank-/Kontonamen oben und ausschließlich
+DEPLOYMENT_ENV=staging. Tatsächlich authentifiziertes CURRENT_USER() und USER()
+müssen beide den festen Benutzernamen enthalten; ein nur ähnlich benanntes oder
+anonymes/proxiertes Konto wird abgewiesen. Jeder Katalogaufruf prüft auf derselben
+physischen DB-Verbindung wie die anschließende Suche:
+
+1. Tatsächliches DATABASE(), CURRENT_USER(), USER() und MariaDB-Version (10.6+).
+2. SHOW GRANTS sowie USER_PRIVILEGES, SCHEMA_PRIVILEGES, TABLE_PRIVILEGES und
+   COLUMN_PRIVILEGES für den authentifizierten Account. Zulässig ist lediglich
+   eine Teilmenge aus SELECT, DELETE HISTORY und SHOW CREATE ROUTINE auf genau
+   dieser Datenbank, einschließlich eines vollständigen schemaweiten SELECT.
+   USAGE auf *.* ist zulässig, da es kein Datenzugriffsrecht erteilt. Weitere
+   globale Rechte, andere Datenbanken, GRANT OPTION, Rollen/Proxy-Zuweisungen und
+   zusätzliche objekt-/spaltenbezogene Rechte werden nicht akzeptiert.
+3. Vollständiges information_schema.TABLES-Inventar mit allen neun Katalog- und
+   Migrationstabellen und höchstens 256 Objekten. Ausschließlich BASE TABLE ist
+   erlaubt; SYSTEM VERSIONED, Views, Sequenzen und unbekannte Typen werden abgewiesen.
+4. SHOW CREATE TABLE für jedes Objekt. Versionierungs-/SYSTEM_TIME-Merkmale oder
+   nicht lesbare/fehlende Definitionen führen zur Ablehnung. Ein leeres oder
+   unvollständiges Inventar gilt ausdrücklich nicht als Beweis für fehlende Versionierung.
+
+Fehler, fehlende Metadaten und zusätzliche Rechte ergeben CATALOG_UNAVAILABLE/503,
+keine detaillierte Rechte-/SQL-Ausgabe. Die App führt nur SELECT/SHOW und die
+vorbereiteten SELECT-Katalogabfragen aus, niemals DELETE HISTORY oder DDL/DML.
+Die Prüfung wird pro Anfrage erneut ausgeführt, nicht als Freigabe gecacht.
+Während dieses Modus keine Schemaänderungen durchführen. Für Wartung zuerst
+Katalogzugriff deaktivieren, Credentials entfernen und Verbindungen per Neustart
+schließen. Ein Administrator könnte systemversionierte Tabellen später anlegen;
+die Kontorechte bleiben deshalb eine bewusst akzeptierte Staging-Ausnahme.
+
+Der private CLI-Test verwendet dieselbe Prüfung. Bei Opt-in berichtet er
+privileges=staging-compatibility, ausdrücklich nicht read-only. Außerhalb des
+exakten Kontexts kann das Flag keine Ausnahme ermöglichen; Produktion prüft
+immer streng SELECT/USAGE. Zum Rückweg Flag false setzen und neu starten. Dann
+werden die Hostinger-Zusatzrechte erneut abgewiesen, die Demo-UI bleibt unabhängig.
+
+CI prüft die tatsächlichen Zusatzrechte auf einem wegwerfbaren MariaDB-11.4-
+Server, einschließlich einer nachgebildeten Account-/DB-Identität, Ablehnung
+systemversionierter Tabellen und API-Tests. Es verbindet sich nicht mit Hostinger.
+
+Quellen: [MariaDB systemversionierte Tabellen](https://mariadb.com/docs/server/reference/sql-structure/temporal-tables/system-versioned-tables),
+[MariaDB TABLE_TYPE](https://mariadb.com/docs/server/reference/system-tables/information-schema/information-schema-tables/information-schema-tables-table).
 
 ## 7. Spätere Awin-Importe mit nur einem Benutzer
 
