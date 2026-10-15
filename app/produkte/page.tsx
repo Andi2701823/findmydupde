@@ -3,6 +3,7 @@ import Link from "next/link";
 import { AffiliateProductList } from "@/components/affiliate-product-list";
 import { samsungCatalogEnabled } from "@/lib/samsung-catalog";
 import { joybuyCatalogEnabled } from "@/lib/joybuy-catalog";
+import { mactradeCatalogEnabled } from "@/lib/mactrade-catalog";
 export const dynamic="force-dynamic";
 export const metadata:Metadata={
   title:"Produktkatalog: Händlerprodukte entdecken | FindMyDup",
@@ -18,6 +19,12 @@ export default function ProductsPage(){
     <aside className="affiliate-disclosure-box"><strong>Transparenzhinweis</strong>
       <p>Diese Seite enthält Werbelinks (Affiliate-Links). Bei einem Kauf können wir eine Provision erhalten. Die angezeigten Beträge sind <strong>Feedpreise und keine live geprüften Angebote</strong>. Verbindlich sind die Angaben im jeweiligen Shop. Ähnliche Namen oder Verpackungen bedeuten nicht identische Produkte.</p>
     </aside>
+    {mactradeCatalogEnabled()&&<section className="editorial-contact samsung-catalog-cta" aria-labelledby="mactrade-catalog-heading">
+      <span className="eyebrow">MACTRADE DE · AWIN</span>
+      <h2 id="mactrade-catalog-heading">MacTrade, Apple-Produkte und Zubehör</h2>
+      <p>MacBooks, Desktop-Macs, iPhones, iPads und Zubehör mit Preis- und Kategorie-Filtern. Preise und Lieferstatus stammen aus einem Händlerfeed.</p>
+      <Link href="/mactrade/" className="button secondary">Zum MacTrade-Katalog →</Link>
+    </section>}
     {joybuyCatalogEnabled()&&<section className="editorial-contact samsung-catalog-cta" aria-labelledby="joybuy-catalog-heading">
       <span className="eyebrow">JOYBUY DE · AWIN</span>
       <h2 id="joybuy-catalog-heading">JoyBuy – Produkte aus vielen Kategorien</h2>
