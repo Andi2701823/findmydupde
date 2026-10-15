@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-export const metadata: Metadata = {title:"Datenschutzerklärung",description:"Informationen zur Verarbeitung personenbezogener Daten auf FindMyDup."};
+export const metadata: Metadata = {title:"Datenschutzerklärung",description:"Informationen zur Verarbeitung personenbezogener Daten auf FindMyDup.",alternates:{canonical:"https://findmydup.de/datenschutz/"}};
 export default function Privacy(){return <main id="main" className="shell legal-page">
   <span className="eyebrow">DEINE DATEN IM BLICK</span>
   <h1>Datenschutzerklärung</h1>
