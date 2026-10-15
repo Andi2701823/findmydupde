@@ -1,33 +1,26 @@
-"use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Icon } from "./icon";
+
+/** Native GET submission avoids stale router and input state for repeat searches. */
 export function SearchBox({ compact = false, initialQuery = "", initialSource = "all" }: { compact?: boolean; initialQuery?: string; initialSource?: string }) {
-  const router = useRouter();
-  const [query, setQuery] = useState(initialQuery);
-  const [error, setError] = useState("");
-  function submit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const value = query.trim().slice(0, 120);
-    if (!value) { setError("Bitte gib ein Thema oder einen Produktnamen ein."); return; }
-    setError("");
-    const source=initialSource!=="all"?`&source=${encodeURIComponent(initialSource)}`:"";
-    router.push(`/suche/?q=${encodeURIComponent(value)}${source}`);
-  }
-  return <section className={`search-box editorial-search ${compact ? "compact" : ""}`} aria-label="Produkte und Ratgeber suchen">
-    <form className="text-search" onSubmit={submit}>
-      <label className="sr-only" htmlFor="product-query">Thema oder Produkt suchen</label>
+  const queryId=compact?"results-product-query":"home-product-query";
+  const destination=(value:string)=>"/suche/?q="+encodeURIComponent(value)+(initialSource!=="all"?"&source="+encodeURIComponent(initialSource):"");
+  return <section id={compact?"neue-suche":undefined} className={"search-box editorial-search "+(compact ? "compact" : "")} aria-label={compact?"Erneut nach Produkten suchen":"Produkte und Ratgeber suchen"}>
+    {compact&&<div className="repeat-search-heading"><strong>Neue Suche starten</strong><span>Suchbegriff ändern und erneut suchen.</span></div>}
+    <form role="search" className="text-search" method="get" action="/suche/">
+      <label className="sr-only" htmlFor={queryId}>Thema oder Produkt suchen</label>
       <Icon name="search" />
-      <input id="product-query" type="search" maxLength={120} value={query} onChange={event => {setQuery(event.target.value);setError("");}}
-        placeholder="Produktname oder Suchbegriff eingeben" aria-invalid={!!error} aria-describedby={error ? "search-error" : "search-hint"} />
-      <button className="button primary" type="submit">Entdecken <Icon name="arrow" /></button>
+      <input key={initialQuery} id={queryId} name="q" type="search" maxLength={120} required defaultValue={initialQuery}
+        placeholder="Produktname oder Suchbegriff eingeben" />
+      {initialSource!=="all"&&<input type="hidden" name="source" value={initialSource}/>}
+      <button className="button primary" type="submit">{compact?"Neu suchen":"Entdecken"} <Icon name="arrow" /></button>
     </form>
-    <div className="suggestions">
+    {!compact&&<div className="suggestions">
       <span>Oft gesucht:</span>
-      {["Gesichtsserum","Sneaker","Kopfhörer"].map(word => <button key={word} type="button" onClick={() => router.push(`/suche/?q=${encodeURIComponent(word)}${initialSource!=="all"?`&source=${encodeURIComponent(initialSource)}`:""}`)}>{word} ↗</button>)}
-    </div>
-    {error && <p id="search-error" role="alert" className="error-message">{error}</p>}
-    {!compact && <div className="photo-search-teaser"><Icon name="image" /><div><strong>Produktsuche per Foto</strong><span>Die KI-Bildsuche wird vorbereitet. Aktuell kannst du über Produktnamen und Suchbegriffe suchen.</span></div></div>}
-    <p id="search-hint" className="search-note"><Icon name="shield" /> Echte Händlerprodukte und Einkaufsratgeber. Weitere Sortimente folgen.</p>
+      {["Gesichtsserum","Sneaker","Kopfhörer"].map(word => <Link href={destination(word)} key={word}>{word} ↗</Link>)}
+    </div>}
+    {compact&&initialSource!=="all"&&<p className="repeat-search-scope">Suche innerhalb der gewählten Quelle. <Link href="/suche/">Stattdessen alle Quellen durchsuchen</Link></p>}
+    {!compact&&<div className="photo-search-teaser"><Icon name="image" /><div><strong>Produktsuche per Foto</strong><span>Die KI-Bildsuche wird vorbereitet. Aktuell kannst du über Produktnamen und Suchbegriffe suchen.</span></div></div>}
+    {!compact&&<p className="search-note"><Icon name="shield" /> Echte Händlerprodukte und Einkaufsratgeber. Weitere Sortimente folgen.</p>}
   </section>;
 }

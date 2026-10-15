@@ -349,12 +349,14 @@ select {
 .suggestions > span {
   color: var(--muted);
 }
-.suggestions button {
+.suggestions button,
+.suggestions a {
   background: #f3f5ef;
   border-radius: 5px;
   padding: 4px 7px;
 }
-.suggestions button:hover {
+.suggestions button:hover,
+.suggestions a:hover {
   background: #e8efdd;
 }
 .search-note {
@@ -2237,3 +2239,57 @@ select {
 .joybuy-catalog-page .samsung-controls label:first-child{flex:2 1 220px;}
 .joybuy-catalog-page .samsung-controls .button{flex:0 0 auto;white-space:nowrap;}
 @media(max-width:600px){.joybuy-catalog-page .samsung-controls label{min-width:100%;}}
+
+/* Always accessible new-search form above long result lists. */
+.results-page .search-box.compact {
+  position: sticky;
+  top: 96px; /* The site header is 88px tall. */
+  z-index: 20;
+  max-width: 100%;
+  padding: 12px 16px;
+  margin-bottom: 18px;
+  box-shadow: 0 8px 30px rgba(37, 56, 49, .10);
+}
+.results-page .repeat-search-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 14px;
+  flex-wrap: wrap;
+  margin-bottom: 9px;
+}
+.results-page .repeat-search-heading strong {
+  font-size: 14px;
+}
+.results-page .repeat-search-heading span,
+.results-page .repeat-search-scope {
+  font-size: 12px;
+  color: var(--muted);
+}
+.results-page .repeat-search-scope {
+  margin-top: 8px;
+}
+.results-page .repeat-search-scope a {
+  color: var(--leaf);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.results-page .search-box.compact .text-search input {
+  font-size: 14px;
+}
+@media (max-width: 600px) {
+  .results-page .search-box.compact {
+    top: 90px;
+    padding: 9px;
+  }
+  .results-page .repeat-search-heading span {
+    display: none;
+  }
+  .results-page .repeat-search-heading strong {
+    font-size: 12px;
+  }
+  .results-page .search-box.compact .text-search input {
+    font-size: 12px;
+  }
+}
