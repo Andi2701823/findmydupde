@@ -47,6 +47,10 @@ try {
   assert.match(favicon.headers.get("content-type")||"",/image\/svg\+xml/);
   assert.match(await favicon.text(),/viewBox="0 0 64 64"/);
   assert.equal(await page.locator('meta[name="robots"][content*="noindex"]').count(),0);
+  assert.match(await page.title(),/Preise vergleichen.*günstigere Alternativen/);
+  const websiteLd=JSON.parse(await page.locator('script[type="application/ld+json"]').first().innerText());
+  assert.equal(websiteLd["@type"],"WebSite");
+  assert.equal(websiteLd.url,"https://findmydup.de/");
   assert.equal((await fetch(`${origin}/robots.txt`).then(r=>r.text())).includes("Disallow: /"),false);
   const verification=await fetch(`${origin}/00fd05c1707e91d286f87c424f566383.html`);
   assert.equal(verification.status,200);
@@ -76,6 +80,10 @@ try {
   await page.getByRole("searchbox",{name:"Thema oder Produkt suchen"}).fill("Serum");
   await page.getByRole("button",{name:"Entdecken"}).click();
   await page.getByRole("heading",{name:"Funde zu „Serum“"}).waitFor();
+  assert.equal(await page.locator('meta[name="robots"][content*="noindex"]').count(),1,
+    "Internal product searches should not be indexed");
+  assert.equal(await page.locator('link[rel="canonical"]').count(),0,
+    "Search pages must not claim a canonical content page");
   assert.equal(await page.locator(".guide-card").count(),1);
   await page.locator(".unified-offer").first().waitFor();
   assert.equal(await page.locator(".search-source-filters").count(),0,"All-merchant results should not start with vendor tabs");
@@ -85,6 +93,12 @@ try {
   await page.getByRole("button",{name:/Gesichtsserum vergleichen.*merken/}).click();
   await page.getByRole("link",{name:/Ratgeber lesen: Gesichtsserum/}).click();
   await page.getByRole("heading",{name:/Gesichtsserum vergleichen/}).waitFor();
+  const guideSchemas=await page.locator('script[type="application/ld+json"]').allTextContents();
+  assert.equal(guideSchemas.length,1,"Guides expose one breadcrumb JSON-LD script");
+  const guideBreadcrumbs=JSON.parse(guideSchemas[0]);
+  assert.equal(guideBreadcrumbs["@type"],"BreadcrumbList");
+  assert.equal(guideBreadcrumbs.itemListElement.length,3);
+  assert.match(guideBreadcrumbs.itemListElement[2].item,/gesichtsserum-vergleichen/);
   await page.getByRole("heading",{name:"Inhaltsstoffliste richtig einordnen"}).waitFor();
   await page.getByRole("link",{name:"Merkliste"}).click();
   await page.getByRole("heading",{name:"Deine Lieblingsratgeber."}).waitFor();
@@ -108,6 +122,10 @@ try {
   }));
   await page.goto(origin+"/digitale-tools/funnelcockpit/",{waitUntil:"domcontentloaded"});
   await page.getByRole("heading",{name:/FunnelCockpit: Was kann die Software/}).waitFor();
+  assert.ok(!(await page.title()).includes("Erfahrungen"),"Do not imply first-hand experience in SEO title");
+  const funnelLd=JSON.parse(await page.locator('script[type="application/ld+json"]').first().innerText());
+  assert.equal(funnelLd["@type"],"BreadcrumbList");
+  assert.equal(funnelLd.itemListElement[2].name,"FunnelCockpit");
   const screenshotNodes=page.locator(".digital-tool-screenshot img");
   assert.equal(await screenshotNodes.count(),3,"Three provider-sourced images illustrate the digital tool");
   assert.ok((await screenshotNodes.evaluateAll(nodes=>nodes.map(n=>n.getAttribute("alt")))).every(alt=>alt&&alt.length>20));
