@@ -51,6 +51,15 @@ try {
   const verification=await fetch(`${origin}/00fd05c1707e91d286f87c424f566383.html`);
   assert.equal(verification.status,200);
   assert.equal((await verification.text()).trim(),'Validation content="00fd05c1707e91d286f87c424f566383"');
+  const llms=await fetch(`${origin}/llms.txt`);
+  assert.equal(llms.status,200,"llms.txt must be publicly accessible");
+  assert.ok((llms.headers.get("content-type")||"").startsWith("text/plain"),"llms.txt must be plaintext");
+  const llmsText=await llms.text();
+  assert.ok(llmsText.startsWith("# FindMyDup\n"));
+  assert.ok(llmsText.includes("https://findmydup.de/suche/"));
+  assert.ok(llmsText.includes("https://findmydup.de/ratgeber/handtasche-kaufen/"));
+  assert.ok(llmsText.includes("noch nicht verfügbar"),"Do not claim image search is live");
+  assert.ok(llmsText.includes("keine geprüften identischen"),"Do not overpromise product equivalence");
   const sitemap=await fetch(`${origin}/sitemap.xml`);
   assert.equal(sitemap.status,200);
   const sitemapContent=await sitemap.text();
