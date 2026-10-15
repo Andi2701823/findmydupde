@@ -101,6 +101,30 @@ try {
   const digitalHtml=await digitalPage.text();
   assert.ok(digitalHtml.includes("https://www.digistore24.com/redir/98201/andi271982/"));
   assert.ok(digitalHtml.includes("sponsored nofollow noopener noreferrer"));
+  // All visuals must be real images hosted by FunnelCockpit, not AI product mockups.
+  await page.route("https://static.funnelcockpit.com/**", route => route.fulfill({
+    status:200,contentType:"image/png",
+    body:Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9SjlZyQAAAAASUVORK5CYII=","base64"),
+  }));
+  await page.goto(origin+"/digitale-tools/funnelcockpit/",{waitUntil:"domcontentloaded"});
+  await page.getByRole("heading",{name:/FunnelCockpit: Was kann die Software/}).waitFor();
+  const screenshotNodes=page.locator(".digital-tool-screenshot img");
+  assert.equal(await screenshotNodes.count(),3,"Three provider-sourced images illustrate the digital tool");
+  assert.ok((await screenshotNodes.evaluateAll(nodes=>nodes.map(n=>n.getAttribute("alt")))).every(alt=>alt&&alt.length>20));
+  assert.ok((await screenshotNodes.evaluateAll(nodes=>nodes.map(n=>n.getAttribute("src")))).every(src=>src.startsWith("https://static.funnelcockpit.com/upload/")));
+  assert.equal(await page.locator("#funktionen .digital-feature-list>div").count(),4);
+  assert.equal(await page.locator("#fragen .digital-tool-faq>div").count(),5);
+  assert.equal(await page.locator(".digital-price-grid>div").count(),3);
+  assert.ok((await page.locator("main").innerText()).includes("kein eigener Praxistest")||
+            (await page.locator("main").innerText()).includes("nicht auf einem eigenen Praxistest"));
+  assert.equal(await page.locator('a[href="https://www.digistore24.com/redir/98201/andi271982/"][rel*="sponsored"]').count(),2);
+  for(const width of [375,390,768,1440]){
+    await page.setViewportSize({width,height:900});
+    await page.waitForTimeout(50);
+    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,"FunnelCockpit content overflows at "+width+"px");
+  }
+  await page.setViewportSize({width:1440,height:1000});
+
   await page.goto(origin+"/suche/?q=FunnelCockpit",{waitUntil:"domcontentloaded"});
   await page.getByRole("heading",{name:"FunnelCockpit",exact:true}).waitFor();
   assert.equal(await page.locator(".unified-offer").count(),0,"No physical-product price rank for subscriptions");
@@ -232,7 +256,13 @@ try {
   await blockedPage.getByRole("heading",{name:"Deine Lieblingsratgeber."}).waitFor();
   assert.equal(await blockedPage.locator(".guide-card").count(),1);
   assert.deepEqual(errors,[]);
-  assert.deepEqual(remoteRequests.filter(url => new URL(url).hostname !== "bdr-beauty.com"),[]);
+  const permittedFunnelScreenshots = new Set([
+    "https://static.funnelcockpit.com/upload/8e03de11-7e44-488b-90c3-eab3f513d9e3.png",
+    "https://static.funnelcockpit.com/upload/RBQjxJBoixoW3jkEN/580cbfd8422d6f3773130e067efd7c7b.jpg",
+    "https://static.funnelcockpit.com/upload/4b8af1d4-40fe-4433-b53e-ff972d52329f.png",
+  ]);
+  assert.deepEqual(remoteRequests.filter(url => new URL(url).hostname !== "bdr-beauty.com" &&
+    !permittedFunnelScreenshots.has(url)),[]);
   assert.deepEqual(uploads,[]);
   console.log("PASS: public editorial home, real guide search and categories, 8 published articles, saved reading list, legal and partner routes, SEO sitemap, Awin verification, mobile breakpoints and no remote requests.");
 } catch(error) {
