@@ -93,6 +93,20 @@ try {
   assert.equal(await page.locator(".guide-card").count(),1);
   await page.getByRole("button",{name:/Gesichtsserum vergleichen.*aus Merkliste entfernen/}).click();
   await page.getByRole("heading",{name:"Platz für deine Favoriten."}).waitFor();
+  // Digital subscriptions stay separate from physical price comparisons.
+  const digitalIndex=await fetch(origin+"/digitale-tools/");
+  assert.equal(digitalIndex.status,200);
+  const digitalPage=await fetch(origin+"/digitale-tools/funnelcockpit/");
+  assert.equal(digitalPage.status,200);
+  const digitalHtml=await digitalPage.text();
+  assert.ok(digitalHtml.includes("https://www.digistore24.com/redir/98201/andi271982/"));
+  assert.ok(digitalHtml.includes("sponsored nofollow noopener noreferrer"));
+  await page.goto(origin+"/suche/?q=FunnelCockpit",{waitUntil:"domcontentloaded"});
+  await page.getByRole("heading",{name:"FunnelCockpit",exact:true}).waitFor();
+  assert.equal(await page.locator(".unified-offer").count(),0,"No physical-product price rank for subscriptions");
+  assert.equal(await page.locator(".digital-search-match").count(),1,"Software has one distinct search match");
+  await page.goto(origin+"/produkte/",{waitUntil:"domcontentloaded"});
+  assert.equal(await page.getByRole("link",{name:"Funktionen und Tarife ansehen"}).count(),1);
   await page.goto(`${origin}/suche/?q=xyzkeinerkenntdies`,{waitUntil:"domcontentloaded"});
   await page.getByText("Keine passenden Händlerangebote gefunden. Versuche einen anderen Suchbegriff.").waitFor();
   assert.equal(await page.locator(".guide-card").count(),0);
