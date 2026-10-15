@@ -11,11 +11,13 @@ import { EbayResults } from "./ebay-results";
 import { SamsungResults } from "./samsung-results";
 import { JoybuyResults } from "./joybuy-results";
 import { MactradeResults } from "./mactrade-results";
+import { UnifiedOffers } from "./unified-offers";
 export function Results({ ebaySearch = false, samsungSearch = false, joybuySearch = false, mactradeSearch = false }: { ebaySearch?: boolean; samsungSearch?: boolean; joybuySearch?: boolean; mactradeSearch?: boolean }){
   const params=useSearchParams();
   const q=(params.get("q")||"").trim().slice(0,120);
   const selectedSource=params.get("source")||"all";
   const source=["all","beauty","guides",...(ebaySearch?["ebay"]:[]),...(samsungSearch?["samsung"]:[]),...(joybuySearch?["joybuy"]:[]),...(mactradeSearch?["mactrade"]:[])].includes(selectedSource)?selectedSource:"all";
+  const combined=source==="all"&&q.length>=2;
   const showBeauty=source==="all"||source==="beauty";
   const showGuides=source==="all"||source==="guides";
   const showEbay=ebaySearch&&(source==="all"||source==="ebay");
@@ -38,15 +40,16 @@ export function Results({ ebaySearch = false, samsungSearch = false, joybuySearc
     <div className="results-heading">
       <span className="eyebrow">PRODUKTE UND EINKAUFSWISSEN ENTDECKEN</span>
       <h1>{q?`Funde zu „${q}“`:category?`Entdecken: ${category}`:"Was möchtest du entdecken?"}</h1>
-      <p>Suche echte Händlerprodukte in unserem wachsenden Katalog und entdecke passende Einkaufsratgeber. {mactradeSearch ? "Neu im Katalog: MacTrade-Produkte, neben anderen freigeschalteten Händlern und Ratgebern. Feedpreise sind nicht live geprüft." : joybuySearch ? "Entdecke JoyBuy-Angebote, Samsung, Beauty-Produkte und eBay-Treffer. Händler-Feedpreise sind nicht live geprüft." : samsungSearch ? "Neben dem Beauty-Katalog kannst du Samsung-Angebote und eBay-Treffer entdecken. Feedpreise werden nicht live abgefragt." : "Aktuell stammen die Katalogprodukte von bdr-beauty. Feedpreise werden nicht live abgefragt."}</p>
+      <p>Finde passende Angebote aus allen verfügbaren Quellen – die niedrigsten Artikelpreise stehen zuerst. Vergleiche Modell, Versand und Zustand vor dem Kauf.</p>
     </div>
     <SearchBox key={q+"|"+source} compact initialQuery={q} initialSource={source}/>
-    <nav className="search-source-filters" aria-label="Ergebnisse nach Quelle filtern">
+    {combined&&<UnifiedOffers query={q} beauty={findAffiliateProducts(q)} enabled={{samsung:samsungSearch,joybuy:joybuySearch,mactrade:mactradeSearch,ebay:ebaySearch}}/>}
+    {!combined&&<nav className="search-source-filters" aria-label="Ergebnisse nach Quelle filtern">
       {[{id:"all",label:"Alle Quellen"},...(samsungSearch?[{id:"samsung",label:"Samsung Shop"}]:[]),...(joybuySearch?[{id:"joybuy",label:"JoyBuy"}]:[]),...(mactradeSearch?[{id:"mactrade",label:"MacTrade"}]:[]),...(ebaySearch?[{id:"ebay",label:"eBay"}]:[]),{id:"beauty",label:"Beauty-Produkte"},{id:"guides",label:"Ratgeber"}].map(item=>
         <Link key={item.id} href={sourceUrl(item.id)} aria-current={source===item.id?"page":undefined}>{item.label}</Link>
       )}
-    </nav>
-    {(source==="all"||source==="guides")&&<div className="guide-category-nav" aria-label="Thema eingrenzen">
+    </nav>}
+    {!combined&&(source==="all"||source==="guides")&&<div className="guide-category-nav" aria-label="Thema eingrenzen">
       <Link href={"/suche/"+(q||source!=="all"?"?"+[q?"q="+encodeURIComponent(q):"",source!=="all"?"source="+encodeURIComponent(source):""].filter(Boolean).join("&"):"")} aria-current={!category?"page":undefined}>Alle Themen</Link>
       {guideCategories.map(c=>{
         const u=new URLSearchParams();
@@ -57,10 +60,10 @@ export function Results({ ebaySearch = false, samsungSearch = false, joybuySearc
       })}
     </div>}
 
-    {!products.length&&!guides.length && !(showEbay && q.length >= 2) && !(showSamsung && q.length >= 2) && !(showJoybuy && q.length >= 2) && !(showMactrade && q.length >= 2) ? <section className="empty-state"><Icon name="search"/><h2>Keine passenden Inhalte gefunden.</h2>
+    {!combined&&!products.length&&!guides.length && !(showEbay && q.length >= 2) && !(showSamsung && q.length >= 2) && !(showJoybuy && q.length >= 2) && !(showMactrade && q.length >= 2) ? <section className="empty-state"><Icon name="search"/><h2>Keine passenden Inhalte gefunden.</h2>
       <p>Probiere ein anderes Produkt oder Thema. Du kannst auch direkt in den Beauty-Produkten stöbern.</p>
       <Link href="/produkte/" className="button primary">Alle Beauty-Produkte <Icon name="arrow"/></Link></section>:null}
-    {products.length>0 && <section className="search-products">
+    {!combined&&products.length>0 && <section className="search-products">
       <div className="section-heading"><div><span className="eyebrow">ECHTE HÄNDLERPRODUKTE</span><h2>Gefundene Produkte ({products.length})</h2>
         <p>Werbelinks zu bdr-beauty DE. Preise laut Feed, aktuelle Angaben beim Händler.</p></div>
         <Link href="/produkte/" className="text-link">Zum Produktkatalog <Icon name="arrow"/></Link></div>
@@ -69,10 +72,10 @@ export function Results({ ebaySearch = false, samsungSearch = false, joybuySearc
       </div>
       {!q&&products.length>6&&<Link href="/produkte/" className="text-link search-see-more">Alle {products.length} Beauty-Produkte anzeigen <Icon name="arrow"/></Link>}
     </section>}
-    {showSamsung && q.length >= 2 && category !== "Beauty" && <SamsungResults key={q} query={q} />}
-    {showJoybuy && q.length >= 2 && <JoybuyResults key={q} query={q} />}
-    {showMactrade && q.length >= 2 && <MactradeResults key={q} query={q} />}
-    {showEbay && q.length >= 2 && <EbayResults query={q} />}
+    {!combined&&showSamsung && q.length >= 2 && category !== "Beauty" && <SamsungResults key={q} query={q} />}
+    {!combined&&showJoybuy && q.length >= 2 && <JoybuyResults key={q} query={q} />}
+    {!combined&&showMactrade && q.length >= 2 && <MactradeResults key={q} query={q} />}
+    {!combined&&showEbay && q.length >= 2 && <EbayResults query={q} />}
     {((source==="samsung"&&q.length<2)||(source==="ebay"&&q.length<2)||(source==="joybuy"&&q.length<2)||(source==="mactrade"&&q.length<2))&&<p className="empty-state" role="status">Bitte gib mindestens zwei Zeichen ein, um Händlerangebote zu suchen.</p>}
     {guides.length>0 && <section className="search-guides">
       <div className="section-heading"><div><span className="eyebrow">EINKAUFSWISSEN</span><h2>Passende Ratgeber ({guides.length})</h2></div>
