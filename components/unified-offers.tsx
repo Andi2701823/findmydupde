@@ -35,39 +35,44 @@ function OfferRow({offer,first}:{offer:SearchOffer;first:boolean}){
   </article>;
 }
 export function UnifiedOffers({query,beauty,enabled}:{query:string;beauty:AffiliateProduct[];enabled:Enabled}){
-  const key=query+":"+sources.map(s=>String(enabled[s])).join(":");
+  const {samsung,joybuy,mactrade,ebay}=enabled;
+  const enabledSources={samsung,joybuy,mactrade,ebay};
+  const key=query+":"+sources.map(s=>String(enabledSources[s])).join(":");
   const [state,setState]=useState<Current|null>(null);
   const [visible,setVisible]=useState(5);
   const start=useMemo(()=>beautyOffers(beauty),[beauty]);
   useEffect(()=>{
     const controller=new AbortController();
-    const requested=sources.filter(source=>enabled[source]);
-    setVisible(5);
-    setState({key,offers:start,pending:requested.length,failed:[]});
+    const requested=sources.filter(source=>(source==="samsung"?samsung:source==="joybuy"?joybuy:source==="mactrade"?mactrade:ebay));
     for(const source of requested){
       fetch("/api/"+source+"/search/?q="+encodeURIComponent(query),{signal:controller.signal,cache:"no-store"})
         .then(async response=>{if(!response.ok)throw Error("Unavailable");return await response.json() as unknown;})
         .then(data=>source==="ebay"?ebayOffers(data):feedOffers(source,data))
         .then(offers=>{
-          if(!controller.signal.aborted)setState(current=>current?.key!==key?current:
-            {...current,offers:[...current.offers,...offers],pending:current.pending-1});
+          if(!controller.signal.aborted)setState(current=>{
+            const base=current?.key===key?current:{key,offers:start,pending:requested.length,failed:[]};
+            return {...base,offers:[...base.offers,...offers],pending:base.pending-1};
+          });
         })
         .catch(()=>{
-          if(!controller.signal.aborted)setState(current=>current?.key!==key?current:
-            {...current,pending:current.pending-1,failed:[...current.failed,source]});
+          if(!controller.signal.aborted)setState(current=>{
+            const base=current?.key===key?current:{key,offers:start,pending:requested.length,failed:[]};
+            return {...base,pending:base.pending-1,failed:[...base.failed,source]};
+          });
         });
     }
     return ()=>controller.abort();
-  },[key,query,start,enabled.ebay,enabled.joybuy,enabled.mactrade,enabled.samsung]);
+  },[key,query,start,samsung,joybuy,mactrade,ebay]);
   const active=state?.key===key?state:null;
   const offers=rankedOffers(active?.offers??start,query);
+  const pending=active?.pending??sources.filter(source=>enabledSources[source]).length;
   return <section className="unified-results" aria-label="Preisübersicht über Händler">
     <div className="unified-results-heading">
       <div><span className="eyebrow">ERGEBNISSE AUS ALLEN VERFÜGBAREN HÄNDLERN</span>
         <h2>Passende Angebote. Günstige zuerst.</h2>
         <p>Nach Artikelpreis sortiert, nicht nach Händler. Versand und Zustand bitte zusätzlich beachten.</p>
       </div>
-      <span className="unified-results-count" role="status">{offers.length} angezeigte Treffer{active?.pending?" · weitere werden geladen":""}</span>
+      <span className="unified-results-count" role="status">{offers.length} angezeigte Treffer{pending?" · weitere werden geladen":""}</span>
     </div>
     {offers.length>0?<>
       <div className="unified-offer-list">{offers.slice(0,visible).map((offer,i)=><OfferRow key={offer.id} offer={offer} first={i===0}/>)}</div>
