@@ -142,7 +142,7 @@ try {
   await page.getByRole("searchbox", { name: "Thema oder Produkt suchen" }).fill("Serum");
   await page.getByRole("button", { name: "Entdecken", exact: true }).click();
   await page.getByRole("heading", { name: "Funde zu „Serum“" }).waitFor();
-  await page.waitForFunction(() => document.querySelectorAll(".affiliate-card").length > 0);
+  await page.waitForFunction(() => document.querySelectorAll(".unified-offer").length > 0);
   assert.equal(await page.locator(".guide-card").count(), 1);
   await page.getByRole("button", { name: /Gesichtsserum vergleichen.*merken/ }).click();
   await page.getByRole("link", { name: "Merkliste", exact: true }).click();
