@@ -87,6 +87,17 @@ try {
   await page.goto(`${origin}/suche/?q=xyzkeinerkenntdies`,{waitUntil:"domcontentloaded"});
   await page.getByRole("heading",{name:"Keine passenden Inhalte gefunden."}).waitFor();
   assert.equal(await page.locator(".guide-card").count(),0);
+  await page.goto(`${origin}/suche/?q=Serum&source=beauty`,{waitUntil:"domcontentloaded"});
+  await page.getByRole("navigation",{name:"Ergebnisse nach Quelle filtern"}).getByRole("link",{name:"Beauty-Produkte"}).waitFor();
+  assert.equal(await page.locator(".search-guides").count(),0,"Beauty filter hides guides");
+  assert.ok(await page.locator(".search-products .affiliate-card").count()>0,"Beauty filter retains matching offers");
+  await page.getByRole("navigation",{name:"Ergebnisse nach Quelle filtern"}).getByRole("link",{name:"Ratgeber"}).click();
+  assert.equal(await page.locator(".search-products .affiliate-card").count(),0,"Guide filter hides Beauty offers");
+  assert.ok(await page.locator(".search-guides .guide-card").count()>0,"Guide filter retains guides");
+  await page.getByRole("searchbox",{name:"Thema oder Produkt suchen"}).fill("Powerbank");
+  await page.getByRole("button",{name:"Entdecken",exact:true}).click();
+  await page.getByRole("heading",{name:"Funde zu „Powerbank“"}).waitFor();
+  assert.ok(new URL(page.url()).searchParams.get("source")==="guides","Changing query preserves source choice");
   await page.goto(`${origin}/suche/?category=Technik`,{waitUntil:"domcontentloaded"});
   assert.equal(await page.locator(".guide-card").count(),2);
   await page.goto(`${origin}/ratgeber/`,{waitUntil:"domcontentloaded"});

@@ -2215,3 +2215,14 @@ select {
 .samsung-catalog-cta {margin-top:32px;margin-bottom:34px;}
 .samsung-search-results {margin-top:46px;}
 @media (max-width:600px){.samsung-pagination{gap:10px;}.samsung-controls{align-items:stretch;}}
+
+/* Product-search source tabs and Samsung price filters. */
+.search-source-filters{display:flex;flex-wrap:wrap;gap:10px;margin:25px 0 14px;align-items:center;}
+.search-source-filters a{border:1px solid var(--line);border-radius:999px;padding:10px 16px;color:var(--ink);font-weight:700;text-decoration:none;font-size:14px;background:#fff;transition:background .15s ease;}
+.search-source-filters a:hover,.search-source-filters a:focus-visible{border-color:var(--leaf);background:var(--cream);}
+.search-source-filters a[aria-current="page"]{background:var(--leaf);color:white;border-color:var(--leaf);}
+.samsung-catalog-page .samsung-controls{display:flex;flex-wrap:wrap;gap:15px;align-items:end;margin-top:24px;}
+.samsung-catalog-page .samsung-controls label{flex:1 1 155px;min-width:135px;}
+.samsung-catalog-page .samsung-controls label:first-child{flex:2 1 230px;}
+.samsung-catalog-page .samsung-controls .button{flex:0 0 auto;white-space:nowrap;}
+@media(max-width:600px){.search-source-filters{gap:8px;}.search-source-filters a{padding:9px 13px;font-size:13px;}.samsung-catalog-page .samsung-controls label{min-width:100%;}}

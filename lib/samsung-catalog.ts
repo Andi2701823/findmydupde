@@ -1,4 +1,6 @@
 import "server-only";
+import {resolveSupabaseCatalogConfig} from "./supabase-public-config";
+import {samsungOrdering,samsungSort,type SamsungSort} from "./samsung-filters";
 
 export const samsungCategories = ["Smartphones","Tablets","Smartwatches","Fernseher","Monitore","Audio","Speicher & SSD","Haushaltsgeräte","Zubehör","Sonstiges"] as const;
 export type SamsungCategory = (typeof samsungCategories)[number];
@@ -6,15 +8,8 @@ export type SamsungProduct = {
   aw_product_id:string; product_name:string; description:string; category:SamsungCategory;
   price_cents:number; delivery_cents:number|null; image_url:string; affiliate_url:string; merchant_name:string;
 };
-type Lookup = {q?:string; category?:string; page?:number; pageSize?:number};
-function apiConfig() {
-  if (process.env.SAMSUNG_CATALOG_ENABLED !== "true") return null;
-  const url=(process.env.SAMSUNG_SUPABASE_URL || "").replace(/\/$/,"");
-  const key=process.env.SAMSUNG_SUPABASE_PUBLISHABLE_KEY || "";
-  // The website uses a read-only, RLS-governed public API key; never a service-role key.
-  if (!/^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(url) || !key || key.length>512) return null;
-  return {url,key};
-}
+type Lookup = {q?:string; category?:string; page?:number; pageSize?:number; minCents?:number|null; maxCents?:number|null; sort?:SamsungSort};
+function apiConfig(){return resolveSupabaseCatalogConfig(process.env);}
 export function samsungCatalogEnabled(){return apiConfig()!==null;}
 export function sanitizeSamsungQuery(value:string):string {
   return value.replace(/[^\p{L}\p{N}\s_-]/gu," ").replace(/\s+/g," ").trim().slice(0,80);
@@ -25,7 +20,7 @@ export function validSamsungCategory(value:string):value is SamsungCategory {
 export function formatSamsungPrice(value:number):string {
   return new Intl.NumberFormat("de-DE",{style:"currency",currency:"EUR"}).format(value/100);
 }
-export async function searchSamsungProducts({q="",category="",page=1,pageSize=24}:Lookup={}):Promise<{products:SamsungProduct[];total:number;page:number}> {
+export async function searchSamsungProducts({q="",category="",page=1,pageSize=24,minCents=null,maxCents=null,sort="name"}:Lookup={}):Promise<{products:SamsungProduct[];total:number;page:number}> {
   const config=apiConfig();
   if(!config)throw new Error("Samsung catalog is not configured");
   const safePage=Number.isSafeInteger(page)?Math.max(1,Math.min(100,page)):1;
@@ -33,12 +28,14 @@ export async function searchSamsungProducts({q="",category="",page=1,pageSize=24
   const endpoint=new URL(config.url+"/rest/v1/samsung_feed_products");
   endpoint.searchParams.set("select","aw_product_id,product_name,description,category,price_cents,delivery_cents,image_url,affiliate_url,merchant_name");
   endpoint.searchParams.set("published","eq.true");
-  endpoint.searchParams.set("order","product_name.asc,aw_product_id.asc");
+  endpoint.searchParams.set("order",samsungOrdering(samsungSort(sort)));
   endpoint.searchParams.set("limit",String(safeLimit));
   endpoint.searchParams.set("offset",String((safePage-1)*safeLimit));
   const term=sanitizeSamsungQuery(q);
   if(term)endpoint.searchParams.set("product_name","ilike.*"+term.replace(/\s+/g,"*")+"*");
   if(validSamsungCategory(category))endpoint.searchParams.set("category","eq."+category);
+  if(minCents!==null&&Number.isSafeInteger(minCents)&&minCents>=0)endpoint.searchParams.append("price_cents","gte."+minCents);
+  if(maxCents!==null&&Number.isSafeInteger(maxCents)&&maxCents>=0)endpoint.searchParams.append("price_cents","lte."+maxCents);
   const response=await fetch(endpoint.toString(),{
     headers:{apikey:config.key,Accept:"application/json",Prefer:"count=exact"},
     cache:"no-store",signal:AbortSignal.timeout(8000)
