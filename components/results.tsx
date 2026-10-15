@@ -12,12 +12,14 @@ import { SamsungResults } from "./samsung-results";
 import { JoybuyResults } from "./joybuy-results";
 import { MactradeResults } from "./mactrade-results";
 import { UnifiedOffers } from "./unified-offers";
+import {matchesFunnelcockpit,funnelcockpit} from "@/lib/digital-tools";
 export function Results({ ebaySearch = false, samsungSearch = false, joybuySearch = false, mactradeSearch = false }: { ebaySearch?: boolean; samsungSearch?: boolean; joybuySearch?: boolean; mactradeSearch?: boolean }){
   const params=useSearchParams();
   const q=(params.get("q")||"").trim().slice(0,120);
   const selectedSource=params.get("source")||"all";
   const source=["all","beauty","guides",...(ebaySearch?["ebay"]:[]),...(samsungSearch?["samsung"]:[]),...(joybuySearch?["joybuy"]:[]),...(mactradeSearch?["mactrade"]:[])].includes(selectedSource)?selectedSource:"all";
-  const combined=source==="all"&&q.length>=2;
+  const digital=source==="all"&&matchesFunnelcockpit(q);
+  const combined=source==="all"&&q.length>=2&&!digital;
   const showBeauty=source==="all"||source==="beauty";
   const showGuides=source==="all"||source==="guides";
   const showEbay=ebaySearch&&(source==="all"||source==="ebay");
@@ -43,6 +45,16 @@ export function Results({ ebaySearch = false, samsungSearch = false, joybuySearc
       <p>Finde passende Angebote aus allen verfügbaren Quellen – die niedrigsten Artikelpreise stehen zuerst. Vergleiche Modell, Versand und Zustand vor dem Kauf.</p>
     </div>
     <SearchBox key={q+"|"+source} compact initialQuery={q} initialSource={source}/>
+    {digital&&<section className="digital-search-match" aria-label="Digitales Software-Angebot">
+      <span className="eyebrow">PASSENDES DIGITALES TOOL</span>
+      <div className="digital-search-match-row">
+        <div><h2>{funnelcockpit.name}</h2><p>{funnelcockpit.summary}</p>
+          <span className="digital-search-type">{funnelcockpit.type} · kein Preisvergleich mit physischen Waren</span>
+        </div>
+        <Link className="button primary" href={funnelcockpit.path}>Funktionen und Tarife ansehen →</Link>
+      </div>
+      <p className="affiliate-disclosure">Transparenter Werbelink auf der Detailseite. Kein eigener Softwaretest.</p>
+    </section>}
     {combined&&<UnifiedOffers key={q} query={q} beauty={findAffiliateProducts(q)} enabled={{samsung:samsungSearch,joybuy:joybuySearch,mactrade:mactradeSearch,ebay:ebaySearch}}/>}
     {!combined&&<nav className="search-source-filters" aria-label="Ergebnisse nach Quelle filtern">
       {[{id:"all",label:"Alle Quellen"},...(samsungSearch?[{id:"samsung",label:"Samsung Shop"}]:[]),...(joybuySearch?[{id:"joybuy",label:"JoyBuy"}]:[]),...(mactradeSearch?[{id:"mactrade",label:"MacTrade"}]:[]),...(ebaySearch?[{id:"ebay",label:"eBay"}]:[]),{id:"beauty",label:"Beauty-Produkte"},{id:"guides",label:"Ratgeber"}].map(item=>
@@ -60,7 +72,7 @@ export function Results({ ebaySearch = false, samsungSearch = false, joybuySearc
       })}
     </div>}
 
-    {!combined&&!products.length&&!guides.length && !(showEbay && q.length >= 2) && !(showSamsung && q.length >= 2) && !(showJoybuy && q.length >= 2) && !(showMactrade && q.length >= 2) ? <section className="empty-state"><Icon name="search"/><h2>Keine passenden Inhalte gefunden.</h2>
+    {!digital&&!combined&&!products.length&&!guides.length && !(showEbay && q.length >= 2) && !(showSamsung && q.length >= 2) && !(showJoybuy && q.length >= 2) && !(showMactrade && q.length >= 2) ? <section className="empty-state"><Icon name="search"/><h2>Keine passenden Inhalte gefunden.</h2>
       <p>Probiere ein anderes Produkt oder Thema. Du kannst auch direkt in den Beauty-Produkten stöbern.</p>
       <Link href="/produkte/" className="button primary">Alle Beauty-Produkte <Icon name="arrow"/></Link></section>:null}
     {!combined&&products.length>0 && <section className="search-products">
