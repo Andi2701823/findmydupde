@@ -4,13 +4,15 @@ Samsung Awin merchant **14815**, data feed **33871**, publisher **3123004**. The
 
 ## Site integration
 
-The new route `/samsung/` presents a **single searchable, paginated catalog**. Category choices are broad groups, not one page per product or raw Awin category. The global search `/suche/` optionally displays eight Samsung matches and links to the filtered catalog. The older 63 bdr-beauty product pages, Awin affiliate links, and live eBay Browse API remain unchanged.
+The new route `/samsung/` presents a **single searchable, paginated catalog** with category, minimum/maximum EUR item-price and name/price sorting. Category choices are broad groups, not one page per product or raw Awin category. The global search `/suche/` lets visitors filter by source (All, Samsung, eBay, Beauty, Guides) and optionally displays eight Samsung matches and links to the filtered catalog. The older 63 bdr-beauty product pages, Awin affiliate links, and live eBay Browse API remain unchanged.
 
 The site owner explicitly approved using the already-existing `findmydup-staging` Supabase project for **the live website** on 2026-10-15, to avoid a second project. This is a shared data environment: imports or changes to this project will affect live Samsung offers once enabled. **Do not run destructive experiments here.** The Samsung integration remains **disabled by default** until these *server-side* runtime variables are set in the Hostinger Node.js deployment:
 
 - `SAMSUNG_CATALOG_ENABLED=true`
-- `SAMSUNG_SUPABASE_URL=https://bqefygvwuwqjoqkkftiv.supabase.co`
-- `SAMSUNG_SUPABASE_PUBLISHABLE_KEY=<public RLS-limited publishable key>`
+- `SUPABASE_URL=https://bqefygvwuwqjoqkkftiv.supabase.co`
+- `SUPABASE_PUBLISHABLE_KEY=<public sb_publishable_* key>`
+
+The older `SAMSUNG_SUPABASE_URL` and `SAMSUNG_SUPABASE_PUBLISHABLE_KEY` variables remain supported for existing Hostinger deployments. Prefer the general names for new deployments. All runtime credentials must be kept server-side. `SAMSUNG_CATALOG_ENABLED=true` is still required.
 
 Use the Supabase **publishable (public)** key, NEVER a service-role or secret key in the website read API. The table has RLS on and only grants SELECT to `anon` and `authenticated` for `published=true` products; no client write policy exists. The server uses a narrow column allowlist, bounded search, 24-item pagination, 8-second timeout and no-store responses.
 

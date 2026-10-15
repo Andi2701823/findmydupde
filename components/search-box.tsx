@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Icon } from "./icon";
-export function SearchBox({ compact = false, initialQuery = "" }: { compact?: boolean; initialQuery?: string }) {
+export function SearchBox({ compact = false, initialQuery = "", initialSource = "all" }: { compact?: boolean; initialQuery?: string; initialSource?: string }) {
   const router = useRouter();
   const [query, setQuery] = useState(initialQuery);
   const [error, setError] = useState("");
@@ -11,7 +11,8 @@ export function SearchBox({ compact = false, initialQuery = "" }: { compact?: bo
     const value = query.trim().slice(0, 120);
     if (!value) { setError("Bitte gib ein Thema oder einen Produktnamen ein."); return; }
     setError("");
-    router.push(`/suche/?q=${encodeURIComponent(value)}`);
+    const source=initialSource!=="all"?`&source=${encodeURIComponent(initialSource)}`:"";
+    router.push(`/suche/?q=${encodeURIComponent(value)}${source}`);
   }
   return <section className={`search-box editorial-search ${compact ? "compact" : ""}`} aria-label="Produkte und Ratgeber suchen">
     <form className="text-search" onSubmit={submit}>
@@ -23,7 +24,7 @@ export function SearchBox({ compact = false, initialQuery = "" }: { compact?: bo
     </form>
     <div className="suggestions">
       <span>Oft gesucht:</span>
-      {["Gesichtsserum","Sneaker","Kopfhörer"].map(word => <button key={word} type="button" onClick={() => router.push(`/suche/?q=${encodeURIComponent(word)}`)}>{word} ↗</button>)}
+      {["Gesichtsserum","Sneaker","Kopfhörer"].map(word => <button key={word} type="button" onClick={() => router.push(`/suche/?q=${encodeURIComponent(word)}${initialSource!=="all"?`&source=${encodeURIComponent(initialSource)}`:""}`)}>{word} ↗</button>)}
     </div>
     {error && <p id="search-error" role="alert" className="error-message">{error}</p>}
     {!compact && <div className="photo-search-teaser"><Icon name="image" /><div><strong>Produktsuche per Foto</strong><span>Die KI-Bildsuche wird vorbereitet. Aktuell kannst du über Produktnamen und Suchbegriffe suchen.</span></div></div>}
