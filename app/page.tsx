@@ -8,8 +8,9 @@ import { guides } from "@/lib/guides";
 import { affiliateProducts } from "@/lib/affiliate-products";
 import { AffiliateProductCard } from "@/components/affiliate-product-card";
 export const metadata: Metadata = {
-  title: "FindMyDup – Produkte finden und bewusst einkaufen",
-  description: "Produkte suchen, Händlerangebote entdecken und Kaufkriterien verstehen. FindMyDup verbindet echte Produkte mit Einkaufsratgebern für Mode, Beauty, Wohnen und Technik.",
+  title: {absolute:"FindMyDup: Preise vergleichen & günstigere Alternativen finden"},
+  description: "Suche dein Wunschprodukt, vergleiche Händlerangebote nach Preis und entdecke passende Alternativen. FindMyDup zeigt transparente Preise und hilfreiche Kauftipps.",
+  openGraph:{title:"FindMyDup – Produkte suchen und Preise vergleichen",description:"Finde passende Händlerangebote und entdecke Alternativen.",url:"https://findmydup.de/"},
   alternates: { canonical: "https://findmydup.de/" },
 };
 const categories = [
