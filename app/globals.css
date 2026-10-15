@@ -2060,6 +2060,8 @@ select {
 .affiliate-body {display:flex;flex-direction:column;flex:1;padding:15px;}
 .affiliate-category {color:var(--leaf);font-size:10px;line-height:1.4;font-weight:700;}
 .affiliate-body h3 {font-size:14px;line-height:1.45;margin:9px 0 12px;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.mactrade-card .affiliate-body h3 {-webkit-line-clamp:2;min-height:2.9em;}
+.mactrade-card .affiliate-price small {line-height:1.4;}
 .affiliate-price {margin-top:auto;display:flex;flex-direction:column;gap:6px;}
 .affiliate-price strong {font-size:21px;font-weight:750;letter-spacing:-.5px;}
 .affiliate-price small {font-size:10px;color:var(--muted);line-height:1.5;}
