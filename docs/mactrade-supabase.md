@@ -20,10 +20,14 @@ Staging project: findmydup-staging, ID bqefygvwuwqjoqkkftiv.
 Separate table: public.mactrade_feed_products. The migration 20261015_mactrade_feed_catalog.sql has been applied to staging.
 RLS protects the table. Anonymous and authenticated roles can SELECT published and in-stock rows, never write.
 
-## Import (manual Dashboard step)
+## Import status and repeatable verification
 
-1. Download MacTrade_Supabase_Import_3794.csv from ChatGPT. Do not commit the private feed or processed CSV to GitHub.
-2. Supabase Dashboard > findmydup-staging > Table Editor > mactrade_feed_products > Import data from CSV.
+Import completed on 2026-10-15 directly into findmydup-staging. Database verification: **3,794 rows, 3,794 unique IDs, 3,794 published and in stock**, zero missing names/links, zero invalid prices, zero wrong-feed rows. The original 23 zero-price records are excluded. The source CSV must NOT be imported again unless a controlled upsert/reconciliation is planned.
+
+## For a future manual CSV import
+
+1. Download MacTrade_Supabase_Import_3794.csv from ChatGPT when explicitly doing a fresh import. Do not commit the private feed or processed CSV to GitHub.
+2. For a fresh empty environment only: Supabase Dashboard > findmydup-staging > Table Editor > mactrade_feed_products > Import data from CSV.
 3. Import all 3,794 rows. Do not clear, merge into or edit JoyBuy/Samsung tables.
 4. Check in SQL Editor:
 
