@@ -40,7 +40,7 @@ export function Results({ ebaySearch = false, samsungSearch = false }: { ebaySea
       </div>
       {!q&&products.length>6&&<Link href="/produkte/" className="text-link search-see-more">Alle {products.length} Beauty-Produkte anzeigen <Icon name="arrow"/></Link>}
     </section>}
-    {samsungSearch && q.length >= 2 && category !== "Beauty" && <SamsungResults query={q} />}
+    {samsungSearch && q.length >= 2 && category !== "Beauty" && <SamsungResults key={q} query={q} />}
     {ebaySearch && q.length >= 2 && <EbayResults query={q} />}
     {guides.length>0 && <section className="search-guides">
       <div className="section-heading"><div><span className="eyebrow">EINKAUFSWISSEN</span><h2>Passende Ratgeber ({guides.length})</h2></div>
