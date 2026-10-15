@@ -9,7 +9,13 @@ export type SamsungProduct = {
   price_cents:number; delivery_cents:number|null; image_url:string; affiliate_url:string; merchant_name:string;
 };
 type Lookup = {q?:string; category?:string; page?:number; pageSize?:number; minCents?:number|null; maxCents?:number|null; sort?:SamsungSort};
-function apiConfig(){return resolveSupabaseCatalogConfig(process.env);}
+function apiConfig(){return resolveSupabaseCatalogConfig({
+  SAMSUNG_CATALOG_ENABLED:process.env.SAMSUNG_CATALOG_ENABLED,
+  SUPABASE_URL:process.env.SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY:process.env.SUPABASE_PUBLISHABLE_KEY,
+  SAMSUNG_SUPABASE_URL:process.env.SAMSUNG_SUPABASE_URL,
+  SAMSUNG_SUPABASE_PUBLISHABLE_KEY:process.env.SAMSUNG_SUPABASE_PUBLISHABLE_KEY,
+});}
 export function samsungCatalogEnabled(){return apiConfig()!==null;}
 export function sanitizeSamsungQuery(value:string):string {
   return value.replace(/[^\p{L}\p{N}\s_-]/gu," ").replace(/\s+/g," ").trim().slice(0,80);
