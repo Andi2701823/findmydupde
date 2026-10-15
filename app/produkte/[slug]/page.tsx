@@ -6,6 +6,7 @@ import {affiliateDescriptions} from "@/lib/affiliate-descriptions";
 import {AffiliateDetailImage} from "@/components/affiliate-detail-image";
 import {AffiliateProductCard} from "@/components/affiliate-product-card";
 import {Icon} from "@/components/icon";
+import {ProductInfoJsonLd} from "@/components/seo-jsonld";
 export const dynamicParams=false;
 export function generateStaticParams(){return affiliateProducts.map(p=>({slug:affiliateProductSlug(p)}));}
 function seoDescription(name:string):string{
@@ -71,6 +72,7 @@ export default async function ProductDetailPage({params}:{params:Promise<{slug:s
   const breadcrumbsJson=JSON.stringify(breadcrumbsLd).replace(/</g,"\\u003c");
   return <main id="main" className="shell product-detail-page">
     <script type="application/ld+json" dangerouslySetInnerHTML={{__html:breadcrumbsJson}}/>
+    <ProductInfoJsonLd name={product.name} image={product.image} description={excerpt} url={url}/>
     <nav className="breadcrumb" aria-label="Brotkrumennavigation">
       <Link href="/">Startseite</Link><span>/</span>
       <Link href="/produkte/">Beauty-Produkte</Link><span>/</span><span aria-current="page">{product.name}</span>
