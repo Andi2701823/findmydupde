@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-export const metadata: Metadata = {title:"Impressum",description:"Anbieterkennzeichnung und Kontaktinformationen von FindMyDup."};
+export const metadata: Metadata = {title:"Impressum",description:"Anbieterkennzeichnung und Kontaktinformationen von FindMyDup.",alternates:{canonical:"https://findmydup.de/impressum/"}};
 export default function Imprint(){return <main id="main" className="shell legal-page">
   <span className="eyebrow">ANBIETERINFORMATIONEN</span>
   <h1>Impressum</h1>
