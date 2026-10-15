@@ -135,7 +135,7 @@ try {
     await page.setViewportSize({ width, height: 900 });
     await page.goto(origin, { waitUntil: "domcontentloaded" });
     await page
-      .getByRole("heading", { name: "Finde Produkte. Entdecke mehr." })
+      .getByRole("heading", { name: "Finde Produkte. Vergleiche Preise." })
       .waitFor();
     assert.equal(
       await page.evaluate(

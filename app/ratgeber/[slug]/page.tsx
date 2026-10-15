@@ -4,7 +4,9 @@ import type { Metadata } from "next";
 import { guides, findGuide } from "@/lib/guides";
 import { GuideCard } from "@/components/guide-card";
 import { Icon } from "@/components/icon";
-import {BreadcrumbJsonLd} from "@/components/seo-jsonld";
+import {BreadcrumbJsonLd,ArticleJsonLd} from "@/components/seo-jsonld";
+import {affiliateProducts} from "@/lib/affiliate-products";
+import {AffiliateProductCard} from "@/components/affiliate-product-card";
 export function generateStaticParams() { return guides.map(g => ({ slug: g.slug })); }
 export function generateMetadata({ params }: { params: Promise<{slug: string}> }): Promise<Metadata> {
   return params.then(({slug}) => {
@@ -21,9 +23,16 @@ export default async function GuidePage({ params }: { params: Promise<{slug: str
   const guide = findGuide(slug);
   if (!guide) notFound();
   const related = guides.filter(g => g.category === guide.category && g.slug !== guide.slug).slice(0,2);
+  const products=guide.slug==="sonnenschutz-kaufen"
+    ?affiliateProducts.filter(p=>p.category==="Sonnenschutz").slice(0,3)
+    :guide.slug==="gesichtsserum-vergleichen"
+    ?affiliateProducts.filter(p=>p.category==="Gesichtspflege").slice(0,3)
+    :[];
+  const guideUrl=`https://findmydup.de/ratgeber/${guide.slug}/`;
   return (
     <main id="main" className="shell article-layout">
       <BreadcrumbJsonLd items={[{name:"Startseite",url:"https://findmydup.de/"},{name:"Ratgeber",url:"https://findmydup.de/ratgeber/"},{name:guide.title,url:`https://findmydup.de/ratgeber/${guide.slug}/`}]}/>
+      <ArticleJsonLd headline={guide.title} description={guide.excerpt} category={guide.category} keywords={guide.keywords} url={guideUrl}/>
       <nav className="breadcrumb" aria-label="Brotkrumennavigation">
         <Link href="/">Startseite</Link><span>/</span><Link href="/ratgeber/">Ratgeber</Link><span>/</span><span aria-current="page">{guide.title}</span>
       </nav>
@@ -43,9 +52,19 @@ export default async function GuidePage({ params }: { params: Promise<{slug: str
         ))}
         <aside className="article-disclosure">
           <strong>Transparenter Vergleich statt Preisversprechen</strong>
-          <p>Dieser Ratgeber enthält allgemeine Einkaufshinweise und keine bezahlte Produktplatzierung. Preise, Verfügbarkeit und Produkteigenschaften sind beim jeweiligen Händler zu prüfen.</p>
+          <p>Dieser Ratgeber enthält allgemeine Einkaufshinweise und keinen eigenen Produkttest. Verlinkte Händlerprodukte sind Affiliate-Werbelinks. Preise, Verfügbarkeit und Produkteigenschaften sind beim jeweiligen Händler zu prüfen.</p>
         </aside>
       </article>
+      {products.length>0&&<section className="search-products" aria-label="Passende Produkte aus dem Beauty-Katalog">
+        <div className="section-heading">
+          <div><span className="eyebrow">ERGÄNZEND ZUM RATGEBER</span>
+            <h2>Passende Beauty-Produkte entdecken</h2>
+            <p>Händlerangebote aus einem älteren Awin-Feed. Keine unabhängige Produktempfehlung; aktuelle Preise und Angaben bitte im Shop prüfen.</p>
+          </div>
+          <Link className="text-link" href="/produkte/">Zum gesamten Beauty-Katalog <Icon name="arrow"/></Link>
+        </div>
+        <div className="affiliate-grid">{products.map(p=><AffiliateProductCard key={p.id} product={p}/>)}</div>
+      </section>}
       <div className="article-next">
         <div className="section-heading"><div><span className="eyebrow">WEITERLESEN</span><h2>Weitere Ratgeber</h2></div>
           <Link className="text-link" href="/ratgeber/">Alle Themen <Icon name="arrow" /></Link></div>
