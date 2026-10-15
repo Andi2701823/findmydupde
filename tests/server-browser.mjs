@@ -140,7 +140,7 @@ try {
   await page.getByRole("link", { name: "Merkliste", exact: true }).click();
   await page.waitForFunction(() => document.querySelectorAll(".guide-card").length === 1);
   await page.goto(origin + "/produkte/", { waitUntil: "domcontentloaded" });
-  await page.getByRole("heading", { name: "Echte Beauty-Produkte. Direkt vom Händler." }).waitFor();
+  await page.getByRole("heading", { name: "Unser Produktkatalog." }).waitFor();
   await page.waitForFunction(() => document.querySelectorAll(".affiliate-card").length === 63);
   assert.equal(await page.locator('a[rel*="sponsored"]').count(), 63);
   await page.goto(origin + "/produkte/dermalumin-c-melanin-correcting-serum-1352/", {waitUntil:"domcontentloaded"});

@@ -104,7 +104,7 @@ try {
   await page.goto(`${origin}/ratgeber/`,{waitUntil:"domcontentloaded"});
   assert.equal(await page.locator(".guide-card").count(),8);
   await page.goto(`${origin}/produkte/`,{waitUntil:"domcontentloaded"});
-  await page.getByRole("heading",{name:"Echte Beauty-Produkte. Direkt vom Händler."}).waitFor();
+  await page.getByRole("heading",{name:"Unser Produktkatalog."}).waitFor();
   await page.waitForFunction(()=>document.querySelectorAll(".affiliate-card").length===63);
   assert.equal(await page.locator('a[rel*="sponsored"][href*="awin1.com/pclick.php"]').count(),63);
   await page.getByRole("searchbox",{name:"Produkte suchen"}).fill("Hyaluron");
