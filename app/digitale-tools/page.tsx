@@ -1,6 +1,7 @@
 import type {Metadata} from "next";
 import Link from "next/link";
 import {funnelcockpit} from "@/lib/digital-tools";
+import {BreadcrumbJsonLd} from "@/components/seo-jsonld";
 export const metadata:Metadata={
  title:"Digitale Tools für Marketing und Online-Business",
  description:"Digitale Software und Onlinedienste verständlich einordnen: Funktionen, Vertragsmodelle und transparente Partnerlinks.",
@@ -8,6 +9,7 @@ export const metadata:Metadata={
 };
 export default function DigitalToolsPage(){
  return <main id="main" className="shell affiliate-page digital-tools-page">
+  <BreadcrumbJsonLd items={[{name:"Startseite",url:"https://findmydup.de/"},{name:"Digitale Tools",url:"https://findmydup.de/digitale-tools/"}]}/>
   <nav className="breadcrumb" aria-label="Brotkrumennavigation"><Link href="/">Startseite</Link><span>/</span> Digitale Tools</nav>
   <span className="eyebrow">SOFTWARE UND ONLINE-TOOLS</span>
   <h1>Digitale Tools entdecken.</h1>
