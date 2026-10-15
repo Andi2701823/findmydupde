@@ -38,6 +38,7 @@ async function start(enabled) {
         DATABASE_ACCESS_ENABLED: String(enabled),
         CATALOG_SEARCH_ENABLED: String(enabled),
         IMAGE_SEARCH_ENABLED: "false",
+        SAMSUNG_CATALOG_ENABLED: "false",
       },
     },
   );
@@ -77,6 +78,15 @@ try {
   const disabled = await fetch(origin + "/api/products/search/?q=tasche");
   assert.equal(disabled.status, 503);
   assert.equal((await disabled.json()).error, "CATALOG_DISABLED");
+  const samsungManifest=JSON.parse(readFileSync("server-app/.next/server/app-paths-manifest.json","utf8"));
+  assert.ok(Object.keys(samsungManifest).some(x=>x.includes("/samsung/page")),"Standalone server must compile Samsung catalog page");
+  assert.ok(Object.keys(samsungManifest).some(x=>x.includes("/api/samsung/search/route")),"Standalone server must compile Samsung search route");
+  const samsungDisabledPage=await fetch(origin + "/samsung/");
+  assert.equal(samsungDisabledPage.status,404,"Samsung catalog must remain disabled without configured access");
+  const samsungDisabledApi=await fetch(origin + "/api/samsung/search/?q=Galaxy");
+  assert.equal(samsungDisabledApi.status,404,"Samsung endpoint must remain disabled without configured access");
+  assert.ok((samsungDisabledApi.headers.get("content-type")||"").includes("application/json"),"Samsung endpoint must exist and return JSON");
+  assert.equal((await samsungDisabledApi.json()).error,"Not found");
   const image = await fetch(origin + "/api/image-search/", {
     method: "POST",
     body: "private bytes",
