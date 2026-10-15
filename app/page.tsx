@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { SearchBox } from "@/components/search-box";
+import {WebsiteJsonLd} from "@/components/seo-jsonld";
 import { GuideCard } from "@/components/guide-card";
 import { Icon } from "@/components/icon";
 import { guides } from "@/lib/guides";
@@ -10,7 +11,7 @@ import { AffiliateProductCard } from "@/components/affiliate-product-card";
 export const metadata: Metadata = {
   title: {absolute:"FindMyDup: Preise vergleichen & günstigere Alternativen finden"},
   description: "Suche dein Wunschprodukt, vergleiche Händlerangebote nach Preis und entdecke passende Alternativen. FindMyDup zeigt transparente Preise und hilfreiche Kauftipps.",
-  openGraph:{title:"FindMyDup – Produkte suchen und Preise vergleichen",description:"Finde passende Händlerangebote und entdecke Alternativen.",url:"https://findmydup.de/"},
+  openGraph:{type:"website",title:"FindMyDup – Produkte suchen und Preise vergleichen",description:"Finde passende Händlerangebote und entdecke Alternativen.",url:"https://findmydup.de/",images:[{url:"https://findmydup.de/share-image/",width:1200,height:630,type:"image/png",alt:"FindMyDup – Produkte suchen und Preise vergleichen"}]},
   alternates: { canonical: "https://findmydup.de/" },
 };
 const categories = [
@@ -21,6 +22,7 @@ const categories = [
 ];
 export default function Home() {
   return <main id="main">
+    <WebsiteJsonLd/>
     <section className="hero shell search-first-hero">
       <div className="hero-copy">
         <span className="eyebrow"><span className="little-star">✳</span> PRODUKTE SUCHEN. BESSER ENTSCHEIDEN.</span>
