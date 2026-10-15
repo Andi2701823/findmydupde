@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-export const metadata: Metadata = {title:"Über FindMyDup",description:"Wofür FindMyDup steht: verständliche Einkaufshilfen, transparente Empfehlungen und ein fairer Blick auf Produkte."};
+export const metadata: Metadata = {title:"Über FindMyDup",description:"Wofür FindMyDup steht: transparente Händlerangebote, Produktvergleiche und verständliche Einkaufsratgeber.",alternates:{canonical:"https://findmydup.de/ueber-uns/"}};
 export default function AboutPage(){return <main id="main" className="shell legal-page">
   <span className="eyebrow">ÜBER FINDMYDUP</span>
   <h1>Mehr wissen, bevor du kaufst.</h1>
