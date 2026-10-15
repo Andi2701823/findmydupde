@@ -76,6 +76,11 @@ try {
   const faviconResponse=await fetch(origin + "/icon.svg");
   assert.equal(faviconResponse.status,200,"Standalone server serves the favicon");
   assert.match(faviconResponse.headers.get("content-type")||"",/image\/svg\+xml/);
+  // Software pages also compile and serve in the Hostinger standalone app.
+  const softwareIndex=await fetch(origin+"/digitale-tools/");
+  assert.equal(softwareIndex.status,200);
+  const softwareProfile=await fetch(origin+"/digitale-tools/funnelcockpit/");
+  assert.equal(softwareProfile.status,200);
   const disabled = await fetch(origin + "/api/products/search/?q=tasche");
   assert.equal(disabled.status, 503);
   assert.equal((await disabled.json()).error, "CATALOG_DISABLED");
