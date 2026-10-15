@@ -111,6 +111,28 @@ try {
   await page.getByRole("heading",{name:"Unser Produktkatalog."}).waitFor();
   await page.waitForFunction(()=>document.querySelectorAll(".affiliate-card").length===63);
   assert.equal(await page.locator('a[rel*="sponsored"][href*="awin1.com/pclick.php"]').count(),63);
+
+  // Compact product cards in both the catalog and search, with readable mobile columns.
+  for(const [width,columns] of [[390,2],[768,3],[1024,3],[1440,4]]){
+    await page.setViewportSize({width,height:900});
+    for(const route of ["/produkte/","/suche/?q=Serum&source=beauty"]){
+      await page.goto(origin+route,{waitUntil:"domcontentloaded"});
+      await page.locator(".affiliate-grid .affiliate-card").first().waitFor();
+      const layout=await page.locator(".affiliate-grid").first().evaluate(grid=>({
+        columns:getComputedStyle(grid).gridTemplateColumns.trim().split(/\s+/).length,
+        cardWidth:grid.querySelector(".affiliate-card").getBoundingClientRect().width,
+        imageRatio:grid.querySelector(".affiliate-image").getBoundingClientRect().width/
+          grid.querySelector(".affiliate-image").getBoundingClientRect().height,
+        overflow:document.documentElement.scrollWidth>innerWidth
+      }));
+      assert.equal(layout.columns,columns,`${route}: expected ${columns} grid columns at ${width}px`);
+      assert.ok(layout.cardWidth>=140,`${route}: cards must remain readable at ${width}px`);
+      assert.ok(layout.imageRatio>1.3,`${route}: cards should have compact product images`);
+      assert.equal(layout.overflow,false,`${route}: product grid overflows at ${width}px`);
+    }
+  }
+  await page.setViewportSize({width:1440,height:1000});
+  await page.goto(`${origin}/produkte/`,{waitUntil:"domcontentloaded"});
   await page.getByRole("searchbox",{name:"Produkte suchen"}).fill("Hyaluron");
   await page.waitForFunction(()=>document.querySelectorAll(".affiliate-card").length>0 && document.querySelectorAll(".affiliate-card").length<63);
   await page.getByRole("searchbox",{name:"Produkte suchen"}).fill("");
