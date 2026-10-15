@@ -31,4 +31,4 @@ Use the Supabase **publishable (public)** key, NEVER a service-role or secret ke
 2. Configure and verify the source Supabase project and RLS read-only access.
 3. In staging, set the three env vars and verify `/samsung/`, filters, paging and `/suche/?q=Galaxy`.
 4. Confirm eBay search, 63 Beauty products, Awin attribution, load time and existing smoke tests still work.
-5. Only enable production after explicit project and credential selection. Product-feed import/scheduling should be implemented as a separate server-only job, not user-facing requests.
+5. Only enable production after explicit project and credential selection. Use `npm run samsung:import -- /path/to/samsung.csv` for a **read-only dry run**. An authorized write requires `--confirm`, `SAMSUNG_FEED_IMPORT_ENABLED=true`, and server-only `SAMSUNG_SUPABASE_SERVICE_ROLE_KEY`; production additionally needs `SAMSUNG_IMPORT_PRODUCTION_ENABLED=true`. This importer never downloads a feed or publishes credentials. Scheduling periodic validated imports is future work; never perform imports in a user-facing request.
