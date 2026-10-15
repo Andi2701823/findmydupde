@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-export const metadata: Metadata = {title:"Für Händler & Marken",description:"Informationen zur Zusammenarbeit mit FindMyDup, einer deutschsprachigen Einkaufsratgeber- und Produktentdeckungswebsite."};
+export const metadata: Metadata = {title:"Für Händler & Marken",description:"Zusammenarbeit und Affiliate-Partnerschaften mit FindMyDup: transparent präsentierte Händlerangebote und unabhängige Einkaufshilfen.",alternates:{canonical:"https://findmydup.de/partner/"}};
 export default function PartnerPage(){return <main id="main" className="shell legal-page">
   <span className="eyebrow">FÜR HÄNDLER UND MARKEN</span>
   <h1>Produkte verständlich und transparent präsentieren.</h1>
