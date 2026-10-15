@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { SearchBox } from "@/components/search-box";
-import {WebsiteJsonLd} from "@/components/seo-jsonld";
+import {WebsiteJsonLd,OrganizationJsonLd} from "@/components/seo-jsonld";
 import { GuideCard } from "@/components/guide-card";
 import { Icon } from "@/components/icon";
 import { guides } from "@/lib/guides";
@@ -23,11 +23,12 @@ const categories = [
 export default function Home() {
   return <main id="main">
     <WebsiteJsonLd/>
+    <OrganizationJsonLd/>
     <section className="hero shell search-first-hero">
       <div className="hero-copy">
         <span className="eyebrow"><span className="little-star">✳</span> PRODUKTE SUCHEN. BESSER ENTSCHEIDEN.</span>
-        <h1>Finde Produkte.<br />Entdecke <span className="underlined">mehr.</span></h1>
-        <p className="hero-description">Du suchst ein bestimmtes Produkt? Starte mit einem Namen oder Stichwort. Entdecke echte Händlerprodukte und hilfreiche Tipps für deine Kaufentscheidung.</p>
+        <h1>Finde Produkte.<br /><span className="underlined">Vergleiche Preise.</span></h1>
+        <p className="hero-description">Gib den Namen deines Wunschprodukts ein. Vergleiche passende Händlerangebote nach Artikelpreis und entdecke Alternativen. Modell, Zustand und Versandkosten solltest du vor dem Kauf zusätzlich prüfen.</p>
         <SearchBox />
       </div>
       <div className="hero-visual" aria-label="Stilisierte Illustrationen von zwei Handtaschen">
