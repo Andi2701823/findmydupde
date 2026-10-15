@@ -25,8 +25,14 @@ test("ignore unrelated products, duplicate identifiers, and mismatched multiword
  ],"MacBook Pro M5");
  assert.equal(results.length,1);
  assert.equal(results[0].id,"beauty:7");
- assert.equal(relevantTitle("iPhone 16 Pro Max","iphone 16 pro"),true);
+ assert.equal(relevantTitle("iPhone 16 Pro Max","iphone 16 pro"),false);
  assert.equal(relevantTitle("iPhone 16 case","iphone 16 pro"),false);
+ assert.equal(relevantTitle("Apple iPhone 16 Pro Max 256GB","iPhone 16 Pro"),false,"Different model variant must not appear as the same device");
+ assert.equal(relevantTitle("Apple iPhone 16 Pro 256GB","iPhone 16 Pro"),true);
+ assert.equal(relevantTitle("Apple iPhone 16 Pro 256GB","iPhone 16"),false);
+ assert.equal(relevantTitle("iPhone 16 Schutzhülle silikon","iPhone 16"),false,"A 5-euro case is not a 5-euro phone");
+ assert.equal(relevantTitle("iPhone 16 Schutzhülle silikon","iPhone 16 Schutzhülle"),true);
+ assert.equal(relevantTitle("Samsung Galaxy S26 Ultra Cover","Galaxy S26 Ultra"),false);
 });
 test("feed validation rejects unexpected affiliate merchants and invalid prices",()=>{
  const base={aw_product_id:"44129500861",product_name:"MacBook Pro 16",price_cents:240000,delivery_cents:995,
