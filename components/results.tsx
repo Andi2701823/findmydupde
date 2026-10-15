@@ -38,7 +38,7 @@ export function Results({ ebaySearch = false, samsungSearch = false, joybuySearc
     <div className="results-heading">
       <span className="eyebrow">PRODUKTE UND EINKAUFSWISSEN ENTDECKEN</span>
       <h1>{q?`Funde zu „${q}“`:category?`Entdecken: ${category}`:"Was möchtest du entdecken?"}</h1>
-      <p>Suche echte Händlerprodukte in unserem wachsenden Katalog und entdecke passende Einkaufsratgeber. {joybuySearch ? "Entdecke JoyBuy-Angebote, Samsung, Beauty-Produkte und eBay-Treffer. Händler-Feedpreise sind nicht live geprüft." : samsungSearch ? "Neben dem Beauty-Katalog kannst du Samsung-Angebote und eBay-Treffer entdecken. Feedpreise werden nicht live abgefragt." : "Aktuell stammen die Katalogprodukte von bdr-beauty. Feedpreise werden nicht live abgefragt."}</p>
+      <p>Suche echte Händlerprodukte in unserem wachsenden Katalog und entdecke passende Einkaufsratgeber. {mactradeSearch ? "Neu im Katalog: MacTrade-Produkte, neben anderen freigeschalteten Händlern und Ratgebern. Feedpreise sind nicht live geprüft." : joybuySearch ? "Entdecke JoyBuy-Angebote, Samsung, Beauty-Produkte und eBay-Treffer. Händler-Feedpreise sind nicht live geprüft." : samsungSearch ? "Neben dem Beauty-Katalog kannst du Samsung-Angebote und eBay-Treffer entdecken. Feedpreise werden nicht live abgefragt." : "Aktuell stammen die Katalogprodukte von bdr-beauty. Feedpreise werden nicht live abgefragt."}</p>
     </div>
     <SearchBox compact initialQuery={q} initialSource={source}/>
     <nav className="search-source-filters" aria-label="Ergebnisse nach Quelle filtern">
