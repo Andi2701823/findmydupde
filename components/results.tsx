@@ -43,7 +43,7 @@ export function Results({ ebaySearch = false, samsungSearch = false, joybuySearc
       <p>Finde passende Angebote aus allen verfügbaren Quellen – die niedrigsten Artikelpreise stehen zuerst. Vergleiche Modell, Versand und Zustand vor dem Kauf.</p>
     </div>
     <SearchBox key={q+"|"+source} compact initialQuery={q} initialSource={source}/>
-    {combined&&<UnifiedOffers query={q} beauty={findAffiliateProducts(q)} enabled={{samsung:samsungSearch,joybuy:joybuySearch,mactrade:mactradeSearch,ebay:ebaySearch}}/>}
+    {combined&&<UnifiedOffers key={q} query={q} beauty={findAffiliateProducts(q)} enabled={{samsung:samsungSearch,joybuy:joybuySearch,mactrade:mactradeSearch,ebay:ebaySearch}}/>}
     {!combined&&<nav className="search-source-filters" aria-label="Ergebnisse nach Quelle filtern">
       {[{id:"all",label:"Alle Quellen"},...(samsungSearch?[{id:"samsung",label:"Samsung Shop"}]:[]),...(joybuySearch?[{id:"joybuy",label:"JoyBuy"}]:[]),...(mactradeSearch?[{id:"mactrade",label:"MacTrade"}]:[]),...(ebaySearch?[{id:"ebay",label:"eBay"}]:[]),{id:"beauty",label:"Beauty-Produkte"},{id:"guides",label:"Ratgeber"}].map(item=>
         <Link key={item.id} href={sourceUrl(item.id)} aria-current={source===item.id?"page":undefined}>{item.label}</Link>
