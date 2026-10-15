@@ -62,6 +62,10 @@ try {
   assert.ok(llmsText.includes("keine geprüften identischen"),"Do not overpromise product equivalence");
   const samsungDisabled=await fetch(`${origin}/samsung/`);
   assert.equal(samsungDisabled.status,404,"Samsung catalog must fail closed without Supabase configuration");
+  const joybuyDisabled=await fetch(`${origin}/joybuy/`);
+  assert.equal(joybuyDisabled.status,404,"JoyBuy catalog must fail closed before data import");
+  const joybuyApiDisabled=await fetch(`${origin}/api/joybuy/search/?q=LEGO`);
+  assert.equal(joybuyApiDisabled.status,404,"JoyBuy search API must stay disabled by default");
   const samsungApiDisabled=await fetch(`${origin}/api/samsung/search/?q=Galaxy`);
   assert.equal(samsungApiDisabled.status,404,"Samsung API must fail closed without Supabase configuration");
   const sitemap=await fetch(`${origin}/sitemap.xml`);
