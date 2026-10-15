@@ -8,7 +8,6 @@ export type JoybuyProduct={
   feed_category:string;brand:string;price_cents:number;original_price_cents:number;
   shipping_cents:number;image_url:string;affiliate_url:string;
 };
-export type JoybuySort="name"|"price-asc"|"price-desc";
 type Options={q?:string;category?:string;brand?:string;minCents?:number|null;maxCents?:number|null;sort?:JoybuySort;page?:number;pageSize?:number};
 export function joybuyCatalogEnabled(){return process.env.JOYBUY_CATALOG_ENABLED==="true"&&!!apiConfig();}
 function apiConfig(){
