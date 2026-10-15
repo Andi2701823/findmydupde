@@ -39,6 +39,7 @@ async function start(enabled) {
         CATALOG_SEARCH_ENABLED: String(enabled),
         IMAGE_SEARCH_ENABLED: "false",
         SAMSUNG_CATALOG_ENABLED: "false",
+        JOYBUY_CATALOG_ENABLED: "false",
       },
     },
   );
@@ -81,6 +82,13 @@ try {
   const samsungManifest=JSON.parse(readFileSync("server-app/.next/server/app-paths-manifest.json","utf8"));
   assert.ok(Object.keys(samsungManifest).some(x=>x.includes("/samsung/page")),"Standalone server must compile Samsung catalog page");
   assert.ok(Object.keys(samsungManifest).some(x=>x.includes("/api/samsung/search/route")),"Standalone server must compile Samsung search route");
+  assert.ok(Object.keys(samsungManifest).some(x=>x.includes("/joybuy/page")),"Standalone must compile JoyBuy catalog page");
+  assert.ok(Object.keys(samsungManifest).some(x=>x.includes("/api/joybuy/search/route")),"Standalone must compile JoyBuy search route");
+  const joybuyDisabledPage=await fetch(origin + "/joybuy/");
+  assert.equal(joybuyDisabledPage.status,404);
+  const joybuyDisabledApi=await fetch(origin + "/api/joybuy/search/?q=LEGO");
+  assert.equal(joybuyDisabledApi.status,404);
+  assert.ok((joybuyDisabledApi.headers.get("content-type")||"").includes("application/json"),"JoyBuy search disabled route must return JSON");
   const samsungDisabledPage=await fetch(origin + "/samsung/");
   assert.equal(samsungDisabledPage.status,404,"Samsung catalog must remain disabled without configured access");
   const samsungDisabledApi=await fetch(origin + "/api/samsung/search/?q=Galaxy");

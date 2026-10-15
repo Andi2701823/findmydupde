@@ -2226,3 +2226,10 @@ select {
 .samsung-catalog-page .samsung-controls label:first-child{flex:2 1 230px;}
 .samsung-catalog-page .samsung-controls .button{flex:0 0 auto;white-space:nowrap;}
 @media(max-width:600px){.search-source-filters{gap:8px;}.search-source-filters a{padding:9px 13px;font-size:13px;}.samsung-catalog-page .samsung-controls label{min-width:100%;}}
+
+/* JoyBuy search controls match Samsung catalog controls; mobile filter fields stack. */
+.joybuy-catalog-page .samsung-controls{display:flex;flex-wrap:wrap;gap:15px;align-items:end;margin-top:24px;}
+.joybuy-catalog-page .samsung-controls label{flex:1 1 150px;min-width:135px;}
+.joybuy-catalog-page .samsung-controls label:first-child{flex:2 1 220px;}
+.joybuy-catalog-page .samsung-controls .button{flex:0 0 auto;white-space:nowrap;}
+@media(max-width:600px){.joybuy-catalog-page .samsung-controls label{min-width:100%;}}
