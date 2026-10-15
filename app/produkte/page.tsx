@@ -19,6 +19,15 @@ export default function ProductsPage(){
     <aside className="affiliate-disclosure-box"><strong>Transparenzhinweis</strong>
       <p>Diese Seite enthält Werbelinks (Affiliate-Links). Bei einem Kauf können wir eine Provision erhalten. Die angezeigten Beträge sind <strong>Feedpreise und keine live geprüften Angebote</strong>. Verbindlich sind die Angaben im jeweiligen Shop. Ähnliche Namen oder Verpackungen bedeuten nicht identische Produkte.</p>
     </aside>
+    <section className="digital-tool-tile digital-tool-promo" aria-labelledby="digital-tools-catalog-heading">
+      <div className="digital-tool-mark" aria-hidden="true">FC</div>
+      <div>
+        <span className="eyebrow">DIGITALE TOOLS · SOFTWARE</span>
+        <h2 id="digital-tools-catalog-heading">FunnelCockpit – Marketing-Software</h2>
+        <p>Website- und Funnel-Builder, Mitgliederbereiche und Marketing-Werkzeuge. Software-Abo, separat von unserem Preisvergleich für physische Produkte.</p>
+        <Link href="/digitale-tools/funnelcockpit/" className="button secondary">Funktionen und Tarife ansehen →</Link>
+      </div>
+    </section>
     {mactradeCatalogEnabled()&&<section className="editorial-contact samsung-catalog-cta" aria-labelledby="mactrade-catalog-heading">
       <span className="eyebrow">MACTRADE DE · AWIN</span>
       <h2 id="mactrade-catalog-heading">MacTrade, Apple-Produkte und Zubehör</h2>
