@@ -8,6 +8,8 @@
 - [Produktsuche](https://findmydup.de/suche/): Suche nach Produktnamen oder Stichwörtern. Bei aktiver eBay-Anbindung erscheinen aktuelle eBay-Angebote. Für angezeigte Treffer ist ein Vergleich der Artikelpreise möglich.
 - [Produktkatalog](https://findmydup.de/produkte/): Beauty-Produkte aus dem Awin-Partnerdatenfeed von bdr-beauty. Feedpreise sind nicht live geprüft; verbindlich sind die Angaben beim Händler.
 - [Einkaufsratgeber](https://findmydup.de/ratgeber/): Kaufkriterien und Informationen zu Mode, Beauty, Wohnen und Technik.
+- [Digitale Tools](https://findmydup.de/digitale-tools/): Sachliche Informationen über Software-Abonnements und laufende Kosten.
+- [FunnelCockpit](https://findmydup.de/digitale-tools/funnelcockpit/): Funktionen, Anbieterbilder, Tarife und Hinweise zu einem Software-Abonnement.
 
 ## Ausgewählte Einkaufsratgeber
 
