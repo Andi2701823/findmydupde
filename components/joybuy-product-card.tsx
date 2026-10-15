@@ -1,5 +1,6 @@
 import Image from "next/image";
-import {euro,type JoybuyProduct} from "@/lib/joybuy-catalog";
+import {euro} from "@/lib/joybuy-catalog-helpers";
+import type {JoybuyProduct} from "@/lib/joybuy-catalog";
 export function JoybuyProductCard({product}:{product:JoybuyProduct}){
   const hasOlderListPrice=product.original_price_cents>product.price_cents;
   return <article className="affiliate-card">
