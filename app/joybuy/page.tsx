@@ -1,14 +1,18 @@
 import type {Metadata} from "next";
+import {merchantCatalogMetadata} from "@/lib/seo-catalog";
 import Link from "next/link";
 import {notFound} from "next/navigation";
 import {joybuyCatalogEnabled,searchJoybuyProducts,joybuyCategories,validJoybuyCategory,cleanJoybuySearch,joybuySort,euroCents} from "@/lib/joybuy-catalog";
 import {JoybuyProductCard} from "@/components/joybuy-product-card";
 export const dynamic="force-dynamic";
-export const metadata:Metadata={
-  title:"JoyBuy-Produkte entdecken | FindMyDup",
-  description:"JoyBuy DE Produkte aus dem Awin-Produktfeed: Beauty, Wohnen, Lebensmittel, Technik, Mode und mehr. Mit Filtern für Kategorien, Preise und Marke.",
-  alternates:{canonical:"https://findmydup.de/joybuy/"}
-};
+export async function generateMetadata({searchParams}:{searchParams:Promise<Record<string,string|string[]|undefined>>}):Promise<Metadata>{
+  return merchantCatalogMetadata({
+    title:"JoyBuy-Produkte entdecken",
+    description:"JoyBuy DE Produkte aus dem Awin-Produktfeed: Beauty, Wohnen, Lebensmittel, Technik, Mode und mehr. Mit Filtern für Kategorien, Preise und Marke.",
+    canonical:"https://findmydup.de/joybuy/",
+    params:await searchParams
+  });
+}
 type Params={q?:string;category?:string;brand?:string;min?:string;max?:string;sort?:string;page?:string};
 function link(filters:{q:string;category:string;brand:string;min:string;max:string;sort:string},page:number){
   const u=new URLSearchParams();
