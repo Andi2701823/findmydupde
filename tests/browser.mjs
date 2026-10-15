@@ -20,7 +20,7 @@ try {
     if(!["GET","HEAD"].includes(request.method()))uploads.push(request.url());
   });
   await page.goto(origin,{waitUntil:"domcontentloaded"});
-  await page.getByRole("heading",{name:"Finde Produkte. Entdecke mehr."}).waitFor();
+  await page.getByRole("heading",{name:"Finde Produkte. Vergleiche Preise."}).waitFor();
   await page.getByRole("link",{name:/Ratgeber lesen: Gesichtsserum vergleichen/}).waitFor();
   assert.equal(await page.locator(".product-card").count(),0);
   assert.equal(await page.getByText("Produktsuche per Foto").count(),1);
@@ -51,6 +51,9 @@ try {
   const websiteLd=JSON.parse(await page.locator('script[type="application/ld+json"]').first().innerText());
   assert.equal(websiteLd["@type"],"WebSite");
   assert.equal(websiteLd.url,"https://findmydup.de/");
+  const orgLd=JSON.parse((await page.locator('script[type="application/ld+json"]').allTextContents())[1]);
+  assert.equal(orgLd["@type"],"Organization");
+  assert.equal(orgLd.name,"FindMyDup");
   assert.equal((await fetch(`${origin}/robots.txt`).then(r=>r.text())).includes("Disallow: /"),false);
   const verification=await fetch(`${origin}/00fd05c1707e91d286f87c424f566383.html`);
   assert.equal(verification.status,200);
@@ -96,7 +99,14 @@ try {
   await page.goto(`${origin}/ratgeber/gesichtsserum-vergleichen/`,{waitUntil:"domcontentloaded"});
   await page.locator('script[type="application/ld+json"]').first().waitFor({state:"attached"});
   const guideSchemas=await page.locator('script[type="application/ld+json"]').allTextContents();
-  assert.equal(guideSchemas.length,1,"Guides expose one breadcrumb JSON-LD script");
+  assert.equal(guideSchemas.length,2,"Guides emit Breadcrumb and Article JSON-LD");
+  const guideArticle=JSON.parse(guideSchemas[1]);
+  assert.equal(guideArticle["@type"],"Article");
+  assert.equal(guideArticle.author.name,"FindMyDup");
+  assert.equal(guideArticle.publisher.name,"FindMyDup");
+  assert.equal(guideArticle.datePublished,undefined,"No invented original publication date");
+  assert.equal(guideArticle.dateModified,undefined,"No invented modified date");
+  assert.equal(await page.getByRole("heading",{name:"Passende Beauty-Produkte entdecken"}).count(),1);
   const guideBreadcrumbs=JSON.parse(guideSchemas[0]);
   assert.equal(guideBreadcrumbs["@type"],"BreadcrumbList");
   assert.equal(guideBreadcrumbs.itemListElement.length,3);
@@ -219,13 +229,18 @@ try {
   assert.equal(await page.locator("a[rel*='sponsored']").count()>0,true);
   assert.match(await page.locator('meta[property="og:image"]').getAttribute("content")||"",/bdr-beauty\.com/,"Product share preview retains product photo");
   const seoJson=await page.locator('script[type="application/ld+json"]').allTextContents();
-  assert.equal(seoJson.length,1,"Do not emit ineligible Product markup for stale Awin prices");
+  assert.equal(seoJson.length,2,"Product pages emit breadcrumbs and descriptive Product data");
   const breadcrumbSchema=JSON.parse(seoJson[0]);
   assert.equal(breadcrumbSchema["@type"],"BreadcrumbList");
   assert.equal(breadcrumbSchema.itemListElement.length,3);
   assert.equal(breadcrumbSchema.itemListElement[2].name,"DermaLumin-C Melanin Correcting Serum");
-  assert.equal(seoJson.some(schema=>/"@type"\s*:\s*"Product"/.test(schema)),false,
-    "No Product rich result without a verified current Offer, review or aggregateRating");
+  const productSchema=JSON.parse(seoJson[1]);
+  assert.equal(productSchema["@type"],"Product");
+  assert.equal(productSchema.name,"DermaLumin-C Melanin Correcting Serum");
+  assert.ok(productSchema.image[0].includes("bdr-beauty.com"));
+  assert.equal(productSchema.offers,undefined,"Never publish stale feed data as live offers");
+  assert.equal(productSchema.review,undefined,"No invented reviews");
+  assert.equal(productSchema.aggregateRating,undefined,"No invented ratings");
   await page.goto(`${origin}/ueber-uns/`,{waitUntil:"domcontentloaded"});
   await page.getByRole("heading",{name:"Mehr wissen, bevor du kaufst."}).waitFor();
   await page.goto(`${origin}/partner/`,{waitUntil:"domcontentloaded"});
