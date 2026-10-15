@@ -57,17 +57,8 @@ export default async function ProductDetailPage({params}:{params:Promise<{slug:s
   const url=`https://findmydup.de${affiliateProductPath(product)}`;
   const related=affiliateProducts.filter(p=>p.id!==product.id&&p.category===product.category).slice(0,3);
   const hint=advice[product.category];
-  const productLd={
-    "@context":"https://schema.org",
-    "@type":"Product",
-    "@id":url+"#product",
-    name:product.name,
-    sku:product.id,
-    description:excerpt,
-    image:[product.image],
-    url,
-    brand:{"@type":"Brand",name:"bdr-beauty"},
-  };
+  // Only emit BreadcrumbList while the Awin feed is stale. Google's Product rich results
+  // require a verified current Offer, review, or aggregateRating; we have none.
   const breadcrumbsLd={
     "@context":"https://schema.org",
     "@type":"BreadcrumbList",
@@ -77,9 +68,9 @@ export default async function ProductDetailPage({params}:{params:Promise<{slug:s
       {"@type":"ListItem",position:3,name:product.name,item:url},
     ],
   };
-  const markup=[productLd,breadcrumbsLd].map(o=>JSON.stringify(o).replace(/</g,"\\u003c"));
+  const breadcrumbsJson=JSON.stringify(breadcrumbsLd).replace(/</g,"\\u003c");
   return <main id="main" className="shell product-detail-page">
-    {markup.map((s,i)=><script key={i} type="application/ld+json" dangerouslySetInnerHTML={{__html:s}}/>)}
+    <script type="application/ld+json" dangerouslySetInnerHTML={{__html:breadcrumbsJson}}/>
     <nav className="breadcrumb" aria-label="Brotkrumennavigation">
       <Link href="/">Startseite</Link><span>/</span>
       <Link href="/produkte/">Beauty-Produkte</Link><span>/</span><span aria-current="page">{product.name}</span>

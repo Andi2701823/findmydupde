@@ -124,11 +124,13 @@ try {
   assert.equal(await page.locator("a[rel*='sponsored']").count()>0,true);
   assert.match(await page.locator('meta[property="og:image"]').getAttribute("content")||"",/bdr-beauty\.com/,"Product share preview retains product photo");
   const seoJson=await page.locator('script[type="application/ld+json"]').allTextContents();
-  assert.equal(seoJson.length,2);
-  const productSchema=JSON.parse(seoJson[0]);
-  assert.equal(productSchema["@type"],"Product");
-  assert.equal(productSchema.sku,"1352");
-  assert.equal("offers" in productSchema,false,"No stale feed price in structured Offer");
+  assert.equal(seoJson.length,1,"Do not emit ineligible Product markup for stale Awin prices");
+  const breadcrumbSchema=JSON.parse(seoJson[0]);
+  assert.equal(breadcrumbSchema["@type"],"BreadcrumbList");
+  assert.equal(breadcrumbSchema.itemListElement.length,3);
+  assert.equal(breadcrumbSchema.itemListElement[2].name,"DermaLumin-C Melanin Correcting Serum");
+  assert.equal(seoJson.some(schema=>/"@type"\s*:\s*"Product"/.test(schema)),false,
+    "No Product rich result without a verified current Offer, review or aggregateRating");
   await page.goto(`${origin}/ueber-uns/`,{waitUntil:"domcontentloaded"});
   await page.getByRole("heading",{name:"Mehr wissen, bevor du kaufst."}).waitFor();
   await page.goto(`${origin}/partner/`,{waitUntil:"domcontentloaded"});
