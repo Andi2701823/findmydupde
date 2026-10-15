@@ -12,7 +12,6 @@ export function SamsungResults({query}:{query:string}) {
   const [failed,setFailed]=useState(false);
   useEffect(()=>{
     const controller=new AbortController();
-    setItems([]);setCount(0);setLoading(true);setFailed(false);
     fetch("/api/samsung/search/?q="+encodeURIComponent(query),{signal:controller.signal})
       .then(async r=>{if(!r.ok)throw new Error("search failed");return await r.json() as Response;})
       .then(data=>{if(!controller.signal.aborted){setItems(data.products);setCount(data.total);setLoading(false);}})
