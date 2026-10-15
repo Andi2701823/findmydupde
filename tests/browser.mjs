@@ -92,6 +92,7 @@ try {
   assert.equal(await page.locator(".search-guides").count(),0,"Beauty filter hides guides");
   assert.ok(await page.locator(".search-products .affiliate-card").count()>0,"Beauty filter retains matching offers");
   await page.getByRole("navigation",{name:"Ergebnisse nach Quelle filtern"}).getByRole("link",{name:"Ratgeber"}).click();
+  await page.waitForFunction(()=>document.querySelector("nav.search-source-filters a[aria-current=\"page\"]")?.textContent?.includes("Ratgeber"));
   assert.equal(await page.locator(".search-products .affiliate-card").count(),0,"Guide filter hides Beauty offers");
   assert.ok(await page.locator(".search-guides .guide-card").count()>0,"Guide filter retains guides");
   await page.getByRole("searchbox",{name:"Thema oder Produkt suchen"}).fill("Powerbank");

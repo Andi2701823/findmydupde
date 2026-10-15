@@ -26,7 +26,7 @@ export function Results({ ebaySearch = false, samsungSearch = false }: { ebaySea
     const u=new URLSearchParams();
     if(q)u.set("q",q);
     if(next!=="all")u.set("source",next);
-    if((next==="all"||next==="guides")&&category)u.set("category",category);
+    if(next===source&&(next==="all"||next==="guides")&&category)u.set("category",category);
     return "/suche/"+(u.size?"?"+u.toString():"");
   }
   return <>
