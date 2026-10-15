@@ -5,6 +5,7 @@ export function Footer() {
       <div className="footer-links">
         <Link href="/produkte/">Beauty-Produkte</Link>
         <Link href="/ratgeber/">Einkaufsratgeber</Link>
+        <Link href="/digitale-tools/">Digitale Tools</Link>
         <Link href="/suche/">Themensuche</Link>
         <Link href="/ueber-uns/">Über uns</Link>
         <Link href="/partner/">Für Händler</Link>
