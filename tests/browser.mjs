@@ -94,7 +94,7 @@ try {
   await page.getByRole("link",{name:/Ratgeber lesen: Gesichtsserum/}).click();
   await page.getByRole("heading",{name:/Gesichtsserum vergleichen/}).waitFor();
   await page.goto(`${origin}/ratgeber/gesichtsserum-vergleichen/`,{waitUntil:"domcontentloaded"});
-  await page.locator('script[type="application/ld+json"]').first().waitFor();
+  await page.locator('script[type="application/ld+json"]').first().waitFor({state:"attached"});
   const guideSchemas=await page.locator('script[type="application/ld+json"]').allTextContents();
   assert.equal(guideSchemas.length,1,"Guides expose one breadcrumb JSON-LD script");
   const guideBreadcrumbs=JSON.parse(guideSchemas[0]);
