@@ -47,10 +47,24 @@ function words(value:string):string[]{
   return value.normalize("NFKD").replace(/\p{M}/gu,"").toLocaleLowerCase("de")
     .split(/[^\p{L}\p{N}]+/u).filter(Boolean);
 }
+const deviceTokens=new Set(["iphone","ipad","macbook","imac","galaxy","pixel"]);
+const accessories=new Set(["case","cover","huelle","hulle","schutzhulle","schutzhülle","panzerglas","schutzglas","schutzfolie",
+  "schutz","folie","charger","ladegeraet","ladegerät","ladekabel","kabel","adapter","holder","halterung",
+  "displayfolie","bildschirmfolie","bumper","shell","etui","ladehulle","ladehülle"]);
+const variants=new Set(["pro","max","plus","ultra","air","mini","fe"]);
 export function relevantTitle(title:string,query:string):boolean{
   const parts=words(query);
   const titleParts=words(title);
-  return parts.length>0&&parts.every(p=>titleParts.some(w=>w===p||w.startsWith(p)));
+  if(parts.length===0||!parts.every(p=>titleParts.some(w=>w===p||w.startsWith(p))))return false;
+  const deviceSearch=parts.some(t=>deviceTokens.has(t));
+  if(deviceSearch&&!parts.some(t=>accessories.has(t))&&titleParts.some(t=>accessories.has(t)))return false;
+  if(deviceSearch){
+    // Do not mix iPhone 16 with Pro/Max/Plus, or Pro with Pro Max.
+    for(const variant of variants){
+      if(titleParts.includes(variant)&&!parts.includes(variant))return false;
+    }
+  }
+  return true;
 }
 export function beautyOffers(products:BeautyEntry[]):SearchOffer[]{
   return products.flatMap(p=>cents(p.priceCents)!==null&&imageAt(p.image,"beauty")&&affiliateAt(p.affiliateUrl,"beauty")
