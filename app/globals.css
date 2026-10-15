@@ -2205,3 +2205,13 @@ select {
 .ebay-reference-button{width:100%;margin-top:14px;white-space:normal;}
 .ebay-reference-button[aria-pressed="true"]{border-color:var(--leaf);color:var(--leaf);}
 @media(max-width:600px){.ebay-comparison-panel{padding:16px;}.ebay-compare-controls{align-items:stretch;flex-direction:column;}.ebay-compare-controls input,.ebay-compare-controls button{width:100%;}.ebay-comparison-panel h3{font-size:19px;}}
+
+/* Read-only Samsung catalog: one index with filters and pagination, no thin product pages. */
+.samsung-catalog-page {padding-bottom:75px;}
+.samsung-controls {align-items:end;}
+.samsung-controls .button {min-height:44px;}
+.samsung-pagination {display:flex;align-items:center;justify-content:center;gap:22px;flex-wrap:wrap;margin:35px auto 25px;font-size:13px;}
+.samsung-pagination .button {display:inline-flex;align-items:center;}
+.samsung-catalog-cta {margin-top:32px;margin-bottom:34px;}
+.samsung-search-results {margin-top:46px;}
+@media (max-width:600px){.samsung-pagination{gap:10px;}.samsung-controls{align-items:stretch;}}
