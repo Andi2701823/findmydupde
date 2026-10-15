@@ -56,12 +56,12 @@ export function Results({ ebaySearch = false, samsungSearch = false, joybuySearc
       <p className="affiliate-disclosure">Transparenter Werbelink auf der Detailseite. Kein eigener Softwaretest.</p>
     </section>}
     {combined&&<UnifiedOffers key={q} query={q} beauty={findAffiliateProducts(q)} enabled={{samsung:samsungSearch,joybuy:joybuySearch,mactrade:mactradeSearch,ebay:ebaySearch}}/>}
-    {!combined&&<nav className="search-source-filters" aria-label="Ergebnisse nach Quelle filtern">
+    {!combined&&!digital&&<nav className="search-source-filters" aria-label="Ergebnisse nach Quelle filtern">
       {[{id:"all",label:"Alle Quellen"},...(samsungSearch?[{id:"samsung",label:"Samsung Shop"}]:[]),...(joybuySearch?[{id:"joybuy",label:"JoyBuy"}]:[]),...(mactradeSearch?[{id:"mactrade",label:"MacTrade"}]:[]),...(ebaySearch?[{id:"ebay",label:"eBay"}]:[]),{id:"beauty",label:"Beauty-Produkte"},{id:"guides",label:"Ratgeber"}].map(item=>
         <Link key={item.id} href={sourceUrl(item.id)} aria-current={source===item.id?"page":undefined}>{item.label}</Link>
       )}
     </nav>}
-    {!combined&&(source==="all"||source==="guides")&&<div className="guide-category-nav" aria-label="Thema eingrenzen">
+    {!combined&&!digital&&(source==="all"||source==="guides")&&<div className="guide-category-nav" aria-label="Thema eingrenzen">
       <Link href={"/suche/"+(q||source!=="all"?"?"+[q?"q="+encodeURIComponent(q):"",source!=="all"?"source="+encodeURIComponent(source):""].filter(Boolean).join("&"):"")} aria-current={!category?"page":undefined}>Alle Themen</Link>
       {guideCategories.map(c=>{
         const u=new URLSearchParams();
