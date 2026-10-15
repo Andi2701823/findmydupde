@@ -1,6 +1,6 @@
 import Image from "next/image";
 import type {MactradeProduct} from "@/lib/mactrade-catalog";
-import {mactradeEuros} from "@/lib/mactrade-catalog";
+const mactradeEuros=(cents:number)=>new Intl.NumberFormat("de-DE",{style:"currency",currency:"EUR"}).format(cents/100);
 
 export function MactradeProductCard({product}:{product:MactradeProduct}) {
   return <article className="affiliate-card mactrade-card">
