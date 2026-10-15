@@ -6,7 +6,7 @@ import { joybuyCatalogEnabled } from "@/lib/joybuy-catalog";
 import { mactradeCatalogEnabled } from "@/lib/mactrade-catalog";
 export const dynamic="force-dynamic";
 export const metadata:Metadata={
-  title:"Produktkatalog: Händlerprodukte entdecken | FindMyDup",
+  title:"Produktkatalog: Angebote und Produkte entdecken",
   description:"Produkte aus echten Händlerfeeds entdecken, mit Suchfiltern, Awin-Händlerlinks und transparenten Feedpreisen.",
   alternates:{canonical:"https://findmydup.de/produkte/"},
 };

@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { guides, findGuide } from "@/lib/guides";
 import { GuideCard } from "@/components/guide-card";
 import { Icon } from "@/components/icon";
+import {BreadcrumbJsonLd} from "@/components/seo-jsonld";
 export function generateStaticParams() { return guides.map(g => ({ slug: g.slug })); }
 export function generateMetadata({ params }: { params: Promise<{slug: string}> }): Promise<Metadata> {
   return params.then(({slug}) => {
@@ -22,8 +23,9 @@ export default async function GuidePage({ params }: { params: Promise<{slug: str
   const related = guides.filter(g => g.category === guide.category && g.slug !== guide.slug).slice(0,2);
   return (
     <main id="main" className="shell article-layout">
+      <BreadcrumbJsonLd items={[{name:"Startseite",url:"https://findmydup.de/"},{name:"Ratgeber",url:"https://findmydup.de/ratgeber/"},{name:guide.title,url:`https://findmydup.de/ratgeber/${guide.slug}/`}]}/>
       <nav className="breadcrumb" aria-label="Brotkrumennavigation">
-        <Link href="/">Startseite</Link><span>/</span><Link href="/ratgeber/">Ratgeber</Link><span>/</span>{guide.category}
+        <Link href="/">Startseite</Link><span>/</span><Link href="/ratgeber/">Ratgeber</Link><span>/</span><span aria-current="page">{guide.title}</span>
       </nav>
       <article className="guide-article">
         <span className="eyebrow">{guide.category.toUpperCase()} · {guide.readMinutes} MINUTEN LESEZEIT</span>

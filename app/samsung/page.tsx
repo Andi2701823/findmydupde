@@ -1,4 +1,5 @@
 import type {Metadata} from "next";
+import {merchantCatalogMetadata} from "@/lib/seo-catalog";
 import Link from "next/link";
 import {notFound} from "next/navigation";
 import {samsungCatalogEnabled,samsungCategories,sanitizeSamsungQuery,searchSamsungProducts,validSamsungCategory} from "@/lib/samsung-catalog";
@@ -6,11 +7,14 @@ import {SamsungProductCard} from "@/components/samsung-product-card";
 import {parseEuroCents,samsungSort,validPriceRange} from "@/lib/samsung-filters";
 
 export const dynamic="force-dynamic";
-export const metadata:Metadata={
-  title:"Samsung-Produkte entdecken | FindMyDup",
-  description:"Samsung Shop DE: Smartphones, Tablets, Fernseher, Monitore und Zubehör aus dem Awin-Produktfeed. Suche und filtere nach Kategorien.",
-  alternates:{canonical:"https://findmydup.de/samsung/"}
-};
+export async function generateMetadata({searchParams}:{searchParams:Promise<Record<string,string|string[]|undefined>>}):Promise<Metadata>{
+  return merchantCatalogMetadata({
+    title:"Samsung-Produkte entdecken",
+    description:"Samsung Shop DE: Smartphones, Tablets, Fernseher, Monitore und Zubehör aus dem Awin-Produktfeed. Suche und filtere nach Kategorien.",
+    canonical:"https://findmydup.de/samsung/",
+    params:await searchParams
+  });
+}
 type Params={q?:string;category?:string;page?:string;min?:string;max?:string;sort?:string};
 function link(q:string,category:string,min:string,max:string,sort:string,page:number) {
   const p=new URLSearchParams();

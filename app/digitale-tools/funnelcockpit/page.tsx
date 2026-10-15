@@ -2,11 +2,13 @@ import type {Metadata} from "next";
 import Image from "next/image";
 import Link from "next/link";
 import {funnelcockpit as product} from "@/lib/digital-tools";
+import {BreadcrumbJsonLd} from "@/components/seo-jsonld";
 
 export const metadata:Metadata={
- title:"FunnelCockpit 2026: Funktionen, Bilder, Preise & Erfahrungen",
+ title:"FunnelCockpit 2026: Funktionen, Bilder & Abo-Preise",
  description:"Was kann FunnelCockpit? Software-Bilder, FunnelBuilder, E-Mail-Marketing, Mitgliederbereiche, ehrliche Einschätzung, Testphase und Abo-Kosten im Überblick.",
- alternates:{canonical:"https://findmydup.de/digitale-tools/funnelcockpit/"}
+ alternates:{canonical:"https://findmydup.de/digitale-tools/funnelcockpit/"},
+ openGraph:{title:"FunnelCockpit 2026: Funktionen, Bilder & Preise",description:"Der FunnelCockpit-Überblick mit Anbieterbildern, Funktionen, Tarifen und ehrlichen Kaufhinweisen.",url:"https://findmydup.de/digitale-tools/funnelcockpit/"}
 };
 
 const screenshots={
@@ -31,6 +33,7 @@ function Screenshot({src,alt,caption,source,width=960,height=580}:{
 }
 export default function FunnelCockpitPage(){
  return <main id="main" className="shell affiliate-page digital-tool-detail">
+  <BreadcrumbJsonLd items={[{name:"Startseite",url:"https://findmydup.de/"},{name:"Digitale Tools",url:"https://findmydup.de/digitale-tools/"},{name:"FunnelCockpit",url:"https://findmydup.de/digitale-tools/funnelcockpit/"}]}/>
   <nav className="breadcrumb" aria-label="Brotkrumennavigation">
    <Link href="/">Startseite</Link><span>/</span><Link href="/digitale-tools/">Digitale Tools</Link><span>/</span>FunnelCockpit
   </nav>

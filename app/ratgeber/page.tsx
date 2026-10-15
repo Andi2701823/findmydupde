@@ -6,6 +6,7 @@ import { Icon } from "@/components/icon";
 export const metadata: Metadata = {
   title: "Einkaufsratgeber für Mode, Beauty, Wohnen & Technik",
   description: "Unabhängige Einkaufsratgeber zu Materialien, Funktionen, Größen und Preisen. Entdecke, worauf es beim Vergleichen wirklich ankommt.",
+  alternates:{canonical:"https://findmydup.de/ratgeber/"},
 };
 export default function GuidesPage() {
   return (

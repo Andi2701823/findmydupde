@@ -1,2 +1,2 @@
-export {default,metadata} from "../../../app/mactrade/page";
+export {default,generateMetadata} from "../../../app/mactrade/page";
 export const dynamic="force-dynamic";
