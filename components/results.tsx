@@ -8,7 +8,8 @@ import { GuideCard } from "./guide-card";
 import { AffiliateProductCard } from "./affiliate-product-card";
 import { Icon } from "./icon";
 import { EbayResults } from "./ebay-results";
-export function Results({ ebaySearch = false }: { ebaySearch?: boolean }){
+import { SamsungResults } from "./samsung-results";
+export function Results({ ebaySearch = false, samsungSearch = false }: { ebaySearch?: boolean; samsungSearch?: boolean }){
   const params=useSearchParams();
   const q=(params.get("q")||"").trim().slice(0,120);
   const categoryValue=params.get("category")||"";
@@ -20,14 +21,14 @@ export function Results({ ebaySearch = false }: { ebaySearch?: boolean }){
     <div className="results-heading">
       <span className="eyebrow">PRODUKTE UND EINKAUFSWISSEN ENTDECKEN</span>
       <h1>{q?`Funde zu „${q}“`:category?`Entdecken: ${category}`:"Was möchtest du entdecken?"}</h1>
-      <p>Suche echte Händlerprodukte in unserem wachsenden Katalog und entdecke passende Einkaufsratgeber. Aktuell stammen die Produktangebote von bdr-beauty; weitere Sortimente sollen folgen. Feedpreise werden nicht live abgefragt.</p>
+      <p>Suche echte Händlerprodukte in unserem wachsenden Katalog und entdecke passende Einkaufsratgeber. {samsungSearch ? "Neben dem Beauty-Katalog kannst du Samsung-Angebote und eBay-Treffer entdecken. Feedpreise werden nicht live abgefragt." : "Aktuell stammen die Katalogprodukte von bdr-beauty. Feedpreise werden nicht live abgefragt."}</p>
     </div>
     <SearchBox compact initialQuery={q}/>
     <div className="guide-category-nav" aria-label="Thema eingrenzen">
       <Link href={`/suche/${q?`?q=${encodeURIComponent(q)}`:""}`} aria-current={!category?"page":undefined}>Alle Themen</Link>
       {guideCategories.map(c=><Link key={c} href={`/suche/?${q?`q=${encodeURIComponent(q)}&`:""}category=${encodeURIComponent(c)}`} aria-current={category===c?"page":undefined}>{c}</Link>)}
     </div>
-    {!products.length&&!guides.length && !(ebaySearch && q.length >= 2) ? <section className="empty-state"><Icon name="search"/><h2>Keine passenden Inhalte gefunden.</h2>
+    {!products.length&&!guides.length && !(ebaySearch && q.length >= 2) && !(samsungSearch && q.length >= 2) ? <section className="empty-state"><Icon name="search"/><h2>Keine passenden Inhalte gefunden.</h2>
       <p>Probiere ein anderes Produkt oder Thema. Du kannst auch direkt in den Beauty-Produkten stöbern.</p>
       <Link href="/produkte/" className="button primary">Alle Beauty-Produkte <Icon name="arrow"/></Link></section>:null}
     {products.length>0 && <section className="search-products">
@@ -39,6 +40,7 @@ export function Results({ ebaySearch = false }: { ebaySearch?: boolean }){
       </div>
       {!q&&products.length>6&&<Link href="/produkte/" className="text-link search-see-more">Alle {products.length} Beauty-Produkte anzeigen <Icon name="arrow"/></Link>}
     </section>}
+    {samsungSearch && q.length >= 2 && category !== "Beauty" && <SamsungResults key={q} query={q} />}
     {ebaySearch && q.length >= 2 && <EbayResults query={q} />}
     {guides.length>0 && <section className="search-guides">
       <div className="section-heading"><div><span className="eyebrow">EINKAUFSWISSEN</span><h2>Passende Ratgeber ({guides.length})</h2></div>
