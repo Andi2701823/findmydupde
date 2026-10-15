@@ -119,7 +119,7 @@ try {
       await page.goto(origin+route,{waitUntil:"domcontentloaded"});
       await page.locator(".affiliate-grid .affiliate-card").first().waitFor();
       const layout=await page.locator(".affiliate-grid").first().evaluate(grid=>({
-        columns:getComputedStyle(grid).gridTemplateColumns.trim().split(/\\s+/).length,
+        columns:getComputedStyle(grid).gridTemplateColumns.trim().split(/\s+/).length,
         cardWidth:grid.querySelector(".affiliate-card").getBoundingClientRect().width,
         imageRatio:grid.querySelector(".affiliate-image").getBoundingClientRect().width/
           grid.querySelector(".affiliate-image").getBoundingClientRect().height,
@@ -132,6 +132,7 @@ try {
     }
   }
   await page.setViewportSize({width:1440,height:1000});
+  await page.goto(`${origin}/produkte/`,{waitUntil:"domcontentloaded"});
   await page.getByRole("searchbox",{name:"Produkte suchen"}).fill("Hyaluron");
   await page.waitForFunction(()=>document.querySelectorAll(".affiliate-card").length>0 && document.querySelectorAll(".affiliate-card").length<63);
   await page.getByRole("searchbox",{name:"Produkte suchen"}).fill("");
