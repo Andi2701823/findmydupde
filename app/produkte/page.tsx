@@ -4,8 +4,8 @@ import { AffiliateProductList } from "@/components/affiliate-product-list";
 import { samsungCatalogEnabled } from "@/lib/samsung-catalog";
 export const dynamic="force-dynamic";
 export const metadata:Metadata={
-  title:"Produktkatalog: Samsung und Beauty entdecken | FindMyDup",
-  description:"Händlerprodukte entdecken: Samsung-Technik und 63 Beauty-Produkte, mit Suchfiltern, Awin-Händlerlinks und transparenten Feedpreisen.",
+  title:"Produktkatalog: Händlerprodukte entdecken | FindMyDup",
+  description:"Produkte aus echten Händlerfeeds entdecken, mit Suchfiltern, Awin-Händlerlinks und transparenten Feedpreisen.",
   alternates:{canonical:"https://findmydup.de/produkte/"},
 };
 export default function ProductsPage(){
@@ -13,7 +13,7 @@ export default function ProductsPage(){
     <nav className="breadcrumb" aria-label="Brotkrumennavigation"><Link href="/">Startseite</Link><span>/</span> Produktkatalog</nav>
     <span className="eyebrow">PRODUKTE NACH HÄNDLERN ENTDECKEN</span>
     <h1>Unser Produktkatalog.</h1>
-    <p className="affiliate-intro">Entdecke Produkte aus unseren Händlerfeeds. Im Samsung-Katalog findest du Technik und Zubehör mit eigener Suche und Preisfiltern. Darunter kannst du Beauty-Produkte von bdr-beauty durchsuchen.</p>
+    <p className="affiliate-intro">Entdecke Produkte aus unseren Händlerfeeds. {samsungCatalogEnabled()?"Im Samsung-Katalog findest du Technik und Zubehör mit Suche und Preisfiltern. Darunter kannst du Beauty-Produkte durchsuchen.":"Durchsuche zunächst unser Beauty-Sortiment von bdr-beauty nach Kategorien und Produktnamen."}</p>
     <aside className="affiliate-disclosure-box"><strong>Transparenzhinweis</strong>
       <p>Diese Seite enthält Werbelinks (Affiliate-Links). Bei einem Kauf können wir eine Provision erhalten. Die angezeigten Beträge sind <strong>Feedpreise und keine live geprüften Angebote</strong>. Verbindlich sind die Angaben im jeweiligen Shop. Ähnliche Namen oder Verpackungen bedeuten nicht identische Produkte.</p>
     </aside>
