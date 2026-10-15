@@ -1,0 +1,37 @@
+# FindMyDup
+
+> FindMyDup (https://findmydup.de/) ist eine deutschsprachige Produktsuche mit Händlerangeboten, Artikelpreisvergleich und Einkaufsratgebern. Die Website hilft beim Entdecken und Einordnen von Angeboten, ohne Produktgleichheit oder Ersparnisse beim Endpreis zu garantieren.
+
+## Wichtige Seiten
+
+- [Startseite](https://findmydup.de/): Produktsuche, Einstieg und aktuelle Inhalte.
+- [Produktsuche](https://findmydup.de/suche/): Suche nach Produktnamen oder Stichwörtern. Bei aktiver eBay-Anbindung erscheinen aktuelle eBay-Angebote. Für angezeigte Treffer ist ein Vergleich der Artikelpreise möglich.
+- [Produktkatalog](https://findmydup.de/produkte/): Beauty-Produkte aus dem Awin-Partnerdatenfeed von bdr-beauty. Feedpreise sind nicht live geprüft; verbindlich sind die Angaben beim Händler.
+- [Einkaufsratgeber](https://findmydup.de/ratgeber/): Kaufkriterien und Informationen zu Mode, Beauty, Wohnen und Technik.
+
+## Ausgewählte Einkaufsratgeber
+
+- [Gesichtsserum vergleichen](https://findmydup.de/ratgeber/gesichtsserum-vergleichen/)
+- [Sonnenschutz kaufen](https://findmydup.de/ratgeber/sonnenschutz-kaufen/)
+- [Handtasche kaufen](https://findmydup.de/ratgeber/handtasche-kaufen/)
+- [Sneaker vergleichen](https://findmydup.de/ratgeber/sneaker-vergleichen/)
+- [Tischleuchten vergleichen](https://findmydup.de/ratgeber/tischleuchten-vergleichen/)
+- [Sessel kaufen](https://findmydup.de/ratgeber/sessel-kaufen/)
+- [Kopfhörer vergleichen](https://findmydup.de/ratgeber/kopfhoerer-vergleichen/)
+- [Powerbank kaufen](https://findmydup.de/ratgeber/powerbank-kaufen/)
+
+## Wichtige Hinweise zu Angeboten und Funktionen
+
+- eBay-Suchergebnisse sind tatsächliche Suchtreffer, keine geprüften identischen oder gleichwertigen Alternativen. Der Vergleich berücksichtigt Artikelpreise in derselben Währung, nicht automatisch Versand, Qualität, Modell oder Gesamtkosten.
+- Angebote, Preise, Versand und Verfügbarkeit können sich ändern. Prüfe die verbindlichen Angaben immer beim Händler.
+- Händlerlinks können Affiliate- oder Werbelinks sein und werden entsprechend gekennzeichnet.
+- Die KI-Bildsuche per Foto oder Screenshot ist geplant, derzeit aber noch nicht verfügbar.
+- FindMyDup ist keine Verkaufsplattform und wickelt Käufe nicht selbst ab.
+
+## Weitere Informationen
+
+- [Über FindMyDup](https://findmydup.de/ueber-uns/)
+- [Informationen für Händler](https://findmydup.de/partner/)
+- [Impressum](https://findmydup.de/impressum/)
+- [Datenschutz](https://findmydup.de/datenschutz/)
+- [Sitemap](https://findmydup.de/sitemap.xml)
