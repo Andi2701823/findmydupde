@@ -1,14 +1,18 @@
 import type {Metadata} from "next";
+import {merchantCatalogMetadata} from "@/lib/seo-catalog";
 import Link from "next/link";
 import {notFound} from "next/navigation";
 import {mactradeCatalogEnabled,searchMactradeProducts,mactradeCategories,validMactradeCategory,cleanMactradeSearch,mactradeSort,parseMactradeEuros} from "@/lib/mactrade-catalog";
 import {MactradeProductCard} from "@/components/mactrade-product-card";
 export const dynamic="force-dynamic";
-export const metadata:Metadata={
-  title:"MacTrade: MacBooks, iPhones und Zubehör | FindMyDup",
-  description:"MacTrade DE Produkte aus dem Awin-Produktfeed. Nach MacBooks, Desktop-Macs, iPhone, iPad, Watch und Zubehör suchen und filtern.",
-  alternates:{canonical:"https://findmydup.de/mactrade/"}
-};
+export async function generateMetadata({searchParams}:{searchParams:Promise<Record<string,string|string[]|undefined>>}):Promise<Metadata>{
+  return merchantCatalogMetadata({
+    title:"MacTrade: MacBooks, iPhones und Zubehör",
+    description:"MacTrade DE Produkte aus dem Awin-Produktfeed. Nach MacBooks, Desktop-Macs, iPhone, iPad, Watch und Zubehör suchen und filtern.",
+    canonical:"https://findmydup.de/mactrade/",
+    params:await searchParams
+  });
+}
 type Params={q?:string;category?:string;min?:string;max?:string;sort?:string;page?:string};
 function link(f:{q:string;category:string;min:string;max:string;sort:string},page:number) {
   const u=new URLSearchParams();
