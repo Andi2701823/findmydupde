@@ -2474,3 +2474,11 @@ select {
 .merchant-directory-card .merchant-directory-link{display:inline-flex;justify-content:space-between;align-items:center;gap:12px;align-self:stretch;font-size:12px;text-align:left}
 @media(max-width:1050px){.merchant-directory-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.merchant-directory-grid{grid-template-columns:1fr;gap:10px}.merchant-directory-card{padding:17px;gap:7px}.merchant-directory-card h2{font-size:21px}.merchant-directory-heading{margin-bottom:12px}}
+
+
+/* Clearly marked Reifen.com Awin advertising, separate from merchant catalog listings. */
+.reifen-ads{margin:20px 0 36px;padding:17px;border:1px solid var(--line);border-radius:12px;background:#fafbf8}
+.reifen-ads-label{font-size:11px;font-weight:700;color:var(--muted);margin:0 0 12px}
+.reifen-ads-grid{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:18px}
+.reifen-ads-grid a{display:block;max-width:100%;line-height:0}
+.reifen-ads-grid img{display:block;max-width:100%;height:auto;border:0}
