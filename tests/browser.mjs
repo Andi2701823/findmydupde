@@ -304,6 +304,17 @@ try {
       await page.goto(origin+route,{waitUntil:"domcontentloaded"});
       await page.locator("main").waitFor();
       assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,`${route} overflows at ${width}px`);
+      if(route === "/produkte/"){
+        const directory=page.locator(".merchant-directory-grid");
+        const cards=directory.locator(".merchant-directory-card");
+        assert.ok(await cards.count()>=3,"Merchant directory must display IMOU, ANTHBOT and bdr-beauty");
+        assert.equal(await directory.locator('a[href="/imou/"]').count(),1);
+        assert.equal(await directory.locator('a[href="/anthbot/"]').count(),1);
+        assert.equal(await directory.locator('a[href="#beauty-catalog-heading"]').count(),1);
+        const columns=await directory.evaluate(el=>getComputedStyle(el).gridTemplateColumns.split(/\s+/).filter(Boolean).length);
+        assert.equal(columns,width>=1051?3:width>=601?2:1,
+          "Merchant grid must have 3 desktop, 2 tablet, or 1 mobile column at "+width+"px");
+      }
       if(route === "/") {
         const about=await page.locator(".about-section").boundingBox();
         const partner=await page.locator(".editorial-partner").boundingBox();
