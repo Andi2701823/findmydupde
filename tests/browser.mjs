@@ -80,6 +80,22 @@ try {
   const sitemapContent=await sitemap.text();
   assert.match(sitemapContent,/gesichtsserum-vergleichen/);
   assert.equal((sitemapContent.match(/<loc>https:\/\/findmydup\.de\/produkte\/[^<]+<\/loc>/g)||[]).length,63);
+  assert.equal((sitemapContent.match(/<loc>https:\/\/findmydup\\.de\/anthbot\/[^<]+<\/loc>/g)||[]).length,35,
+   "All 35 ANTHBOT product pages must be in the XML sitemap");
+  const anthbotHome=await fetch(origin+"/anthbot/");
+  assert.equal(anthbotHome.status,200,"ANTHBOT catalog route must be reachable");
+  const anthbotHtml=await anthbotHome.text();
+  assert.match(anthbotHtml,/ANTHBOT Mähroboter und Zubehör entdecken/);
+  assert.match(anthbotHtml,/\/anthbot\/5-klingenscheibe-50042633781561\//);
+  const anthbotDetail=await fetch(origin+"/anthbot/5-klingenscheibe-50042633781561/");
+  assert.equal(anthbotDetail.status,200,"ANTHBOT variant page must be directly loadable");
+  const detailHtml=await anthbotDetail.text();
+  assert.match(detailHtml,/<h1[^>]*>5-Klingenscheibe<\/h1>/);
+  assert.match(detailHtml,/Produktdetails|Herstellerinformationen|HERSTELLERINFORMATIONEN/);
+  assert.match(detailHtml,/canonical/);
+  const invalidAnthbot=await fetch(origin+"/anthbot/not-a-valid-product-00000000000000/");
+  assert.equal(invalidAnthbot.status,404);
+ 
   await page.getByRole("searchbox",{name:"Thema oder Produkt suchen"}).fill("Serum");
   await page.getByRole("button",{name:"Entdecken"}).click();
   await page.getByRole("heading",{name:"Funde zu „Serum“"}).waitFor();
