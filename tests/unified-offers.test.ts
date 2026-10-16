@@ -87,3 +87,36 @@ test("IMOU is a validated Awin merchant source, rejecting lookalike shop and ima
  assert.equal(feedOffers("imou",{products:[{...p,image_url:"https://evil.example/camera.png"}]}).length,0);
  assert.equal(feedOffers("imou",{products:[{...p,price_cents:0}]}).length,0);
 });
+
+test("MacBook computer searches keep actual Neo, Air and Pro models, not compatible accessories",()=>{
+ const bad=[
+  "RP // BEEZ LArobe MacBook 13,3'' - Pink",
+  "Tomtoc 14 Zoll Laptop-Tasche mit Schutzhülle für MacBook Pro",
+  "UGREEN USB-C Ladekabel 100W kompatibel mit MacBook",
+  "Tech-Protect USB-C Adapter für MacBook",
+  "Apple 96W USB-C Netzadapter – Ladegerät für MacBook Pro",
+  "INNOCN 27 Zoll Monitor, perfekt für Apple MacBook",
+  "MacBook Pro Sleeve Case",
+ ];
+ for(const title of bad)assert.equal(relevantTitle(title,"MacBook"),false,title);
+ const real=[
+  "Macbook Neo 13'' A18 6-Core CPU - 8 GB - 256 GB SSD - Kein Netzteil",
+  "RP 2576 // Macbook Air 15'' - M4 10-Core CPU - 16 GB - 256 GB SSD",
+  "Apple MacBook Pro 14'' M5 16 GB 512GB SSD",
+  "Apple 13 Zoll MacBook Neo Laptop A18 Pro Chip 8 GB RAM 256 GB SSD",
+ ];
+ for(const title of real)assert.equal(relevantTitle(title,"MacBook"),true,title);
+ assert.equal(relevantTitle(real[1],"MacBook Air"),true);
+ assert.equal(relevantTitle(real[2],"MacBook Air"),false);
+ assert.equal(relevantTitle(real[1],"MacBook Pro"),false);
+ assert.equal(relevantTitle(real[2],"MacBook Pro"),true);
+ assert.equal(relevantTitle("MacBook Air Tasche für MacBook Pro","MacBook Tasche"),true,"Explicit accessory queries should still find compatible cases");
+ assert.equal(relevantTitle("RP // BEEZ LArobe MacBook Air 13'' Allure - Moka","MacBook"),false);
+ const offers=[
+  {...offer("mactrade:case","RP // BEEZ LArobe MacBook 13,3'' - Pink",1590),source:"mactrade" as const},
+  {...offer("joybuy:adapter","USB-C Adapter für MacBook",395),source:"joybuy" as const},
+  {...offer("mactrade:neo",real[0],71200),source:"mactrade" as const},
+  {...offer("joybuy:pro",real[2],129900),source:"joybuy" as const}
+ ];
+ assert.deepEqual(rankedOffers(offers,"MacBook").map(o=>o.id),["mactrade:neo","joybuy:pro"]);
+});
