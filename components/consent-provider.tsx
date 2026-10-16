@@ -44,11 +44,11 @@ export function ConsentProvider({children}:{children:React.ReactNode}){
   {loaded&&(choice===null||settings)&&<div className="consent-layer" role="dialog" aria-modal="false" aria-labelledby="consent-title" aria-describedby="consent-description">
     <div className="consent-card">
       <strong id="consent-title">Deine Privatsphäre bei FindMyDup</strong>
-      <p id="consent-description">Wir verwenden notwendige Browserfunktionen für die Website. Mit deiner freiwilligen Zustimmung dürfen zusätzlich Awin-Werbebanner von externen Servern geladen und Affiliate-Klicks mit Cookie-Einwilligung verarbeitet werden. Ohne Zustimmung bleibt die Produktsuche nutzbar. Du kannst deine Wahl jederzeit hier ändern.</p>
+      <p id="consent-description">Wir verwenden notwendige Browserfunktionen für die Website. Mit deiner freiwilligen Zustimmung laden wir externe Werbebanner und ermöglichen die Zuordnung von Affiliate-Klicks und möglichen Käufen. Dafür nutzen wir unseren Werbepartner Awin. Ohne Zustimmung kannst du die Produktsuche weiterhin nutzen. Du kannst deine Wahl jederzeit hier ändern.</p>
       <p><Link href="/datenschutz/">Datenschutzerklärung</Link> · <Link href="/impressum/">Impressum</Link></p>
       <div className="consent-actions">
         <button type="button" onClick={()=>decide("rejected")}>Nur notwendige</button>
-        <button type="button" onClick={()=>decide("accepted")}>Awin-Werbung erlauben</button>
+        <button type="button" onClick={()=>decide("accepted")}>Werbung & Tracking erlauben</button>
       </div>
     </div>
   </div>}
