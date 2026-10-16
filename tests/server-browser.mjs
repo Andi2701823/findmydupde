@@ -79,6 +79,12 @@ try {
   // Software pages also compile and serve in the Hostinger standalone app.
   const softwareIndex=await fetch(origin+"/digitale-tools/");
   assert.equal(softwareIndex.status,200);
+  const anthbotCatalog=await fetch(origin+"/anthbot/");
+  assert.equal(anthbotCatalog.status,200,"ANTHBOT catalog exists in Hostinger standalone");
+  const anthbotDetail=await fetch(origin+"/anthbot/5-klingenscheibe-50042633781561/");
+  assert.equal(anthbotDetail.status,200,"ANTHBOT product pages compile and serve in Hostinger standalone");
+  const anthbotInvalid=await fetch(origin+"/anthbot/invalid-00000000000000/");
+  assert.equal(anthbotInvalid.status,404);
   const softwareProfile=await fetch(origin+"/digitale-tools/funnelcockpit/");
   assert.equal(softwareProfile.status,200);
   const disabled = await fetch(origin + "/api/products/search/?q=tasche");

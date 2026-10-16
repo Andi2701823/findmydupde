@@ -1,8 +1,9 @@
 "use client";
 import {useState} from "react";
+import Link from "next/link";
 import Image from "next/image";
 import {Icon} from "./icon";
-import {anthbotFeedSnapshot,formatAnthbotPrice,type AnthbotProduct} from "@/lib/anthbot-products";
+import {anthbotFeedSnapshot,formatAnthbotPrice,anthbotProductPath,type AnthbotProduct} from "@/lib/anthbot-products";
 
 export function AnthbotProductCard({product}:{product:AnthbotProduct}) {
  const [broken,setBroken]=useState(false);
@@ -14,7 +15,8 @@ export function AnthbotProductCard({product}:{product:AnthbotProduct}) {
   </div>
   <div className="affiliate-body">
    <span className="affiliate-category">{product.category} · ANTHBOT DE</span>
-   <h3>{product.name}</h3>
+   <h3><Link href={anthbotProductPath(product)}>{product.name}</Link></h3>
+   <Link href={anthbotProductPath(product)} className="affiliate-details-link">Beschreibung & Details ansehen <Icon name="arrow"/></Link>
    <div className="affiliate-price">
     <strong>{formatAnthbotPrice(product.priceCents)}</strong>
     <small>Artikelpreis laut Awin-Feed vom {anthbotFeedSnapshot}, nicht live</small>
