@@ -42,7 +42,7 @@ export function PartnerBannerRotation() {
           aria-label={`Werbung von ${banner.name} (öffnet in neuem Tab)`}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={image} alt={`${banner.name} Werbebanner`} loading="lazy" />
-          <span className="partner-banner-text">Angebote bei {banner.name} ansehen ↗</span>
+          <span className="partner-banner-text" style={{ display: "block", fontSize: 12, lineHeight: 1.5, padding: "10px 8px", textAlign: "center", color: "#29734f", fontWeight: 700 }}>Angebote bei {banner.name} ansehen ↗</span>
         </a>
       </div>
       <div className="partner-banner-controls" aria-label="Werbebanner wechseln">
