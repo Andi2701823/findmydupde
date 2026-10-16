@@ -3,6 +3,7 @@ import "./globals.css";
 import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
 import { FavoritesProvider } from "@/components/favorites";
+import { ConsentProvider } from "@/components/consent-provider";
 export const metadata: Metadata = {
   metadataBase: new URL("https://findmydup.de"),
   icons: { icon: [{url:"/icon.svg",type:"image/svg+xml",sizes:"any"}], shortcut:"/icon.svg" },
@@ -15,8 +16,8 @@ export const metadata: Metadata = {
   twitter: {card:"summary_large_image",title:"FindMyDup – Produkte suchen und Preise vergleichen",description:"Echte Händlerangebote entdecken, Preise vergleichen und Einkaufsratgeber lesen.",images:["https://findmydup.de/share-image/"]},
 };
 export default function RootLayout({children}:{children:React.ReactNode}){
-  return <html lang="de"><body><FavoritesProvider>
+  return <html lang="de"><body><ConsentProvider><FavoritesProvider>
     <a href="#main" className="skip-link">Zum Inhalt springen</a>
     <Navigation />{children}<Footer />
-  </FavoritesProvider></body></html>;
+  </FavoritesProvider></ConsentProvider></body></html>;
 }
