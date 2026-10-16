@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AffiliateProductList } from "@/components/affiliate-product-list";
 import {MerchantDirectoryCard} from "@/components/merchant-directory-card";
+import {PartnerBannerRotation} from "@/components/partner-banner-rotation";
 import { samsungCatalogEnabled } from "@/lib/samsung-catalog";
 import { joybuyCatalogEnabled } from "@/lib/joybuy-catalog";
 import { mactradeCatalogEnabled } from "@/lib/mactrade-catalog";
@@ -49,45 +50,5 @@ export default function ProductsPage(){
           href="#beauty-catalog-heading" action="Beauty-Produkte ansehen" accent="beauty"/>
       </div>
     </section>
-    <section className="reifen-ads" aria-label="Werbung unserer Partner">
-      <p className="reifen-ads-label">Anzeige · Angebote unserer Partner</p>
-      <div className="reifen-ads-grid">
-        <a rel="sponsored nofollow noopener noreferrer" href="https://www.awin1.com/cread.php?s=3855040&v=7605&q=403450&r=3123004" target="_blank" aria-label="Werbung von Reifen.com, Banner 1 (öffnet in neuem Tab)">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="https://www.awin1.com/cshow.php?s=3855040&v=7605&q=403450&r=3123004" alt="Reifen.com Werbebanner" loading="lazy" />
-        </a>
-        <a rel="sponsored nofollow noopener noreferrer" href="https://www.awin1.com/cread.php?s=3855041&v=7605&q=403450&r=3123004" target="_blank" aria-label="Werbung von Reifen.com, Banner 2 (öffnet in neuem Tab)">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="https://www.awin1.com/cshow.php?s=3855041&v=7605&q=403450&r=3123004" alt="Reifen.com Werbebanner" loading="lazy" />
-        </a>
-        <a rel="sponsored nofollow noopener noreferrer" href="https://www.awin1.com/cread.php?s=3820327&v=14815&q=381849&r=3123004" target="_blank" aria-label="Werbung von Samsung Shop DE, Banner 3 (öffnet in neuem Tab)">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="https://www.awin1.com/cshow.php?s=3820327&v=14815&q=381849&r=3123004" alt="Samsung Shop DE Werbebanner" loading="lazy" />
-        </a>
-        <a rel="sponsored nofollow noopener noreferrer" href="https://www.awin1.com/cread.php?s=2481981&v=13737&q=372932&r=3123004" target="_blank" aria-label="Werbung von MacTrade, Banner 4 (öffnet in neuem Tab)">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="https://www.awin1.com/cshow.php?s=2481981&v=13737&q=372932&r=3123004" alt="MacTrade Werbebanner" loading="lazy" />
-        </a>
-        <a rel="sponsored nofollow noopener noreferrer" href="https://www.awin1.com/cread.php?s=2481968&v=13737&q=372932&r=3123004" target="_blank" aria-label="Werbung von MacTrade, Banner 5 (öffnet in neuem Tab)">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="https://www.awin1.com/cshow.php?s=2481968&v=13737&q=372932&r=3123004" alt="MacTrade Werbebanner" loading="lazy" />
-        </a>
-      </div>
-    </section>
-    <section className="digital-tool-tile digital-tool-promo" aria-labelledby="digital-tools-catalog-heading">
-      <div className="digital-tool-mark" aria-hidden="true">FC</div>
-      <div>
-        <span className="eyebrow">DIGITALE TOOLS · SOFTWARE</span>
-        <h2 id="digital-tools-catalog-heading">FunnelCockpit – Marketing-Software</h2>
-        <p>Website- und Funnel-Builder, Mitgliederbereiche und Marketing-Werkzeuge. Software-Abo, separat von unserem Preisvergleich für physische Produkte.</p>
-        <Link href="/digitale-tools/funnelcockpit/" className="button secondary">Funktionen und Tarife ansehen →</Link>
-      </div>
-    </section>
-    <section aria-labelledby="beauty-catalog-heading">
-      <span className="eyebrow">BDR-BEAUTY DE</span>
-      <h2 id="beauty-catalog-heading">Beauty-Produkte entdecken</h2>
-      <p className="affiliate-intro">63 Produkte von bdr-beauty mit Kategorie- und Namensfilter. Die Preise stammen aus einem älteren Awin-Feed.</p>
-      <AffiliateProductList/>
-    </section>
-  </main>;
-}
+    <PartnerBannerRotation />
+
