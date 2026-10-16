@@ -1,3 +1,4 @@
+import {relevantMacbookPage} from "@/lib/relevant-device-pages";
 import {NextRequest,NextResponse} from "next/server";
 import {mactradeCatalogEnabled,cleanMactradeSearch,searchMactradeProducts} from "@/lib/mactrade-catalog";
 export const dynamic="force-dynamic";
@@ -6,7 +7,7 @@ export async function GET(request:NextRequest){
   const q=cleanMactradeSearch(request.nextUrl.searchParams.get("q")||"");
   if(q.length<2)return NextResponse.json({products:[],total:0},{headers:{"Cache-Control":"no-store"}});
   try{
-    const {products,total}=await searchMactradeProducts({q,pageSize:24,sort:"price-asc"});
+    const {products,total}=await relevantMacbookPage(q,(page)=>searchMactradeProducts({q,page,pageSize:24,sort:"price-asc"}));
     return NextResponse.json({products,total},{headers:{"Cache-Control":"no-store"}});
   }catch{return NextResponse.json({error:"Temporarily unavailable"},{status:503,headers:{"Cache-Control":"no-store"}});}
 }

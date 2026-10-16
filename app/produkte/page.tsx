@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AffiliateProductList } from "@/components/affiliate-product-list";
+import {MerchantDirectoryCard} from "@/components/merchant-directory-card";
 import { samsungCatalogEnabled } from "@/lib/samsung-catalog";
 import { joybuyCatalogEnabled } from "@/lib/joybuy-catalog";
 import { mactradeCatalogEnabled } from "@/lib/mactrade-catalog";
@@ -17,10 +18,37 @@ export default function ProductsPage(){
     <nav className="breadcrumb" aria-label="Brotkrumennavigation"><Link href="/">Startseite</Link><span>/</span> Produktkatalog</nav>
     <span className="eyebrow">PRODUKTE NACH HÄNDLERN ENTDECKEN</span>
     <h1>Unser Produktkatalog.</h1>
-    <p className="affiliate-intro">Entdecke Produkte aus unseren Händlerfeeds. {mactradeCatalogEnabled()?"Bei MacTrade findest du Apple-Produkte und Zubehör mit Suche und Filtern. Weitere Händlerkataloge und Beauty-Produkte stehen je nach Freischaltung bereit.":joybuyCatalogEnabled()?"Mit JoyBuy und Samsung findest du Produkte aus verschiedenen Kategorien. Darunter kannst du Beauty-Produkte von bdr-beauty entdecken.":samsungCatalogEnabled()?"Im Samsung-Katalog findest du Technik und Zubehör mit Suche und Preisfiltern. Darunter kannst du Beauty-Produkte durchsuchen.":"Durchsuche zunächst unser Beauty-Sortiment von bdr-beauty nach Kategorien und Produktnamen."}</p>
+    <p className="affiliate-intro">Entdecke unsere Awin-Händler auf einen Blick und wähle die passende Produktsuche. In den einzelnen Händlerkatalogen kannst du das Sortiment nach Modell, Kategorie oder Preis eingrenzen.</p>
     <aside className="affiliate-disclosure-box"><strong>Transparenzhinweis</strong>
       <p>Diese Seite enthält Werbelinks (Affiliate-Links). Bei einem Kauf können wir eine Provision erhalten. Die angezeigten Beträge sind <strong>Feedpreise und keine live geprüften Angebote</strong>. Verbindlich sind die Angaben im jeweiligen Shop. Ähnliche Namen oder Verpackungen bedeuten nicht identische Produkte.</p>
     </aside>
+    <section aria-labelledby="merchant-directory-heading" className="merchant-directory">
+      <div className="merchant-directory-heading">
+        <span className="eyebrow">ALLE HÄNDLER AUF EINEN BLICK</span>
+        <h2 id="merchant-directory-heading">Unsere Händler entdecken</h2>
+        <p>Wähle einen Shop und durchsuche dessen Angebot. Preise stammen aus Händlerfeeds und sind keine Live-Angebote.</p>
+      </div>
+      <div className="merchant-directory-grid">
+        <MerchantDirectoryCard label="IMOU DE · AWIN" name="IMOU"
+          description={imouModels.length+" Modellgruppen mit "+imouVariantCount+" Varianten: Kameras, Sicherheit und Smart Home."}
+          href="/imou/" action="IMOU entdecken" accent="imou"/>
+        <MerchantDirectoryCard label="ANTHBOT DE · AWIN" name="ANTHBOT"
+          description={anthbotProducts.length+" Mähroboter- und Zubehörvarianten für den Garten."}
+          href="/anthbot/" action="ANTHBOT entdecken" accent="anthbot"/>
+        {mactradeCatalogEnabled()&&<MerchantDirectoryCard label="MACTRADE DE · AWIN" name="MacTrade"
+          description="MacBooks, iPhones, iPads, Desktop-Macs und Zubehör mit eigenen Produktfiltern."
+          href="/mactrade/" action="MacTrade entdecken" accent="mactrade"/>}
+        {joybuyCatalogEnabled()&&<MerchantDirectoryCard label="JOYBUY DE · AWIN" name="JoyBuy"
+          description="Technik, Haushalt, Beauty, Spielzeug und weitere Produktkategorien."
+          href="/joybuy/" action="JoyBuy entdecken" accent="joybuy"/>}
+        {samsungCatalogEnabled()&&<MerchantDirectoryCard label="SAMSUNG SHOP DE · AWIN" name="Samsung"
+          description="Smartphones, Fernseher, Tablets und Zubehör aus dem Samsung-Shop."
+          href="/samsung/" action="Samsung entdecken" accent="samsung"/>}
+        <MerchantDirectoryCard label="BDR-BEAUTY DE · AWIN" name="bdr-beauty"
+          description="63 Beauty-Produkte: Gesichtspflege, Masken, Sonnenschutz und Sets."
+          href="#beauty-catalog-heading" action="Beauty-Produkte ansehen" accent="beauty"/>
+      </div>
+    </section>
     <section className="digital-tool-tile digital-tool-promo" aria-labelledby="digital-tools-catalog-heading">
       <div className="digital-tool-mark" aria-hidden="true">FC</div>
       <div>
@@ -30,36 +58,6 @@ export default function ProductsPage(){
         <Link href="/digitale-tools/funnelcockpit/" className="button secondary">Funktionen und Tarife ansehen →</Link>
       </div>
     </section>
-    <section className="editorial-contact samsung-catalog-cta" aria-labelledby="imou-catalog-heading">
-      <span className="eyebrow">IMOU DE · AWIN</span>
-      <h2 id="imou-catalog-heading">IMOU – Überwachungskameras und Smart Home</h2>
-      <p>{imouModels.length} Kameras, Sets und weitere Modellgruppen mit {imouVariantCount} Händler-Varianten. Preise aus dem Awin-Feed, nicht live aktualisiert.</p>
-      <Link href="/imou/" className="button secondary">Zum IMOU-Katalog →</Link>
-    </section>
-    <section className="editorial-contact samsung-catalog-cta" aria-labelledby="anthbot-catalog-heading">
-      <span className="eyebrow">ANTHBOT DE · AWIN</span>
-      <h2 id="anthbot-catalog-heading">ANTHBOT – Mähroboter und Garten-Zubehör</h2>
-      <p>{anthbotProducts.length} Varianten aus dem Händlerfeed, darunter Mähroboter und Ersatzteile. Suche, Preisfilter und transparente Awin-Links. Preise sind nicht live geprüft.</p>
-      <Link href="/anthbot/" className="button secondary">Zum ANTHBOT-Katalog →</Link>
-    </section>
-    {mactradeCatalogEnabled()&&<section className="editorial-contact samsung-catalog-cta" aria-labelledby="mactrade-catalog-heading">
-      <span className="eyebrow">MACTRADE DE · AWIN</span>
-      <h2 id="mactrade-catalog-heading">MacTrade, Apple-Produkte und Zubehör</h2>
-      <p>MacBooks, Desktop-Macs, iPhones, iPads und Zubehör mit Preis- und Kategorie-Filtern. Preise und Lieferstatus stammen aus einem Händlerfeed.</p>
-      <Link href="/mactrade/" className="button secondary">Zum MacTrade-Katalog →</Link>
-    </section>}
-    {joybuyCatalogEnabled()&&<section className="editorial-contact samsung-catalog-cta" aria-labelledby="joybuy-catalog-heading">
-      <span className="eyebrow">JOYBUY DE · AWIN</span>
-      <h2 id="joybuy-catalog-heading">JoyBuy – Produkte aus vielen Kategorien</h2>
-      <p>Beauty, Haushalt, Lebensmittel, Technik, Spielzeug und vieles mehr. Durchsuche die lieferbaren Feedangebote mit Preis-, Kategorie- und Markenfiltern.</p>
-      <Link href="/joybuy/" className="button secondary">Zum JoyBuy-Katalog →</Link>
-    </section>}
-    {samsungCatalogEnabled()&&<section className="editorial-contact samsung-catalog-cta" aria-labelledby="samsung-catalog-heading">
-      <span className="eyebrow">NEU: SAMSUNG SHOP DE</span>
-      <h2 id="samsung-catalog-heading">Samsung Shop DE – Technik &amp; Zubehör</h2>
-      <p>Smartphones, Fernseher, Tablets und Zubehör im eigenen Katalog mit Suche, Filtern und transparenten Awin-Händlerlinks.</p>
-      <Link href="/samsung/" className="button secondary">Zum Samsung-Katalog →</Link>
-    </section>}
     <section aria-labelledby="beauty-catalog-heading">
       <span className="eyebrow">BDR-BEAUTY DE</span>
       <h2 id="beauty-catalog-heading">Beauty-Produkte entdecken</h2>
