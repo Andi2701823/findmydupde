@@ -30,7 +30,7 @@ function OfferRow({offer,first}:{offer:SearchOffer;first:boolean}){
       </div>
       <a className="button secondary unified-offer-action" href={offer.href} target="_blank"
         rel={offer.source==="ebay"?"noopener noreferrer":"sponsored nofollow noopener noreferrer"}>
-        Beim Händler prüfen ↗
+        Beim Händler prüfen* ↗
       </a>
     </div>
   </article>;
@@ -83,6 +83,7 @@ export function UnifiedOffers({query,beauty,anthbot,enabled}:{query:string;beaut
     </>:active?.pending?<p role="status">Passende Angebote und Preise werden geladen …</p>:
       <p className="empty-state" role="status">Keine passenden Händlerangebote gefunden. Versuche einen anderen Suchbegriff.</p>}
     {active?.failed.length?<p className="unified-results-notice">Einige Händler konnten nicht geladen werden. Die Preisübersicht ist möglicherweise unvollständig.</p>:null}
+    <p className="unified-results-note">* Affiliate-Links können uns eine Provision einbringen. Für dich entstehen keine zusätzlichen Kosten.</p>
     <p className="unified-results-note">Dies sind Treffer zu deinem Suchbegriff, nicht automatisch identische Produkte. Unterschiedliche Modelle, Größen und Zustände sind möglich. Es werden nur geladene Angebote berücksichtigt. Händlerpreise stammen teilweise aus älteren Feeds und können sich geändert haben; verbindlich sind die Angaben im Shop.</p>
   </section>;
 }
