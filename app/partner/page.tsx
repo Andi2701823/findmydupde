@@ -1,3 +1,4 @@
+import {supportEmail} from "@/lib/site-contact";
 import Link from "next/link";
 import type { Metadata } from "next";
 export const metadata: Metadata = {title:"Für Händler & Marken",description:"Zusammenarbeit und Affiliate-Partnerschaften mit FindMyDup: transparent präsentierte Händlerangebote und unabhängige Einkaufshilfen.",alternates:{canonical:"https://findmydup.de/partner/"}};
@@ -14,6 +15,6 @@ export default function PartnerPage(){return <main id="main" className="shell le
   <h2>Affiliate-Partnerschaften</h2>
   <p>Wir arbeiten über Awin mit freigegebenen Partnern zusammen. Auf unserer Beauty-Produktseite zeigen wir derzeit Produkte von bdr-beauty DE mit gekennzeichneten Affiliate-Links. Produktdaten, Bilder und Händlerlinks nutzen wir nur im Rahmen bestehender Freigaben und der jeweils geltenden Programmbedingungen. Wir machen keine unbelegten Angaben zu Reichweite, Verkäufen oder Produktgleichwertigkeit.</p>
   <h2>Kontakt für Kooperationen</h2>
-  <p>Sie möchten mögliche Formen der Zusammenarbeit besprechen? Kontaktieren Sie uns unter <a href="mailto:andreas.paul4282@gmail.com?subject=Partnerschaft%20FindMyDup">andreas.paul4282@gmail.com</a>. Weitere Betreiberangaben stehen im <Link href="/impressum/">Impressum</Link>.</p>
+  <p>Sie möchten mögliche Formen der Zusammenarbeit besprechen? Kontaktieren Sie uns unter <a href={"mailto:"+supportEmail+"?subject=Partnerschaft%20FindMyDup"}>{supportEmail}</a>. Weitere Betreiberangaben stehen im <Link href="/impressum/">Impressum</Link>.</p>
   <Link href="/ratgeber/" className="button secondary">Unsere Inhalte ansehen</Link>
 </main>;}
