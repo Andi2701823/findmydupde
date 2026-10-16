@@ -88,7 +88,7 @@ try {
   assert.equal(imouCatalog.status,200);
   const imouCatalogHtml=await imouCatalog.text();
   assert.match(imouCatalogHtml,/IMOU Überwachungskameras und Smart Home entdecken/);
-  assert.match(imouCatalogHtml,/69 Produktgruppen/);
+  assert.match(imouCatalogHtml.replaceAll("<!-- -->",""),/69 Produktgruppen/);
   const modelPage=await fetch(origin+"/imou/imou-ranger-2c-wifi-security-surveillance-camera-8143695413560/");
   assert.equal(modelPage.status,200,"The first IMOU model route is a real product detail page");
   const modelHtml=await modelPage.text();
