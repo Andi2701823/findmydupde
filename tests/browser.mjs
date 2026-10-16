@@ -19,6 +19,32 @@ try {
     if(/^https?:/.test(request.url())&&!request.url().startsWith(origin))remoteRequests.push(request.url());
     if(!["GET","HEAD"].includes(request.method()))uploads.push(request.url());
   });
+  // Existing affiliate consent predates Analytics. A separate Analytics choice must appear.
+  const analyticsContext=await browser.newContext();
+  await analyticsContext.addInitScript(()=>{
+    localStorage.setItem("findmydup:affiliate-consent:v1","accepted");
+    localStorage.removeItem("findmydup:analytics-consent:v1");
+  });
+  const analyticsPage=await analyticsContext.newPage();
+  const analyticsRequests=[];
+  await analyticsPage.route("https://www.googletagmanager.com/**",route=>{
+    analyticsRequests.push(route.request().url());
+    return route.abort();
+  });
+  await analyticsPage.goto(origin,{waitUntil:"domcontentloaded"});
+  await analyticsPage.getByRole("dialog",{name:"Deine Privatsphäre bei FindMyDup"}).waitFor();
+  assert.equal(await analyticsPage.locator('script[data-findmydup-analytics]').count(),0,
+    "Google Analytics must not load before Analytics consent");
+  await analyticsPage.getByRole("checkbox",{name:"Besucherstatistik mit Google Analytics erlauben"}).check();
+  await analyticsPage.getByRole("button",{name:"Auswahl speichern"}).click();
+  await analyticsPage.locator('script[data-findmydup-analytics]').waitFor();
+  assert.equal(await analyticsPage.locator('script[data-findmydup-analytics]').getAttribute("src"),
+    "https://www.googletagmanager.com/gtag/js?id=G-D3QN1F7G47");
+  assert.equal(await analyticsPage.evaluate(()=>localStorage.getItem("findmydup:analytics-consent:v1")),
+    "accepted");
+  assert.ok(analyticsRequests.some(url=>url.includes("G-D3QN1F7G47")),
+    "Consent must trigger the real Google Analytics tag request");
+  await analyticsContext.close();
   await page.goto(origin,{waitUntil:"domcontentloaded"});
   await page.getByRole("heading",{name:"Finde Produkte. Vergleiche Preise."}).waitFor();
   await page.getByRole("link",{name:/Ratgeber lesen: Gesichtsserum vergleichen/}).waitFor();
