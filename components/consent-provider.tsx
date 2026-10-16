@@ -12,9 +12,10 @@ export function ConsentProvider({children}:{children:React.ReactNode}){
  const [loaded,setLoaded]=useState(false);
  const [settings,setSettings]=useState(false);
  const [analytics,setAnalytics]=useState(false);
+ const [analyticsGranted,setAnalyticsGranted]=useState(false);
  useEffect(()=>{
    const timer=window.setTimeout(()=>{
-     try {const saved=localStorage.getItem(key);if(saved==="accepted"||saved==="rejected")setChoice(saved);setAnalytics(localStorage.getItem(analyticsKey)==="accepted");}catch{}
+     try {const saved=localStorage.getItem(key);if(saved==="accepted"||saved==="rejected")setChoice(saved);const granted=localStorage.getItem(analyticsKey)==="accepted";setAnalytics(granted);setAnalyticsGranted(granted);}catch{}
      setLoaded(true);
    },0);
    return ()=>window.clearTimeout(timer);
@@ -39,7 +40,7 @@ export function ConsentProvider({children}:{children:React.ReactNode}){
    return ()=>{document.removeEventListener("click",update,true);document.removeEventListener("auxclick",update,true);};
  },[loaded,choice]);
  useEffect(()=>{
-   if(!loaded||!analytics)return;
+   if(!loaded||!analyticsGranted)return;
    // Basic consent mode: never download Google Analytics before opt-in.
    const w=window as Window & {dataLayer?:unknown[];gtag?:(...args:unknown[])=>void};
    w.dataLayer=w.dataLayer||[];
@@ -55,15 +56,15 @@ export function ConsentProvider({children}:{children:React.ReactNode}){
      script.src="https://www.googletagmanager.com/gtag/js?id="+measurementId;
      document.head.appendChild(script);
    }
- },[loaded,analytics]);
+ },[loaded,analyticsGranted]);
  useEffect(()=>{
-   if(!loaded||analytics)return;
+   if(!loaded||analyticsGranted)return;
    const w=window as Window & {gtag?:(...args:unknown[])=>void};
    w.gtag?.("consent","update",{analytics_storage:"denied",ad_storage:"denied",ad_user_data:"denied",ad_personalization:"denied"});
  },[loaded,analytics]);
  function decide(next:Exclude<Choice,null>, allowAnalytics=analytics){
    try{localStorage.setItem(key,next);localStorage.setItem(analyticsKey,allowAnalytics?"accepted":"rejected");}catch{}
-   setAnalytics(allowAnalytics);setChoice(next);setSettings(false);
+   setAnalytics(allowAnalytics);setAnalyticsGranted(allowAnalytics);setChoice(next);setSettings(false);
  }
  return <ConsentContext.Provider value={loaded?choice:null}>
   {children}
