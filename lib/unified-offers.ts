@@ -1,5 +1,5 @@
 import type {AnthbotProduct} from "./anthbot-products";
-export type OfferSource="beauty"|"joybuy"|"samsung"|"mactrade"|"ebay"|"anthbot";
+export type OfferSource="beauty"|"joybuy"|"samsung"|"mactrade"|"ebay"|"anthbot"|"imou";
 export type SearchOffer={
   id:string;source:OfferSource;merchant:string;title:string;image:string;href:string;
   articleCents:number;shippingCents:number|null;condition:string|null;
@@ -8,7 +8,7 @@ export type SearchOffer={
 type Entry=Record<string,unknown>;
 export type BeautyEntry={id:string;name:string;image:string;priceCents:number;affiliateUrl:string;merchant:string};
 const merchantNames:Record<OfferSource,string>={
-  beauty:"bdr-beauty",joybuy:"JoyBuy",samsung:"Samsung Shop",mactrade:"MacTrade",ebay:"eBay",anthbot:"ANTHBOT"
+  beauty:"bdr-beauty",joybuy:"JoyBuy",samsung:"Samsung Shop",mactrade:"MacTrade",ebay:"eBay",anthbot:"ANTHBOT",imou:"IMOU DE"
 };
 function urlAt(raw:unknown,host:string,path:string):raw is string{
   if(typeof raw!=="string")return false;
@@ -21,6 +21,7 @@ function imageAt(raw:unknown,source:OfferSource):raw is string{
     const u=new URL(raw);
     if(u.protocol!=="https:"||u.username||u.password||u.port)return false;
     if(source==="ebay")return u.hostname==="i.ebayimg.com";
+    if(source==="imou")return u.hostname==="cdn.shopify.com"&&u.pathname.startsWith("/s/files/1/0727/5711/7240/");
     if(source==="anthbot")return u.hostname==="cdn.shopify.com"&&u.pathname.startsWith("/s/files/1/0904/5983/2633/");
     if(source==="mactrade")return u.hostname==="www.mactrade.de"&&u.pathname.startsWith("/media/");
     if(source==="samsung")return ["images.samsung.com","dashboard.feedspark.com"].includes(u.hostname);
@@ -45,7 +46,7 @@ function affiliateAt(raw:unknown,source:OfferSource):raw is string {
   if(!urlAt(raw,"www.awin1.com",path))return false;
   const u=new URL(raw);
   if(source==="joybuy")return u.searchParams.get("awinmid")==="123926"&&u.searchParams.get("awinaffid")==="3123004";
-  return u.searchParams.get("m")===({beauty:"125128",samsung:"14815",mactrade:"13737"} as const)[source]
+  return u.searchParams.get("m")===({beauty:"125128",samsung:"14815",mactrade:"13737",imou:"125816"} as const)[source]
     &&u.searchParams.get("a")==="3123004";
 }
 function cents(raw:unknown,positive=true):number|null{
@@ -86,7 +87,7 @@ export function anthbotOffers(products:readonly AnthbotProduct[]):SearchOffer[]{
        href:p.affiliateUrl,articleCents:p.priceCents,shippingCents:null,condition:null,priceUpdated:null}]
     :[]);
 }
-export function feedOffers(source:"joybuy"|"samsung"|"mactrade",raw:unknown):SearchOffer[]{
+export function feedOffers(source:"joybuy"|"samsung"|"mactrade"|"imou",raw:unknown):SearchOffer[]{
   if(!raw||typeof raw!=="object"||!Array.isArray((raw as {products?:unknown}).products))throw Error("Invalid feed data");
   const arr=(raw as {products:unknown[]}).products;
   if(arr.length>24)throw Error("Feed over limit");
