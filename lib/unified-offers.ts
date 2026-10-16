@@ -1,4 +1,5 @@
-export type OfferSource="beauty"|"joybuy"|"samsung"|"mactrade"|"ebay";
+import type {AnthbotProduct} from "./anthbot-products";
+export type OfferSource="beauty"|"joybuy"|"samsung"|"mactrade"|"ebay"|"anthbot";
 export type SearchOffer={
   id:string;source:OfferSource;merchant:string;title:string;image:string;href:string;
   articleCents:number;shippingCents:number|null;condition:string|null;
@@ -7,7 +8,7 @@ export type SearchOffer={
 type Entry=Record<string,unknown>;
 export type BeautyEntry={id:string;name:string;image:string;priceCents:number;affiliateUrl:string;merchant:string};
 const merchantNames:Record<OfferSource,string>={
-  beauty:"bdr-beauty",joybuy:"JoyBuy",samsung:"Samsung Shop",mactrade:"MacTrade",ebay:"eBay"
+  beauty:"bdr-beauty",joybuy:"JoyBuy",samsung:"Samsung Shop",mactrade:"MacTrade",ebay:"eBay",anthbot:"ANTHBOT"
 };
 function urlAt(raw:unknown,host:string,path:string):raw is string{
   if(typeof raw!=="string")return false;
@@ -20,6 +21,7 @@ function imageAt(raw:unknown,source:OfferSource):raw is string{
     const u=new URL(raw);
     if(u.protocol!=="https:"||u.username||u.password||u.port)return false;
     if(source==="ebay")return u.hostname==="i.ebayimg.com";
+    if(source==="anthbot")return u.hostname==="cdn.shopify.com"&&u.pathname.startsWith("/s/files/1/0904/5983/2633/");
     if(source==="mactrade")return u.hostname==="www.mactrade.de"&&u.pathname.startsWith("/media/");
     if(source==="samsung")return ["images.samsung.com","dashboard.feedspark.com"].includes(u.hostname);
     if(source==="joybuy")return u.hostname==="images1.joy-sourcing.com";
@@ -32,6 +34,12 @@ function affiliateAt(raw:unknown,source:OfferSource):raw is string {
     try{const u=new URL(raw);return u.protocol==="https:"&&!u.username&&!u.password&&!u.port&&
       ["ebay.de","ebay.com"].some(h=>u.hostname===h||u.hostname.endsWith("."+h));}
     catch{return false;}
+  }
+  if(source==="anthbot"){
+    if(!urlAt(raw,"www.awin1.com","/cread.php"))return false;
+    const u=new URL(raw);
+    if(u.searchParams.get("awinmid")!=="125144"||u.searchParams.get("awinaffid")!=="3123004")return false;
+    try {const target=new URL(u.searchParams.get("ued")||"");return target.protocol==="https:"&&target.hostname==="de.anthbot.com"&&target.pathname.startsWith("/products/")&&!target.username&&!target.password;}catch{return false;}
   }
   const path=source==="joybuy"?"/cread.php":"/pclick.php";
   if(!urlAt(raw,"www.awin1.com",path))return false;
@@ -69,6 +77,12 @@ export function relevantTitle(title:string,query:string):boolean{
 export function beautyOffers(products:BeautyEntry[]):SearchOffer[]{
   return products.flatMap(p=>cents(p.priceCents)!==null&&imageAt(p.image,"beauty")&&affiliateAt(p.affiliateUrl,"beauty")
     ?[{id:"beauty:"+p.id,source:"beauty" as const,merchant:merchantNames.beauty,title:p.name,image:p.image,
+       href:p.affiliateUrl,articleCents:p.priceCents,shippingCents:null,condition:null,priceUpdated:null}]
+    :[]);
+}
+export function anthbotOffers(products:readonly AnthbotProduct[]):SearchOffer[]{
+  return products.flatMap(p=>cents(p.priceCents)!==null&&imageAt(p.image,"anthbot")&&affiliateAt(p.affiliateUrl,"anthbot")
+    ?[{id:"anthbot:"+p.id,source:"anthbot" as const,merchant:merchantNames.anthbot,title:p.name,image:p.image,
        href:p.affiliateUrl,articleCents:p.priceCents,shippingCents:null,condition:null,priceUpdated:null}]
     :[]);
 }

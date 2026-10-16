@@ -12,15 +12,18 @@ import { SamsungResults } from "./samsung-results";
 import { JoybuyResults } from "./joybuy-results";
 import { MactradeResults } from "./mactrade-results";
 import { UnifiedOffers } from "./unified-offers";
+import {anthbotProducts,findAnthbotProducts} from "@/lib/anthbot-products";
+import {AnthbotProductCard} from "./anthbot-product-card";
 import {matchesFunnelcockpit,funnelcockpit} from "@/lib/digital-tools";
 export function Results({ ebaySearch = false, samsungSearch = false, joybuySearch = false, mactradeSearch = false }: { ebaySearch?: boolean; samsungSearch?: boolean; joybuySearch?: boolean; mactradeSearch?: boolean }){
   const params=useSearchParams();
   const q=(params.get("q")||"").trim().slice(0,120);
   const selectedSource=params.get("source")||"all";
-  const source=["all","beauty","guides",...(ebaySearch?["ebay"]:[]),...(samsungSearch?["samsung"]:[]),...(joybuySearch?["joybuy"]:[]),...(mactradeSearch?["mactrade"]:[])].includes(selectedSource)?selectedSource:"all";
+  const source=["all","beauty","guides","anthbot",...(ebaySearch?["ebay"]:[]),...(samsungSearch?["samsung"]:[]),...(joybuySearch?["joybuy"]:[]),...(mactradeSearch?["mactrade"]:[])].includes(selectedSource)?selectedSource:"all";
   const digital=source==="all"&&matchesFunnelcockpit(q);
   const combined=source==="all"&&q.length>=2&&!digital;
   const showBeauty=source==="all"||source==="beauty";
+  const showAnthbot=source==="all"||source==="anthbot";
   const showGuides=source==="all"||source==="guides";
   const showEbay=ebaySearch&&(source==="all"||source==="ebay");
   const showSamsung=samsungSearch&&(source==="all"||source==="samsung");
@@ -30,6 +33,7 @@ export function Results({ ebaySearch = false, samsungSearch = false, joybuySearc
   const category=guideCategories.find(c=>c===categoryValue);
   const guides=showGuides?searchGuides(q,category):[];
   const products=showBeauty&&(!category||category==="Beauty")?findAffiliateProducts(q):[];
+  const anthbot=showAnthbot&&q.length>=2?findAnthbotProducts(q):source==="anthbot"?anthbotProducts:[];
   function sourceUrl(next:string){
     const u=new URLSearchParams();
     if(q)u.set("q",q);
@@ -55,9 +59,9 @@ export function Results({ ebaySearch = false, samsungSearch = false, joybuySearc
       </div>
       <p className="affiliate-disclosure">Transparenter Werbelink auf der Detailseite. Kein eigener Softwaretest.</p>
     </section>}
-    {combined&&<UnifiedOffers key={q} query={q} beauty={findAffiliateProducts(q)} enabled={{samsung:samsungSearch,joybuy:joybuySearch,mactrade:mactradeSearch,ebay:ebaySearch}}/>}
+    {combined&&<UnifiedOffers key={q} query={q} beauty={findAffiliateProducts(q)} anthbot={anthbot} enabled={{samsung:samsungSearch,joybuy:joybuySearch,mactrade:mactradeSearch,ebay:ebaySearch}}/>}
     {!combined&&!digital&&<nav className="search-source-filters" aria-label="Ergebnisse nach Quelle filtern">
-      {[{id:"all",label:"Alle Quellen"},...(samsungSearch?[{id:"samsung",label:"Samsung Shop"}]:[]),...(joybuySearch?[{id:"joybuy",label:"JoyBuy"}]:[]),...(mactradeSearch?[{id:"mactrade",label:"MacTrade"}]:[]),...(ebaySearch?[{id:"ebay",label:"eBay"}]:[]),{id:"beauty",label:"Beauty-Produkte"},{id:"guides",label:"Ratgeber"}].map(item=>
+      {[{id:"all",label:"Alle Quellen"},{id:"anthbot",label:"ANTHBOT"},...(samsungSearch?[{id:"samsung",label:"Samsung Shop"}]:[]),...(joybuySearch?[{id:"joybuy",label:"JoyBuy"}]:[]),...(mactradeSearch?[{id:"mactrade",label:"MacTrade"}]:[]),...(ebaySearch?[{id:"ebay",label:"eBay"}]:[]),{id:"beauty",label:"Beauty-Produkte"},{id:"guides",label:"Ratgeber"}].map(item=>
         <Link key={item.id} href={sourceUrl(item.id)} aria-current={source===item.id?"page":undefined}>{item.label}</Link>
       )}
     </nav>}
@@ -72,7 +76,7 @@ export function Results({ ebaySearch = false, samsungSearch = false, joybuySearc
       })}
     </div>}
 
-    {!digital&&!combined&&!products.length&&!guides.length && !(showEbay && q.length >= 2) && !(showSamsung && q.length >= 2) && !(showJoybuy && q.length >= 2) && !(showMactrade && q.length >= 2) ? <section className="empty-state"><Icon name="search"/><h2>Keine passenden Inhalte gefunden.</h2>
+    {!digital&&!combined&&!products.length&&!anthbot.length&&!guides.length && !(showEbay && q.length >= 2) && !(showSamsung && q.length >= 2) && !(showJoybuy && q.length >= 2) && !(showMactrade && q.length >= 2) ? <section className="empty-state"><Icon name="search"/><h2>Keine passenden Inhalte gefunden.</h2>
       <p>Probiere ein anderes Produkt oder Thema. Du kannst auch direkt in den Beauty-Produkten stöbern.</p>
       <Link href="/produkte/" className="button primary">Alle Beauty-Produkte <Icon name="arrow"/></Link></section>:null}
     {!combined&&products.length>0 && <section className="search-products">
@@ -83,6 +87,14 @@ export function Results({ ebaySearch = false, samsungSearch = false, joybuySearc
         {products.slice(0,q?63:6).map(product=><AffiliateProductCard key={product.id} product={product}/>)}
       </div>
       {!q&&products.length>6&&<Link href="/produkte/" className="text-link search-see-more">Alle {products.length} Beauty-Produkte anzeigen <Icon name="arrow"/></Link>}
+    </section>}
+    {!combined&&anthbot.length>0&&<section className="search-products" aria-label="ANTHBOT Mähroboter und Zubehör">
+      <div className="section-heading">
+        <div><span className="eyebrow">ANTHBOT DE · AWIN</span><h2>ANTHBOT-Produkte ({anthbot.length})</h2>
+          <p>Händlerdaten aus einem importierten Awin-Feed, Preise und Verfügbarkeit bitte im Shop prüfen.</p>
+        </div><Link href="/anthbot/" className="text-link">Alle ANTHBOT-Produkte <Icon name="arrow"/></Link>
+      </div>
+      <div className="affiliate-grid">{anthbot.slice(0,source==="anthbot"?35:6).map(item=><AnthbotProductCard key={item.id} product={item}/>)}</div>
     </section>}
     {!combined&&showSamsung && q.length >= 2 && category !== "Beauty" && <SamsungResults key={q} query={q} />}
     {!combined&&showJoybuy && q.length >= 2 && <JoybuyResults key={q} query={q} />}

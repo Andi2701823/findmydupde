@@ -2,7 +2,8 @@
 import {useEffect,useMemo,useState} from "react";
 import Image from "next/image";
 import type {AffiliateProduct} from "@/lib/affiliate-products";
-import {beautyOffers,ebayOffers,feedOffers,rankedOffers,type OfferSource,type SearchOffer} from "@/lib/unified-offers";
+import {anthbotOffers,beautyOffers,ebayOffers,feedOffers,rankedOffers,type OfferSource,type SearchOffer} from "@/lib/unified-offers";
+import type {AnthbotProduct} from "@/lib/anthbot-products";
 
 type Enabled={samsung:boolean;joybuy:boolean;mactrade:boolean;ebay:boolean};
 type Current={key:string;offers:SearchOffer[];pending:number;failed:OfferSource[]};
@@ -34,13 +35,13 @@ function OfferRow({offer,first}:{offer:SearchOffer;first:boolean}){
     </div>
   </article>;
 }
-export function UnifiedOffers({query,beauty,enabled}:{query:string;beauty:AffiliateProduct[];enabled:Enabled}){
+export function UnifiedOffers({query,beauty,anthbot,enabled}:{query:string;beauty:AffiliateProduct[];anthbot:AnthbotProduct[];enabled:Enabled}){
   const {samsung,joybuy,mactrade,ebay}=enabled;
   const enabledSources={samsung,joybuy,mactrade,ebay};
   const key=query+":"+sources.map(s=>String(enabledSources[s])).join(":");
   const [state,setState]=useState<Current|null>(null);
   const [visible,setVisible]=useState(5);
-  const start=useMemo(()=>beautyOffers(beauty),[beauty]);
+  const start=useMemo(()=>[...beautyOffers(beauty),...anthbotOffers(anthbot)],[beauty,anthbot]);
   useEffect(()=>{
     const controller=new AbortController();
     const requested=sources.filter(source=>(source==="samsung"?samsung:source==="joybuy"?joybuy:source==="mactrade"?mactrade:ebay));

@@ -4,6 +4,7 @@ import { AffiliateProductList } from "@/components/affiliate-product-list";
 import { samsungCatalogEnabled } from "@/lib/samsung-catalog";
 import { joybuyCatalogEnabled } from "@/lib/joybuy-catalog";
 import { mactradeCatalogEnabled } from "@/lib/mactrade-catalog";
+import {anthbotProducts} from "@/lib/anthbot-products";
 export const dynamic="force-dynamic";
 export const metadata:Metadata={
   title:"Produktkatalog: Angebote und Produkte entdecken",
@@ -27,6 +28,12 @@ export default function ProductsPage(){
         <p>Website- und Funnel-Builder, Mitgliederbereiche und Marketing-Werkzeuge. Software-Abo, separat von unserem Preisvergleich für physische Produkte.</p>
         <Link href="/digitale-tools/funnelcockpit/" className="button secondary">Funktionen und Tarife ansehen →</Link>
       </div>
+    </section>
+    <section className="editorial-contact samsung-catalog-cta" aria-labelledby="anthbot-catalog-heading">
+      <span className="eyebrow">ANTHBOT DE · AWIN</span>
+      <h2 id="anthbot-catalog-heading">ANTHBOT – Mähroboter und Garten-Zubehör</h2>
+      <p>{anthbotProducts.length} Varianten aus dem Händlerfeed, darunter Mähroboter und Ersatzteile. Suche, Preisfilter und transparente Awin-Links. Preise sind nicht live geprüft.</p>
+      <Link href="/anthbot/" className="button secondary">Zum ANTHBOT-Katalog →</Link>
     </section>
     {mactradeCatalogEnabled()&&<section className="editorial-contact samsung-catalog-cta" aria-labelledby="mactrade-catalog-heading">
       <span className="eyebrow">MACTRADE DE · AWIN</span>
