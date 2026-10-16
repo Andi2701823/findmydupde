@@ -49,6 +49,19 @@ export default function ProductsPage(){
           href="#beauty-catalog-heading" action="Beauty-Produkte ansehen" accent="beauty"/>
       </div>
     </section>
+    <section className="reifen-ads" aria-label="Werbung von Reifen.com">
+      <p className="reifen-ads-label">Anzeige · Reifen.com</p>
+      <div className="reifen-ads-grid">
+        <a rel="sponsored nofollow noopener noreferrer" href="https://www.awin1.com/cread.php?s=3855040&v=7605&q=403450&r=3123004" target="_blank" aria-label="Werbung von Reifen.com, Banner 1 (öffnet in neuem Tab)">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="https://www.awin1.com/cshow.php?s=3855040&v=7605&q=403450&r=3123004" alt="Reifen.com Werbebanner" loading="lazy" />
+        </a>
+        <a rel="sponsored nofollow noopener noreferrer" href="https://www.awin1.com/cread.php?s=3855041&v=7605&q=403450&r=3123004" target="_blank" aria-label="Werbung von Reifen.com, Banner 2 (öffnet in neuem Tab)">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="https://www.awin1.com/cshow.php?s=3855041&v=7605&q=403450&r=3123004" alt="Reifen.com Werbebanner" loading="lazy" />
+        </a>
+      </div>
+    </section>
     <section className="digital-tool-tile digital-tool-promo" aria-labelledby="digital-tools-catalog-heading">
       <div className="digital-tool-mark" aria-hidden="true">FC</div>
       <div>
