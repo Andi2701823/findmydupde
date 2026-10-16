@@ -229,6 +229,11 @@ try {
   assert.equal(await page.locator(".guide-card").count(),8);
   await page.goto(`${origin}/produkte/`,{waitUntil:"domcontentloaded"});
   await page.getByRole("heading",{name:"Unser Produktkatalog."}).waitFor();
+  assert.equal(await page.locator('.reifen-ads').count(),1,"One partner advertising area");
+  assert.equal(await page.locator('.reifen-ads a[href*="awin1.com/cread.php"]').count(),1,
+    "Only one advertising link visible at any time");
+  assert.equal(await page.locator('.reifen-ads .partner-banner-controls button').count(),2,
+    "Visitors may change rotating banners");
   await page.waitForFunction(()=>document.querySelectorAll(".affiliate-card").length===63);
   assert.equal(await page.locator('a[rel*="sponsored"][href*="awin1.com/pclick.php"]').count(),63);
 
@@ -355,8 +360,21 @@ try {
     "https://static.funnelcockpit.com/upload/RBQjxJBoixoW3jkEN/580cbfd8422d6f3773130e067efd7c7b.jpg",
     "https://static.funnelcockpit.com/upload/4b8af1d4-40fe-4433-b53e-ff972d52329f.png",
   ]);
+  const allowedAwinBannerIds = new Map([
+    ["3855040",["7605","403450"]],["3855041",["7605","403450"]],
+    ["3820327",["14815","381849"]],["2481981",["13737","372932"]],
+    ["2481968",["13737","372932"]],
+  ]);
+  const permittedAwinBanner = raw => {
+    const url = new URL(raw);
+    const expected = allowedAwinBannerIds.get(url.searchParams.get("s"));
+    return url.protocol === "https:" && url.hostname === "www.awin1.com" &&
+      url.pathname === "/cshow.php" && expected &&
+      url.searchParams.get("v") === expected[0] && url.searchParams.get("q") === expected[1] &&
+      url.searchParams.get("r") === "3123004" && url.searchParams.size === 4;
+  };
   assert.deepEqual(remoteRequests.filter(url => new URL(url).hostname !== "bdr-beauty.com" &&
-    !permittedFunnelScreenshots.has(url)),[]);
+    !permittedFunnelScreenshots.has(url) && !permittedAwinBanner(url)),[]);
   assert.deepEqual(uploads,[]);
   console.log("PASS: public editorial home, real guide search and categories, 8 published articles, saved reading list, legal and partner routes, SEO sitemap, Awin verification, mobile breakpoints and no remote requests.");
 } catch(error) {
