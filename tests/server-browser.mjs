@@ -169,7 +169,9 @@ try {
   await page.goto(origin + "/produkte/", { waitUntil: "domcontentloaded" });
   await page.getByRole("heading", { name: "Unser Produktkatalog." }).waitFor();
   await page.waitForFunction(() => document.querySelectorAll(".affiliate-card").length === 63);
-  assert.equal(await page.locator('a[rel*="sponsored"]').count(), 63);
+  assert.equal(await page.locator('.affiliate-card a[rel*="sponsored"]').count(), 63);
+  assert.equal(await page.locator('.reifen-ads a[href*="awin1.com/cread.php"][rel*="sponsored"]').count(), 1,
+    "Exactly one clearly marked rotating partner banner is shown");
   await page.goto(origin + "/produkte/dermalumin-c-melanin-correcting-serum-1352/", {waitUntil:"domcontentloaded"});
   await page.getByRole("heading",{name:"DermaLumin-C Melanin Correcting Serum",exact:true}).waitFor();
   assert.match(await page.locator(".product-description").innerText(),/Vitamin-C Ampullenkur/);
