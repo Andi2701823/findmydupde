@@ -1,3 +1,4 @@
+import {supportEmail} from "@/lib/site-contact";
 import Link from "next/link";
 import type { Metadata } from "next";
 export const metadata: Metadata = {title:"Über FindMyDup",description:"Wofür FindMyDup steht: transparente Händlerangebote, Produktvergleiche und verständliche Einkaufsratgeber.",alternates:{canonical:"https://findmydup.de/ueber-uns/"}};
@@ -12,6 +13,6 @@ export default function AboutPage(){return <main id="main" className="shell lega
   <h2>So finanzieren wir uns</h2>
   <p>FindMyDup zeigt ausgewählte Angebote freigegebener Händler mit entsprechend gekennzeichneten Affiliate-Links. Kommt über einen solchen Link ein Kauf zustande, können wir eine Provision erhalten. Die redaktionellen Ratgeber sind unabhängig davon lesbar.</p>
   <h2>Kontakt</h2>
-  <p>Du hast Fragen, Anregungen oder möchtest eine Kooperation besprechen? Schreibe an <a href="mailto:andreas.paul4282@gmail.com">andreas.paul4282@gmail.com</a>.</p>
+  <p>Du hast Fragen, Anregungen oder möchtest eine Kooperation besprechen? Schreibe an <a href={"mailto:"+supportEmail}>{supportEmail}</a>.</p>
   <Link href="/ratgeber/" className="button primary">Ratgeber entdecken</Link>
 </main>;}
