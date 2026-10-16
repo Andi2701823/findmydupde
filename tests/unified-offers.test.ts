@@ -1,6 +1,7 @@
 import test from "node:test";
+import {anthbotProducts} from "../lib/anthbot-products.ts";
 import assert from "node:assert/strict";
-import {rankedOffers,relevantTitle,beautyOffers,feedOffers,ebayOffers,type SearchOffer} from "../lib/unified-offers.ts";
+import {rankedOffers,relevantTitle,beautyOffers,anthbotOffers,feedOffers,ebayOffers,type SearchOffer} from "../lib/unified-offers.ts";
 
 function offer(id:string,title:string,articleCents:number):SearchOffer {
   return {id,source:"beauty",merchant:"bdr-beauty",title,articleCents,shippingCents:null,
@@ -59,4 +60,16 @@ test("Beauty feed entries retain their original source without inventing shippin
   priceCents:3950,affiliateUrl:"https://www.awin1.com/pclick.php?p=45133289527&a=3123004&m=125128",merchant:"bdr-beauty DE"}]);
  assert.equal(offers[0].shippingCents,null);
  assert.equal(offers[0].articleCents,3950);
+});
+
+test("ANTHBOT Awin offers retain approved merchant links and participate in price ranking",()=>{
+ const a=anthbotOffers(anthbotProducts);
+ assert.equal(a.length,35);
+ assert.equal(new Set(a.map(p=>p.id)).size,35);
+ assert.ok(a.every(p=>p.source==="anthbot"&&p.merchant==="ANTHBOT"&&p.shippingCents===null));
+ const original=a.find(p=>p.title.toLocaleLowerCase("de-DE").includes("genie"));
+ assert.ok(original);
+ const result=rankedOffers([original,{...original,id:"beauty:dummy",source:"beauty",merchant:"bdr-beauty",articleCents:original.articleCents+15000}], "genie");
+ assert.deepEqual(result.map(p=>p.source),["anthbot","beauty"]);
+ assert.equal(anthbotOffers([{...anthbotProducts[0],affiliateUrl:"https://evil.example/"}]).length,0);
 });
