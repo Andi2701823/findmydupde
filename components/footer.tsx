@@ -1,3 +1,4 @@
+import {supportEmail} from "@/lib/site-contact";
 import Link from "next/link";
 export function Footer() {
   return <footer className="footer"><div className="shell">
@@ -9,6 +10,7 @@ export function Footer() {
         <Link href="/suche/">Themensuche</Link>
         <Link href="/ueber-uns/">Über uns</Link>
         <Link href="/partner/">Für Händler</Link>
+        <a href={"mailto:"+supportEmail}>Kontakt</a>
         <Link href="/datenschutz/">Datenschutz</Link>
         <Link href="/impressum/">Impressum</Link>
       </div>

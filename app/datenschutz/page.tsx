@@ -1,3 +1,4 @@
+import {supportEmail} from "@/lib/site-contact";
 import type { Metadata } from "next";
 export const metadata: Metadata = {title:"Datenschutzerklärung",description:"Informationen zur Verarbeitung personenbezogener Daten auf FindMyDup.",alternates:{canonical:"https://findmydup.de/datenschutz/"}};
 export default function Privacy(){return <main id="main" className="shell legal-page">
@@ -5,7 +6,7 @@ export default function Privacy(){return <main id="main" className="shell legal-
   <h1>Datenschutzerklärung</h1>
   <p>Diese Datenschutzhinweise erläutern, welche Daten bei der Nutzung von FindMyDup verarbeitet werden. Die Website bietet aktuell frei lesbare Einkaufsratgeber, eine Suchfunktion für redaktionelle Inhalte und eine lokale Merkliste.</p>
   <h2>1. Verantwortlicher</h2>
-  <p>Andreas Paul<br/>Germersheimer Straße 17<br/>70499 Stuttgart<br/>Deutschland<br/>E-Mail: <a href="mailto:andreas.paul4282@gmail.com">andreas.paul4282@gmail.com</a></p>
+  <p>Andreas Paul<br/>Germersheimer Straße 17<br/>70499 Stuttgart<br/>Deutschland<br/>E-Mail: <a href={"mailto:"+supportEmail}>{supportEmail}</a></p>
   <h2>2. Bereitstellung der Website und Hosting</h2>
   <p>Beim Abruf unserer Website werden technisch notwendige Daten übertragen, darunter IP-Adresse, Zeitpunkt der Anfrage, aufgerufene URL, Browserinformationen und technische Statuscodes. Diese Informationen können auf den Servern unseres Hosting-Anbieters Hostinger zur Auslieferung, Absicherung und Fehleranalyse verarbeitet werden.</p>
   <p>Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einem sicheren und funktionsfähigen Internetauftritt). Die konkrete Aufbewahrungsdauer von Serverprotokollen richtet sich nach den Einstellungen und Verfahren des Hosting-Anbieters. Auf Anfrage geben wir Auskunft zu den bei uns verfügbaren Einzelheiten.</p>
