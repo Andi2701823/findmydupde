@@ -2451,3 +2451,13 @@ select {
  .digital-tool-steps li{padding:13px!important;}
  .digital-feature-list>div,.digital-tool-audience>div{padding:16px;}
 }
+
+/* IMOU retailer pages: keep 559 affiliate variant offers grouped under 69 model detail URLs. */
+.imou-variant-list{display:flex;flex-direction:column;gap:10px;margin-top:20px}
+.imou-variant{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:20px;align-items:center;padding:15px 20px;background:#fff;border:1px solid var(--line);border-radius:12px}
+.imou-variant-name{min-width:0;overflow-wrap:anywhere;display:flex;flex-direction:column;gap:6px}
+.imou-variant-name strong{font-size:14px;line-height:1.5}
+.imou-variant-name small{color:var(--muted);font-size:10px}
+.imou-variant-price{font-size:17px;white-space:nowrap}
+.imou-variant .button{white-space:nowrap}
+@media(max-width:650px){.imou-variant{grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:13px}.imou-variant-name{grid-column:1/-1}.imou-variant .button{white-space:normal;font-size:11px}}
