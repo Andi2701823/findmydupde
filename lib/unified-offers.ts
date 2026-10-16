@@ -57,23 +57,60 @@ function words(value:string):string[]{
     .split(/[^\p{L}\p{N}]+/u).filter(Boolean);
 }
 const deviceTokens=new Set(["iphone","ipad","macbook","imac","galaxy","pixel"]);
-const accessories=new Set(["case","cover","huelle","hulle","schutzhulle","schutzhülle","panzerglas","schutzglas","schutzfolie",
-  "schutz","folie","charger","ladegeraet","ladegerät","ladekabel","kabel","adapter","holder","halterung",
-  "displayfolie","bildschirmfolie","bumper","shell","etui","ladehulle","ladehülle"]);
+const accessories=new Set(["case","cover","huelle","hulle","schutzhulle","panzerglas","schutzglas","schutzfolie",
+ "schutz","folie","charger","ladegeraet","ladekabel","kabel","adapter","holder","halterung",
+ "displayfolie","bildschirmfolie","bumper","shell","etui","ladehulle","tasche","laptoptasche",
+ "sleeve","bag","sleeves","dock","dockingstation","hub","usb","netzteil","netzadapter","staender",
+ "stand","skin","sticker","zubehoer","accessory","zubehor","powerbank","schutzhuelle"]);
 const variants=new Set(["pro","max","plus","ultra","air","mini","fe"]);
+const macbookFamilies=["air","pro","neo"] as const;
+
+export function macbookComputerIntent(query:string):boolean{
+ const parts=words(query);
+ return parts.includes("macbook")&&!parts.some(p=>accessories.has(p)||p.startsWith("tasche"));
+}
+function macbookComputerTitle(title:string):boolean {
+ // A real MacBook listing can say "Kein Netzteil" / "ohne Netzteil".
+ // Those packaging disclaimers must not be mistaken for a charger offer.
+ const safe=title.replace(/\b(?:kein|ohne)\s+netzteil\b/gi,"");
+ const parts=words(safe);
+ if(!parts.includes("macbook"))return false;
+ if(parts.some(p=>accessories.has(p)||p.startsWith("tasche")||p==="larobe"))return false;
+ // Reject accessories presented as MacBook-compatible without naming a computer.
+ if(/\b(?:fuer|für|for|compatible|kompatibel|passend)\b[\s\S]{0,60}\bmacbook\b/i.test(safe))return false;
+ // An Apple notebook should be identifiable as the actual device or by its specs.
+ const normalized=safe.normalize("NFKD").replace(/\p{M}/gu,"").toLocaleLowerCase("de-DE");
+ const deviceWords=/(?:^|\s|\/\/\s*)(?:apple\s+)?macbook\b|\bapple\s+(?:\d{2}\s+zoll\s+)?macbook\b/;
+ const hardware=/\b(?:ssd|ram|cpu|gpu|chip|laptop|notebook|touch\s*id|a18|m[1-9])\b|\b(?:\d{1,2}\s*gb|\d{1,2}gb)\b/;
+ return deviceWords.test(normalized)||hardware.test(normalized);
+}
+function macbookFamily(title:string):string|null{
+ const match=title.normalize("NFKD").replace(/\p{M}/gu,"").toLocaleLowerCase("de-DE")
+  .match(/\bmacbook\s+(air|pro|neo)\b/);
+ return match?match[1]:null;
+}
 export function relevantTitle(title:string,query:string):boolean{
-  const parts=words(query);
-  const titleParts=words(title);
-  if(parts.length===0||!parts.every(p=>titleParts.some(w=>w===p||w.startsWith(p))))return false;
-  const deviceSearch=parts.some(t=>deviceTokens.has(t));
-  if(deviceSearch&&!parts.some(t=>accessories.has(t))&&titleParts.some(t=>accessories.has(t)))return false;
-  if(deviceSearch){
-    // Do not mix iPhone 16 with Pro/Max/Plus, or Pro with Pro Max.
-    for(const variant of variants){
-      if(titleParts.includes(variant)&&!parts.includes(variant))return false;
-    }
-  }
-  return true;
+ const parts=words(query);
+ const titleParts=words(title);
+ if(parts.length===0||!parts.every(p=>titleParts.some(w=>w===p||w.startsWith(p))))return false;
+ if(macbookComputerIntent(query)){
+   if(!macbookComputerTitle(title))return false;
+   const requested=macbookFamilies.find(f=>parts.includes(f));
+   if(requested){
+     const found=macbookFamily(title);
+     if(found&&found!==requested)return false;
+   }
+   return true;
+ }
+ const deviceSearch=parts.some(t=>deviceTokens.has(t));
+ if(deviceSearch&&!parts.some(t=>accessories.has(t))&&titleParts.some(t=>accessories.has(t)))return false;
+ if(deviceSearch){
+   // Do not mix iPhone 16 with Pro/Max/Plus, or Pro with Pro Max.
+   for(const variant of variants){
+     if(titleParts.includes(variant)&&!parts.includes(variant))return false;
+   }
+ }
+ return true;
 }
 export function beautyOffers(products:BeautyEntry[]):SearchOffer[]{
   return products.flatMap(p=>cents(p.priceCents)!==null&&imageAt(p.image,"beauty")&&affiliateAt(p.affiliateUrl,"beauty")
