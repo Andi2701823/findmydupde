@@ -11,11 +11,12 @@ export function ConsentProvider({children}:{children:React.ReactNode}){
  const [choice,setChoice]=useState<Choice>(null);
  const [loaded,setLoaded]=useState(false);
  const [settings,setSettings]=useState(false);
+ const [affiliateDraft,setAffiliateDraft]=useState(false);
  const [analytics,setAnalytics]=useState(false);
  const [analyticsGranted,setAnalyticsGranted]=useState(false);
  useEffect(()=>{
    const timer=window.setTimeout(()=>{
-     try {const saved=localStorage.getItem(key);if(saved==="accepted"||saved==="rejected")setChoice(saved);const granted=localStorage.getItem(analyticsKey)==="accepted";setAnalytics(granted);setAnalyticsGranted(granted);}catch{}
+     try {const saved=localStorage.getItem(key);if(saved==="accepted"||saved==="rejected"){setChoice(saved);setAffiliateDraft(saved==="accepted");}const granted=localStorage.getItem(analyticsKey)==="accepted";setAnalytics(granted);setAnalyticsGranted(granted);}catch{}
      setLoaded(true);
    },0);
    return ()=>window.clearTimeout(timer);
@@ -64,7 +65,7 @@ export function ConsentProvider({children}:{children:React.ReactNode}){
  },[loaded,analytics]);
  function decide(next:Exclude<Choice,null>, allowAnalytics=analytics){
    try{localStorage.setItem(key,next);localStorage.setItem(analyticsKey,allowAnalytics?"accepted":"rejected");}catch{}
-   setAnalytics(allowAnalytics);setAnalyticsGranted(allowAnalytics);setChoice(next);setSettings(false);
+   setAffiliateDraft(next==="accepted");setAnalytics(allowAnalytics);setAnalyticsGranted(allowAnalytics);setChoice(next);setSettings(false);
  }
  return <ConsentContext.Provider value={loaded?choice:null}>
   {children}
@@ -72,11 +73,13 @@ export function ConsentProvider({children}:{children:React.ReactNode}){
     <div className="consent-card">
       <strong id="consent-title">Deine Privatsphäre bei FindMyDup</strong>
       <p id="consent-description">Wir verwenden notwendige Browserfunktionen für die Website. Mit deiner freiwilligen Zustimmung laden wir externe Werbebanner und ermöglichen die Zuordnung von Affiliate-Klicks und möglichen Käufen. Dafür nutzen wir unseren Werbepartner Awin. Google Analytics setzen wir nur ein, wenn du der statistischen Auswertung zustimmst. Ohne Zustimmung kannst du die Produktsuche weiterhin nutzen. Du kannst deine Wahl jederzeit hier ändern.</p>
+      <label style={{display:"flex",alignItems:"center",gap:8,margin:"12px 0"}}><input type="checkbox" checked={affiliateDraft} onChange={e=>setAffiliateDraft(e.target.checked)}/> Externe Partnerwerbung und Affiliate-Tracking erlauben</label>
       <label style={{display:"flex",alignItems:"center",gap:8,margin:"12px 0"}}><input type="checkbox" checked={analytics} onChange={e=>setAnalytics(e.target.checked)}/> Besucherstatistik mit Google Analytics erlauben</label>
       <p><Link href="/datenschutz/">Datenschutzerklärung</Link> · <Link href="/impressum/">Impressum</Link></p>
       <div className="consent-actions">
         <button type="button" onClick={()=>decide("rejected",false)}>Nur notwendige</button>
-        <button type="button" onClick={()=>decide("accepted")}>Werbung & Tracking erlauben</button>
+        <button type="button" onClick={()=>decide(affiliateDraft?"accepted":"rejected",analytics)}>Auswahl speichern</button>
+        <button type="button" onClick={()=>decide("accepted",true)}>Alle erlauben</button>
       </div>
     </div>
   </div>}
