@@ -49,8 +49,8 @@ export default function ProductsPage(){
           href="#beauty-catalog-heading" action="Beauty-Produkte ansehen" accent="beauty"/>
       </div>
     </section>
-    <section className="reifen-ads" aria-label="Werbung von Reifen.com">
-      <p className="reifen-ads-label">Anzeige · Reifen.com</p>
+    <section className="reifen-ads" aria-label="Werbung unserer Partner">
+      <p className="reifen-ads-label">Anzeige · Angebote unserer Partner</p>
       <div className="reifen-ads-grid">
         <a rel="sponsored nofollow noopener noreferrer" href="https://www.awin1.com/cread.php?s=3855040&v=7605&q=403450&r=3123004" target="_blank" aria-label="Werbung von Reifen.com, Banner 1 (öffnet in neuem Tab)">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -59,6 +59,18 @@ export default function ProductsPage(){
         <a rel="sponsored nofollow noopener noreferrer" href="https://www.awin1.com/cread.php?s=3855041&v=7605&q=403450&r=3123004" target="_blank" aria-label="Werbung von Reifen.com, Banner 2 (öffnet in neuem Tab)">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="https://www.awin1.com/cshow.php?s=3855041&v=7605&q=403450&r=3123004" alt="Reifen.com Werbebanner" loading="lazy" />
+        </a>
+        <a rel="sponsored nofollow noopener noreferrer" href="https://www.awin1.com/cread.php?s=3820327&v=14815&q=381849&r=3123004" target="_blank" aria-label="Werbung von Samsung Shop DE, Banner 3 (öffnet in neuem Tab)">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="https://www.awin1.com/cshow.php?s=3820327&v=14815&q=381849&r=3123004" alt="Samsung Shop DE Werbebanner" loading="lazy" />
+        </a>
+        <a rel="sponsored nofollow noopener noreferrer" href="https://www.awin1.com/cread.php?s=2481981&v=13737&q=372932&r=3123004" target="_blank" aria-label="Werbung von MacTrade, Banner 4 (öffnet in neuem Tab)">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="https://www.awin1.com/cshow.php?s=2481981&v=13737&q=372932&r=3123004" alt="MacTrade Werbebanner" loading="lazy" />
+        </a>
+        <a rel="sponsored nofollow noopener noreferrer" href="https://www.awin1.com/cread.php?s=2481968&v=13737&q=372932&r=3123004" target="_blank" aria-label="Werbung von MacTrade, Banner 5 (öffnet in neuem Tab)">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="https://www.awin1.com/cshow.php?s=2481968&v=13737&q=372932&r=3123004" alt="MacTrade Werbebanner" loading="lazy" />
         </a>
       </div>
     </section>
