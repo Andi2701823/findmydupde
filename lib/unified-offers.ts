@@ -102,6 +102,9 @@ export function relevantTitle(title:string,query:string):boolean{
    }
    return true;
  }
+ // Searching explicitly for MacBook accessories should retain Air/Pro-related
+ // compatible items, instead of incorrectly applying computer model rules.
+ if(parts.includes("macbook"))return true;
  const deviceSearch=parts.some(t=>deviceTokens.has(t));
  if(deviceSearch&&!parts.some(t=>accessories.has(t))&&titleParts.some(t=>accessories.has(t)))return false;
  if(deviceSearch){
