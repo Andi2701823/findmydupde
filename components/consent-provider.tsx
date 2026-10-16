@@ -61,9 +61,9 @@ export function ConsentProvider({children}:{children:React.ReactNode}){
    const w=window as Window & {gtag?:(...args:unknown[])=>void};
    w.gtag?.("consent","update",{analytics_storage:"denied",ad_storage:"denied",ad_user_data:"denied",ad_personalization:"denied"});
  },[loaded,analytics]);
- function decide(next:Exclude<Choice,null>){
-   try{localStorage.setItem(key,next);localStorage.setItem(analyticsKey,analytics?"accepted":"rejected");}catch{}
-   setChoice(next);setSettings(false);
+ function decide(next:Exclude<Choice,null>, allowAnalytics=analytics){
+   try{localStorage.setItem(key,next);localStorage.setItem(analyticsKey,allowAnalytics?"accepted":"rejected");}catch{}
+   setAnalytics(allowAnalytics);setChoice(next);setSettings(false);
  }
  return <ConsentContext.Provider value={loaded?choice:null}>
   {children}
@@ -71,10 +71,10 @@ export function ConsentProvider({children}:{children:React.ReactNode}){
     <div className="consent-card">
       <strong id="consent-title">Deine Privatsphäre bei FindMyDup</strong>
       <p id="consent-description">Wir verwenden notwendige Browserfunktionen für die Website. Mit deiner freiwilligen Zustimmung laden wir externe Werbebanner und ermöglichen die Zuordnung von Affiliate-Klicks und möglichen Käufen. Dafür nutzen wir unseren Werbepartner Awin. Google Analytics setzen wir nur ein, wenn du der statistischen Auswertung zustimmst. Ohne Zustimmung kannst du die Produktsuche weiterhin nutzen. Du kannst deine Wahl jederzeit hier ändern.</p>
-      <label style={{display:"flex",alignItems:"center",gap:8,margin:"12px 0"}}><input type="checkbox" checked={analytics} onChange={e=>setAnalytics(e.target.checked)}/> Anonyme Nutzungsstatistik mit Google Analytics erlauben</label>
+      <label style={{display:"flex",alignItems:"center",gap:8,margin:"12px 0"}}><input type="checkbox" checked={analytics} onChange={e=>setAnalytics(e.target.checked)}/> Besucherstatistik mit Google Analytics erlauben</label>
       <p><Link href="/datenschutz/">Datenschutzerklärung</Link> · <Link href="/impressum/">Impressum</Link></p>
       <div className="consent-actions">
-        <button type="button" onClick={()=>{setAnalytics(false);try{localStorage.setItem(analyticsKey,"rejected");}catch{}decide("rejected");}}>Nur notwendige</button>
+        <button type="button" onClick={()=>decide("rejected",false)}>Nur notwendige</button>
         <button type="button" onClick={()=>decide("accepted")}>Werbung & Tracking erlauben</button>
       </div>
     </div>
