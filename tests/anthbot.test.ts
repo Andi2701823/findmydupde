@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {anthbotProducts,findAnthbotProducts,formatAnthbotPrice,anthbotFeedSnapshot} from "../lib/anthbot-products.ts";
+import {anthbotProducts,findAnthbotProducts,formatAnthbotPrice,anthbotFeedSnapshot,anthbotProductSlug,anthbotProductPath,findAnthbotProductBySlug} from "../lib/anthbot-products.ts";
 test("ANTHBOT contains 35 genuine physical and unique variants from one approved Awin feed",()=>{
  assert.equal(anthbotProducts.length,35);
  assert.equal(new Set(anthbotProducts.map(p=>p.id)).size,35);
@@ -29,4 +29,17 @@ test("ANTHBOT search is deterministic, filters by category and uses original fee
  assert.equal(findAnthbotProducts("Genie","Zubehör").every(p=>p.category==="Zubehör"),true);
  assert.equal(findAnthbotProducts("no-such-anthbot").length,0);
  assert.equal(formatAnthbotPrice(109990),"1.099,90 €");
+});
+
+test("ANTHBOT pages have unique, accessible and reproducible SEO URLs for every variant",()=>{
+ const urls=anthbotProducts.map(anthbotProductPath);
+ assert.equal(urls.length,35);
+ assert.equal(new Set(urls).size,35);
+ for(const p of anthbotProducts){
+  const slug=anthbotProductSlug(p),path=anthbotProductPath(p);
+  assert.match(slug,/^[a-z0-9-]+-\d{14}$/);
+  assert.match(path,/^\/anthbot\/[a-z0-9-]+\/$/);
+  assert.equal(findAnthbotProductBySlug(slug)?.id,p.id);
+ }
+ assert.equal(findAnthbotProductBySlug("fake-product-99999999999999"),undefined);
 });
