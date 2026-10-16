@@ -51,4 +51,20 @@ export default function ProductsPage(){
       </div>
     </section>
     <PartnerBannerRotation />
-
+    <section className="digital-tool-tile digital-tool-promo" aria-labelledby="digital-tools-catalog-heading">
+      <div className="digital-tool-mark" aria-hidden="true">FC</div>
+      <div>
+        <span className="eyebrow">DIGITALE TOOLS · SOFTWARE</span>
+        <h2 id="digital-tools-catalog-heading">FunnelCockpit – Marketing-Software</h2>
+        <p>Website- und Funnel-Builder, Mitgliederbereiche und Marketing-Werkzeuge. Software-Abo, separat von unserem Preisvergleich für physische Produkte.</p>
+        <Link href="/digitale-tools/funnelcockpit/" className="button secondary">Funktionen und Tarife ansehen →</Link>
+      </div>
+    </section>
+    <section aria-labelledby="beauty-catalog-heading">
+      <span className="eyebrow">BDR-BEAUTY DE</span>
+      <h2 id="beauty-catalog-heading">Beauty-Produkte entdecken</h2>
+      <p className="affiliate-intro">63 Produkte von bdr-beauty mit Kategorie- und Namensfilter. Die Preise stammen aus einem älteren Awin-Feed.</p>
+      <AffiliateProductList/>
+    </section>
+  </main>;
+}
