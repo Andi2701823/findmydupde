@@ -19,7 +19,7 @@ export function Results({ ebaySearch = false, samsungSearch = false, joybuySearc
   const params=useSearchParams();
   const q=(params.get("q")||"").trim().slice(0,120);
   const selectedSource=params.get("source")||"all";
-  const source=["all","beauty","guides","anthbot",...(ebaySearch?["ebay"]:[]),...(samsungSearch?["samsung"]:[]),...(joybuySearch?["joybuy"]:[]),...(mactradeSearch?["mactrade"]:[])].includes(selectedSource)?selectedSource:"all";
+  const source=["all","beauty","guides","anthbot","imou",...(ebaySearch?["ebay"]:[]),...(samsungSearch?["samsung"]:[]),...(joybuySearch?["joybuy"]:[]),...(mactradeSearch?["mactrade"]:[])].includes(selectedSource)?selectedSource:"all";
   const digital=source==="all"&&matchesFunnelcockpit(q);
   const combined=source==="all"&&q.length>=2&&!digital;
   const showBeauty=source==="all"||source==="beauty";
@@ -59,12 +59,13 @@ export function Results({ ebaySearch = false, samsungSearch = false, joybuySearc
       </div>
       <p className="affiliate-disclosure">Transparenter Werbelink auf der Detailseite. Kein eigener Softwaretest.</p>
     </section>}
-    {combined&&<UnifiedOffers key={q} query={q} beauty={findAffiliateProducts(q)} anthbot={anthbot} enabled={{samsung:samsungSearch,joybuy:joybuySearch,mactrade:mactradeSearch,ebay:ebaySearch}}/>}
+    {combined&&<UnifiedOffers key={q} query={q} beauty={findAffiliateProducts(q)} anthbot={anthbot} enabled={{samsung:samsungSearch,joybuy:joybuySearch,mactrade:mactradeSearch,imou:true,ebay:ebaySearch}}/>}
     {!combined&&!digital&&<nav className="search-source-filters" aria-label="Ergebnisse nach Quelle filtern">
-      {[{id:"all",label:"Alle Quellen"},{id:"anthbot",label:"ANTHBOT"},...(samsungSearch?[{id:"samsung",label:"Samsung Shop"}]:[]),...(joybuySearch?[{id:"joybuy",label:"JoyBuy"}]:[]),...(mactradeSearch?[{id:"mactrade",label:"MacTrade"}]:[]),...(ebaySearch?[{id:"ebay",label:"eBay"}]:[]),{id:"beauty",label:"Beauty-Produkte"},{id:"guides",label:"Ratgeber"}].map(item=>
+      {[{id:"all",label:"Alle Quellen"},{id:"anthbot",label:"ANTHBOT"},{id:"imou",label:"IMOU"},...(samsungSearch?[{id:"samsung",label:"Samsung Shop"}]:[]),...(joybuySearch?[{id:"joybuy",label:"JoyBuy"}]:[]),...(mactradeSearch?[{id:"mactrade",label:"MacTrade"}]:[]),...(ebaySearch?[{id:"ebay",label:"eBay"}]:[]),{id:"beauty",label:"Beauty-Produkte"},{id:"guides",label:"Ratgeber"}].map(item=>
         <Link key={item.id} href={sourceUrl(item.id)} aria-current={source===item.id?"page":undefined}>{item.label}</Link>
       )}
     </nav>}
+    {source==="imou"&&q.length>=2&&<UnifiedOffers key={"imou:"+q} query={q} beauty={[]} anthbot={[]} enabled={{samsung:false,joybuy:false,mactrade:false,imou:true,ebay:false}}/>}
     {!combined&&!digital&&(source==="all"||source==="guides")&&<div className="guide-category-nav" aria-label="Thema eingrenzen">
       <Link href={"/suche/"+(q||source!=="all"?"?"+[q?"q="+encodeURIComponent(q):"",source!=="all"?"source="+encodeURIComponent(source):""].filter(Boolean).join("&"):"")} aria-current={!category?"page":undefined}>Alle Themen</Link>
       {guideCategories.map(c=>{
@@ -100,7 +101,7 @@ export function Results({ ebaySearch = false, samsungSearch = false, joybuySearc
     {!combined&&showJoybuy && q.length >= 2 && <JoybuyResults key={q} query={q} />}
     {!combined&&showMactrade && q.length >= 2 && <MactradeResults key={q} query={q} />}
     {!combined&&showEbay && q.length >= 2 && <EbayResults query={q} />}
-    {((source==="samsung"&&q.length<2)||(source==="ebay"&&q.length<2)||(source==="joybuy"&&q.length<2)||(source==="mactrade"&&q.length<2))&&<p className="empty-state" role="status">Bitte gib mindestens zwei Zeichen ein, um Händlerangebote zu suchen.</p>}
+    {((source==="samsung"&&q.length<2)||(source==="ebay"&&q.length<2)||(source==="joybuy"&&q.length<2)||(source==="mactrade"&&q.length<2)||(source==="imou"&&q.length<2))&&<p className="empty-state" role="status">Bitte gib mindestens zwei Zeichen ein, um Händlerangebote zu suchen.</p>}
     {guides.length>0 && <section className="search-guides">
       <div className="section-heading"><div><span className="eyebrow">EINKAUFSWISSEN</span><h2>Passende Ratgeber ({guides.length})</h2></div>
         <Link href="/ratgeber/" className="text-link">Alle Ratgeber <Icon name="arrow"/></Link></div>
