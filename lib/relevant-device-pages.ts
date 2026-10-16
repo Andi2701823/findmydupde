@@ -1,4 +1,4 @@
-import {macbookComputerIntent,relevantTitle} from "./unified-offers";
+import {macbookComputerIntent,relevantTitle} from "./unified-offers.ts";
 
 type OfferTitle={product_name:string;price_cents:number};
 type Page<T>={products:T[];total:number;page:number};
