@@ -57,3 +57,17 @@ export function findAnthbotProducts(query="",category=""):AnthbotProduct[]{
 export function formatAnthbotPrice(cents:number):string{
  return new Intl.NumberFormat("de-DE",{style:"currency",currency:"EUR"}).format(cents/100);
 }
+
+/** Stable, crawlable URLs: readable original item name plus exact merchant variant ID. */
+export function anthbotProductSlug(product:AnthbotProduct):string{
+ const name=product.name.normalize("NFKD").replace(/[\u0300-\u036f]/g,"")
+  .toLocaleLowerCase("de-DE").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")
+  .slice(0,72).replace(/-$/,"");
+ return (name||"anthbot-produkt")+"-"+product.id;
+}
+export function anthbotProductPath(product:AnthbotProduct):string{
+ return "/anthbot/"+anthbotProductSlug(product)+"/";
+}
+export function findAnthbotProductBySlug(slug:string):AnthbotProduct|undefined{
+ return anthbotProducts.find(p=>anthbotProductSlug(p)===slug);
+}
