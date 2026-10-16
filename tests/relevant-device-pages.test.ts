@@ -14,7 +14,7 @@ const devices=(start:number,n:number):Item[]=>Array.from({length:n},(_,i)=>({
 }));
 test("MacBook search scans beyond cheapest 24 accessory rows and returns only genuine laptops",async()=>{
  const input=[...accessories(1000,28),...devices(2000,32)];
- let pages:number[]=[];
+ const pages:number[]=[];
  const result=await relevantMacbookPage("MacBook",async page=>{
   pages.push(page);
   return {products:input.slice((page-1)*24,page*24),total:input.length,page};
