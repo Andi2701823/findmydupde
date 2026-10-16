@@ -23,9 +23,9 @@ export function AffiliateProductCard({product}:{product:AffiliateProduct}) {
       </div>
       <a href={product.affiliateUrl} target="_blank" rel="nofollow sponsored noopener noreferrer"
         className="button primary affiliate-shop-link" aria-label={`${product.name} beim Händler ansehen (Werbelink, neuer Tab)`}>
-        Zum Händler <Icon name="arrow" />
+        Zum Händler* <Icon name="arrow" />
       </a>
-      <p className="affiliate-disclosure">Werbelink · Bei einem Kauf können wir eine Provision erhalten.</p>
+      <p className="affiliate-disclosure">* Affiliate-Link: Bei einem Kauf können wir eine Provision erhalten. Für dich entstehen keine zusätzlichen Kosten.</p>
     </div>
   </article>;
 }
