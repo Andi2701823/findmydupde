@@ -10,7 +10,7 @@ export function AffiliateProductCard({product}:{product:AffiliateProduct}) {
   return <article className="affiliate-card">
     <div className="affiliate-image">
       {brokenImage ? <div className="image-fallback"><Icon name="image" /><span>Produktbild beim Händler ansehen</span></div>
-        : <Image src={product.image} alt={product.name} width={340} height={340} unoptimized
+        : <Image src={product.image} alt={product.name} width={340} height={340} unoptimized referrerPolicy="no-referrer"
           loading="lazy" onError={()=>setBrokenImage(true)} />}
     </div>
     <div className="affiliate-body">
