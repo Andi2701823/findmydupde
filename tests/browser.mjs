@@ -80,7 +80,7 @@ try {
   const sitemapContent=await sitemap.text();
   assert.match(sitemapContent,/gesichtsserum-vergleichen/);
   assert.equal((sitemapContent.match(/<loc>https:\/\/findmydup\.de\/produkte\/[^<]+<\/loc>/g)||[]).length,63);
-  assert.equal((sitemapContent.match(/<loc>https:\/\/findmydup\\.de\/anthbot\/[^<]+<\/loc>/g)||[]).length,35,
+  assert.equal((sitemapContent.match(/<loc>https:\/\/findmydup\.de\/anthbot\/[^<]+<\/loc>/g)||[]).length,35,
    "All 35 ANTHBOT product pages must be in the XML sitemap");
   const anthbotHome=await fetch(origin+"/anthbot/");
   assert.equal(anthbotHome.status,200,"ANTHBOT catalog route must be reachable");
