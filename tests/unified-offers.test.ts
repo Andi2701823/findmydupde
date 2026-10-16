@@ -73,3 +73,17 @@ test("ANTHBOT Awin offers retain approved merchant links and participate in pric
  assert.deepEqual(result.map(p=>p.source),["anthbot","beauty"]);
  assert.equal(anthbotOffers([{...anthbotProducts[0],affiliateUrl:"https://evil.example/"}]).length,0);
 });
+
+test("IMOU is a validated Awin merchant source, rejecting lookalike shop and image links",()=>{
+ const p={aw_product_id:"44993279802",product_name:"IMOU Ranger 2C WiFi Smart Kamera",price_cents:2799,
+  image_url:"https://cdn.shopify.com/s/files/1/0727/5711/7240/products/imou-ranger.jpg",
+  affiliate_url:"https://www.awin1.com/pclick.php?p=44993279802&a=3123004&m=125816"};
+ const valid=feedOffers("imou",{products:[p]});
+ assert.equal(valid.length,1);
+ assert.equal(valid[0].source,"imou");
+ assert.equal(valid[0].merchant,"IMOU DE");
+ assert.equal(valid[0].articleCents,2799);
+ assert.equal(feedOffers("imou",{products:[{...p,affiliate_url:p.affiliate_url.replace("m=125816","m=125128")}]}).length,0);
+ assert.equal(feedOffers("imou",{products:[{...p,image_url:"https://evil.example/camera.png"}]}).length,0);
+ assert.equal(feedOffers("imou",{products:[{...p,price_cents:0}]}).length,0);
+});

@@ -79,6 +79,14 @@ try {
   // Software pages also compile and serve in the Hostinger standalone app.
   const softwareIndex=await fetch(origin+"/digitale-tools/");
   assert.equal(softwareIndex.status,200);
+  const imouCatalog=await fetch(origin+"/imou/");
+  assert.equal(imouCatalog.status,200,"IMOU listing exists in Hostinger standalone build");
+  const imouModel=await fetch(origin+"/imou/imou-ranger-2c-wifi-security-surveillance-camera-8143695413560/");
+  assert.equal(imouModel.status,200,"IMOU model detail routes compile in Hostinger standalone");
+  const imouApi=await fetch(origin+"/api/imou/search/?q=Ranger");
+  assert.equal(imouApi.status,200,"IMOU compact search API is available in Hostinger standalone");
+  const imouOffers=await imouApi.json();
+  assert.ok(imouOffers.products.length>0&&imouOffers.products.length<=24);
   const anthbotCatalog=await fetch(origin+"/anthbot/");
   assert.equal(anthbotCatalog.status,200,"ANTHBOT catalog exists in Hostinger standalone");
   const anthbotDetail=await fetch(origin+"/anthbot/5-klingenscheibe-50042633781561/");

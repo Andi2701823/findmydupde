@@ -82,6 +82,27 @@ try {
   assert.equal((sitemapContent.match(/<loc>https:\/\/findmydup\.de\/produkte\/[^<]+<\/loc>/g)||[]).length,63);
   assert.equal((sitemapContent.match(/<loc>https:\/\/findmydup\.de\/anthbot\/[^<]+<\/loc>/g)||[]).length,35,
    "All 35 ANTHBOT product pages must be in the XML sitemap");
+  assert.equal((sitemapContent.match(/<loc>https:\/\/findmydup\.de\/imou\/[^<]+<\/loc>/g)||[]).length,69,
+   "XML sitemap must include all 69 IMOU grouped model pages");
+  const imouCatalog=await fetch(origin+"/imou/");
+  assert.equal(imouCatalog.status,200);
+  const imouCatalogHtml=await imouCatalog.text();
+  assert.match(imouCatalogHtml,/IMOU Überwachungskameras und Smart Home entdecken/);
+  assert.match(imouCatalogHtml.replaceAll("<!-- -->",""),/69 Produktgruppen/);
+  const modelPage=await fetch(origin+"/imou/imou-ranger-2c-wifi-security-surveillance-camera-8143695413560/");
+  assert.equal(modelPage.status,200,"The first IMOU model route is a real product detail page");
+  const modelHtml=await modelPage.text();
+  assert.match(modelHtml,/IMOU Ranger 2C/);
+  assert.match(modelHtml,/16\.10\.2026/);
+  assert.match(modelHtml,/m=125816/);
+  const missingModel=await fetch(origin+"/imou/not-a-real-model-1234567890123/");
+  assert.equal(missingModel.status,404);
+  const imouSearch=await fetch(origin+"/api/imou/search/?q=Ranger");
+  assert.equal(imouSearch.status,200);
+  const imouJson=await imouSearch.json();
+  assert.equal(imouJson.source,"imou");
+  assert.ok(imouJson.products.length>0&&imouJson.products.length<=24);
+  assert.equal(imouSearch.headers.get("cache-control"),"no-store");
   const anthbotHome=await fetch(origin+"/anthbot/");
   assert.equal(anthbotHome.status,200,"ANTHBOT catalog route must be reachable");
   const anthbotHtml=await anthbotHome.text();
