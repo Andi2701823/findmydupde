@@ -5,6 +5,7 @@ import { samsungCatalogEnabled } from "@/lib/samsung-catalog";
 import { joybuyCatalogEnabled } from "@/lib/joybuy-catalog";
 import { mactradeCatalogEnabled } from "@/lib/mactrade-catalog";
 import {anthbotProducts} from "@/lib/anthbot-products";
+import {imouModels,imouVariantCount} from "@/lib/imou-products";
 export const dynamic="force-dynamic";
 export const metadata:Metadata={
   title:"Produktkatalog: Angebote und Produkte entdecken",
@@ -28,6 +29,12 @@ export default function ProductsPage(){
         <p>Website- und Funnel-Builder, Mitgliederbereiche und Marketing-Werkzeuge. Software-Abo, separat von unserem Preisvergleich für physische Produkte.</p>
         <Link href="/digitale-tools/funnelcockpit/" className="button secondary">Funktionen und Tarife ansehen →</Link>
       </div>
+    </section>
+    <section className="editorial-contact samsung-catalog-cta" aria-labelledby="imou-catalog-heading">
+      <span className="eyebrow">IMOU DE · AWIN</span>
+      <h2 id="imou-catalog-heading">IMOU – Überwachungskameras und Smart Home</h2>
+      <p>{imouModels.length} Kameras, Sets und weitere Modellgruppen mit {imouVariantCount} Händler-Varianten. Preise aus dem Awin-Feed, nicht live aktualisiert.</p>
+      <Link href="/imou/" className="button secondary">Zum IMOU-Katalog →</Link>
     </section>
     <section className="editorial-contact samsung-catalog-cta" aria-labelledby="anthbot-catalog-heading">
       <span className="eyebrow">ANTHBOT DE · AWIN</span>
