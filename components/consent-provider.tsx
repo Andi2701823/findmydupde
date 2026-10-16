@@ -14,9 +14,10 @@ export function ConsentProvider({children}:{children:React.ReactNode}){
  const [affiliateDraft,setAffiliateDraft]=useState(false);
  const [analytics,setAnalytics]=useState(false);
  const [analyticsGranted,setAnalyticsGranted]=useState(false);
+ const [analyticsChoiceKnown,setAnalyticsChoiceKnown]=useState(false);
  useEffect(()=>{
    const timer=window.setTimeout(()=>{
-     try {const saved=localStorage.getItem(key);if(saved==="accepted"||saved==="rejected"){setChoice(saved);setAffiliateDraft(saved==="accepted");}const granted=localStorage.getItem(analyticsKey)==="accepted";setAnalytics(granted);setAnalyticsGranted(granted);}catch{}
+     try {const saved=localStorage.getItem(key);if(saved==="accepted"||saved==="rejected"){setChoice(saved);setAffiliateDraft(saved==="accepted");}const storedAnalytics=localStorage.getItem(analyticsKey);const granted=storedAnalytics==="accepted";setAnalytics(granted);setAnalyticsGranted(granted);setAnalyticsChoiceKnown(storedAnalytics==="accepted"||storedAnalytics==="rejected");}catch{}
      setLoaded(true);
    },0);
    return ()=>window.clearTimeout(timer);
@@ -65,11 +66,11 @@ export function ConsentProvider({children}:{children:React.ReactNode}){
  },[loaded,analytics]);
  function decide(next:Exclude<Choice,null>, allowAnalytics=analytics){
    try{localStorage.setItem(key,next);localStorage.setItem(analyticsKey,allowAnalytics?"accepted":"rejected");}catch{}
-   setAffiliateDraft(next==="accepted");setAnalytics(allowAnalytics);setAnalyticsGranted(allowAnalytics);setChoice(next);setSettings(false);
+   setAffiliateDraft(next==="accepted");setAnalytics(allowAnalytics);setAnalyticsGranted(allowAnalytics);setAnalyticsChoiceKnown(true);setChoice(next);setSettings(false);
  }
  return <ConsentContext.Provider value={loaded?choice:null}>
   {children}
-  {loaded&&(choice===null||settings)&&<div className="consent-layer" role="dialog" aria-modal="false" aria-labelledby="consent-title" aria-describedby="consent-description">
+  {loaded&&(choice===null||!analyticsChoiceKnown||settings)&&<div className="consent-layer" role="dialog" aria-modal="false" aria-labelledby="consent-title" aria-describedby="consent-description">
     <div className="consent-card">
       <strong id="consent-title">Deine Privatsphäre bei FindMyDup</strong>
       <p id="consent-description">Wir verwenden notwendige Browserfunktionen für die Website. Mit deiner freiwilligen Zustimmung laden wir externe Werbebanner und ermöglichen die Zuordnung von Affiliate-Klicks und möglichen Käufen. Dafür nutzen wir unseren Werbepartner Awin. Google Analytics setzen wir nur ein, wenn du der statistischen Auswertung zustimmst. Ohne Zustimmung kannst du die Produktsuche weiterhin nutzen. Du kannst deine Wahl jederzeit hier ändern.</p>
