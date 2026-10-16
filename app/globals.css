@@ -2482,3 +2482,10 @@ select {
 .reifen-ads-grid{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:18px}
 .reifen-ads-grid a{display:block;max-width:100%;line-height:0}
 .reifen-ads-grid img{display:block;max-width:100%;height:auto;border:0}
+
+
+/* Partner banner rotation: one creative at a time, compact controls. */
+.reifen-ads-grid{min-height:105px}
+.partner-banner-controls{display:flex;align-items:center;justify-content:center;gap:13px;margin-top:12px;color:var(--muted);font-size:11px}
+.partner-banner-controls button{width:32px;height:32px;border:1px solid var(--line);background:white;border-radius:50%;font-size:22px;line-height:1}
+.partner-banner-controls button:hover{background:var(--cream)}
