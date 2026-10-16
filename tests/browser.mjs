@@ -37,7 +37,7 @@ try {
     "Google Analytics must not load before Analytics consent");
   await analyticsPage.getByRole("checkbox",{name:"Besucherstatistik mit Google Analytics erlauben"}).check();
   await analyticsPage.getByRole("button",{name:"Auswahl speichern"}).click();
-  await analyticsPage.locator('script[data-findmydup-analytics]').waitFor();
+  await analyticsPage.locator('script[data-findmydup-analytics]').waitFor({state:"attached"});
   assert.equal(await analyticsPage.locator('script[data-findmydup-analytics]').getAttribute("src"),
     "https://www.googletagmanager.com/gtag/js?id=G-D3QN1F7G47");
   assert.equal(await analyticsPage.evaluate(()=>localStorage.getItem("findmydup:analytics-consent:v1")),
