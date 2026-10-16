@@ -30,7 +30,7 @@ function OfferRow({offer,first}:{offer:SearchOffer;first:boolean}){
       </div>
       <a className="button secondary unified-offer-action" href={offer.href} target="_blank"
         rel={offer.source==="ebay"?"noopener noreferrer":"sponsored nofollow noopener noreferrer"}>
-        Beim Händler prüfen* ↗
+        Beim Händler prüfen{offer.source==="ebay"?"":"*"} ↗
       </a>
     </div>
   </article>;
