@@ -2461,3 +2461,16 @@ select {
 .imou-variant-price{font-size:17px;white-space:nowrap}
 .imou-variant .button{white-space:nowrap}
 @media(max-width:650px){.imou-variant{grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:13px}.imou-variant-name{grid-column:1/-1}.imou-variant .button{white-space:normal;font-size:11px}}
+
+/* Compact merchant discovery on /produkte/: 3 desktops, 2 tablets, 1 phone. */
+.merchant-directory{margin:28px 0 34px}
+.merchant-directory-heading{margin-bottom:16px}
+.merchant-directory-heading h2{font-size:clamp(23px,2.7vw,32px);line-height:1.2;letter-spacing:-.5px;margin:7px 0}
+.merchant-directory-heading p{font-size:13px;line-height:1.6;color:var(--muted);max-width:800px}
+.merchant-directory-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.merchant-directory-card{min-width:0;display:flex;flex-direction:column;background:var(--cream);border:1px solid var(--line);border-radius:17px;padding:22px;gap:9px}
+.merchant-directory-card h2{font-size:23px;line-height:1.2;letter-spacing:-.4px;margin:0}
+.merchant-directory-card p{font-size:12px;color:var(--muted);line-height:1.6;margin:0 0 4px;flex:1}
+.merchant-directory-card .merchant-directory-link{display:inline-flex;justify-content:space-between;align-items:center;gap:12px;align-self:stretch;font-size:12px;text-align:left}
+@media(max-width:1050px){.merchant-directory-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.merchant-directory-grid{grid-template-columns:1fr;gap:10px}.merchant-directory-card{padding:17px;gap:7px}.merchant-directory-card h2{font-size:21px}.merchant-directory-heading{margin-bottom:12px}}
