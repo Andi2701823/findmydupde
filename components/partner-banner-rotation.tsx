@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import {useAffiliateConsent} from "./consent-provider";
 
 const banners = [
   { name: "Reifen.com", s: "3855040", v: "7605", q: "403450" },
@@ -11,6 +12,7 @@ const banners = [
 ] as const;
 
 export function PartnerBannerRotation() {
+  const consent=useAffiliateConsent();
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
 
@@ -27,7 +29,7 @@ export function PartnerBannerRotation() {
   }, [paused]);
 
   const banner = banners[index];
-  const url = `https://www.awin1.com/cread.php?s=${banner.s}&v=${banner.v}&q=${banner.q}&r=3123004`;
+  const url = `https://www.awin1.com/cread.php?s=${banner.s}&v=${banner.v}&q=${banner.q}&r=3123004&cons=${consent==="accepted"?"1":"0"}`;
   const image = `https://www.awin1.com/cshow.php?s=${banner.s}&v=${banner.v}&q=${banner.q}&r=3123004`;
 
   return (
@@ -41,7 +43,7 @@ export function PartnerBannerRotation() {
         <a href={url} rel="sponsored nofollow noopener noreferrer" target="_blank"
           aria-label={`Werbung von ${banner.name} (öffnet in neuem Tab)`}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={image} alt={`${banner.name} Werbebanner`} loading="lazy" />
+          {consent==="accepted" ? <img src={image} alt={`${banner.name} Werbebanner`} loading="lazy" /> : <span className="partner-banner-text">Externe Awin-Banner erst nach Zustimmung · {banner.name}</span>}
           <span className="partner-banner-text" style={{ display: "block", fontSize: 12, lineHeight: 1.5, padding: "10px 8px", textAlign: "center", color: "#29734f", fontWeight: 700 }}>Angebote bei {banner.name} ansehen ↗</span>
         </a>
       </div>
