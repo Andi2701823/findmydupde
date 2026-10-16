@@ -63,7 +63,7 @@ export function ConsentProvider({children}:{children:React.ReactNode}){
    if(!loaded||analyticsGranted)return;
    const w=window as Window & {gtag?:(...args:unknown[])=>void};
    w.gtag?.("consent","update",{analytics_storage:"denied",ad_storage:"denied",ad_user_data:"denied",ad_personalization:"denied"});
- },[loaded,analytics]);
+ },[loaded,analyticsGranted]);
  function decide(next:Exclude<Choice,null>, allowAnalytics=analytics){
    try{localStorage.setItem(key,next);localStorage.setItem(analyticsKey,allowAnalytics?"accepted":"rejected");}catch{}
    setAffiliateDraft(next==="accepted");setAnalytics(allowAnalytics);setAnalyticsGranted(allowAnalytics);setAnalyticsChoiceKnown(true);setChoice(next);setSettings(false);
