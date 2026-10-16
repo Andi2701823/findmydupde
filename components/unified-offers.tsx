@@ -5,11 +5,11 @@ import type {AffiliateProduct} from "@/lib/affiliate-products";
 import {anthbotOffers,beautyOffers,ebayOffers,feedOffers,rankedOffers,type OfferSource,type SearchOffer} from "@/lib/unified-offers";
 import type {AnthbotProduct} from "@/lib/anthbot-products";
 
-type Enabled={samsung:boolean;joybuy:boolean;mactrade:boolean;ebay:boolean};
+type Enabled={samsung:boolean;joybuy:boolean;mactrade:boolean;imou:boolean;ebay:boolean};
 type Current={key:string;offers:SearchOffer[];pending:number;failed:OfferSource[]};
 const format=new Intl.NumberFormat("de-DE",{style:"currency",currency:"EUR"});
 function euro(cents:number){return format.format(cents/100);}
-const sources=["samsung","joybuy","mactrade","ebay"] as const;
+const sources=["samsung","joybuy","mactrade","imou","ebay"] as const;
 function OfferRow({offer,first}:{offer:SearchOffer;first:boolean}){
   const [broken,setBroken]=useState(false);
   const total=offer.shippingCents===null?null:offer.articleCents+offer.shippingCents;
@@ -36,15 +36,15 @@ function OfferRow({offer,first}:{offer:SearchOffer;first:boolean}){
   </article>;
 }
 export function UnifiedOffers({query,beauty,anthbot,enabled}:{query:string;beauty:AffiliateProduct[];anthbot:AnthbotProduct[];enabled:Enabled}){
-  const {samsung,joybuy,mactrade,ebay}=enabled;
-  const enabledSources={samsung,joybuy,mactrade,ebay};
+  const {samsung,joybuy,mactrade,imou,ebay}=enabled;
+  const enabledSources={samsung,joybuy,mactrade,imou,ebay};
   const key=query+":"+sources.map(s=>String(enabledSources[s])).join(":");
   const [state,setState]=useState<Current|null>(null);
   const [visible,setVisible]=useState(5);
   const start=useMemo(()=>[...beautyOffers(beauty),...anthbotOffers(anthbot)],[beauty,anthbot]);
   useEffect(()=>{
     const controller=new AbortController();
-    const requested=sources.filter(source=>(source==="samsung"?samsung:source==="joybuy"?joybuy:source==="mactrade"?mactrade:ebay));
+    const requested=sources.filter(source=>enabledSources[source]);
     for(const source of requested){
       fetch("/api/"+source+"/search/?q="+encodeURIComponent(query),{signal:controller.signal,cache:"no-store"})
         .then(async response=>{if(!response.ok)throw Error("Unavailable");return await response.json() as unknown;})
@@ -63,7 +63,7 @@ export function UnifiedOffers({query,beauty,anthbot,enabled}:{query:string;beaut
         });
     }
     return ()=>controller.abort();
-  },[key,query,start,samsung,joybuy,mactrade,ebay]);
+  },[key,query,start,samsung,joybuy,mactrade,imou,ebay]);
   const active=state?.key===key?state:null;
   const offers=rankedOffers(active?.offers??start,query);
   const pending=active?.pending??sources.filter(source=>enabledSources[source]).length;
