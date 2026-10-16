@@ -2489,3 +2489,17 @@ select {
 .partner-banner-controls{display:flex;align-items:center;justify-content:center;gap:13px;margin-top:12px;color:var(--muted);font-size:11px}
 .partner-banner-controls button{width:32px;height:32px;border:1px solid var(--line);background:white;border-radius:50%;font-size:22px;line-height:1}
 .partner-banner-controls button:hover{background:var(--cream)}
+
+
+/* Optional affiliate consent: equal prominence for accepting or declining. */
+.consent-layer{position:fixed;inset:0;z-index:1000;background:rgba(15,22,25,.32);display:flex;justify-content:center;align-items:flex-end;padding:16px;pointer-events:none}
+.consent-card{pointer-events:auto;width:min(100%,690px);background:#fff;border:1px solid #bfc9c6;border-radius:15px;padding:24px;box-shadow:0 12px 36px #0002;color:#1a2927}
+.consent-card strong{display:block;font-size:20px}
+.consent-card p{font-size:13px;line-height:1.65;margin:12px 0}
+.consent-card a{text-decoration:underline}
+.consent-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.consent-actions button{min-height:46px;padding:10px;border:1px solid #276949;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer}
+.consent-actions button:first-child{background:#fff;color:#276949}
+.consent-actions button:last-child{background:#276949;color:white}
+.consent-settings-link{position:fixed;bottom:10px;left:12px;z-index:800;border:1px solid #bfc9c6;border-radius:7px;background:white;color:#24563e;padding:6px 9px;font-size:11px;cursor:pointer;box-shadow:0 1px 6px #0002}
+@media(max-width:520px){.consent-card{padding:18px}.consent-actions{grid-template-columns:1fr}.consent-card strong{font-size:17px}}
