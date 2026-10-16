@@ -17,7 +17,7 @@ function OfferRow({offer,first}:{offer:SearchOffer;first:boolean}){
     {first&&<span className="unified-offer-best">Niedrigster Artikelpreis dieser Treffer</span>}
     <div className="unified-offer-body">
       <div className="unified-offer-image">
-        {broken?<span aria-hidden="true">Bild</span>:<Image src={offer.image} width={100} height={100} alt="" loading="lazy" unoptimized onError={()=>setBroken(true)}/>}
+        {broken?<span aria-hidden="true">Bild</span>:<Image src={offer.image} width={100} height={100} alt="" loading="lazy" unoptimized referrerPolicy="no-referrer" onError={()=>setBroken(true)}/>}
       </div>
       <div className="unified-offer-info">
         <h3>{offer.title}</h3>
