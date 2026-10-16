@@ -10,8 +10,11 @@ export function ConsentProvider({children}:{children:React.ReactNode}){
  const [loaded,setLoaded]=useState(false);
  const [settings,setSettings]=useState(false);
  useEffect(()=>{
-   try {const saved=localStorage.getItem(key);if(saved==="accepted"||saved==="rejected")setChoice(saved);}catch{}
-   setLoaded(true);
+   const timer=window.setTimeout(()=>{
+     try {const saved=localStorage.getItem(key);if(saved==="accepted"||saved==="rejected")setChoice(saved);}catch{}
+     setLoaded(true);
+   },0);
+   return ()=>window.clearTimeout(timer);
  },[]);
  useEffect(()=>{
    if(!loaded)return;
