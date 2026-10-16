@@ -6,6 +6,8 @@ export default function Imprint(){return <main id="main" className="shell legal-
   <h1>Impressum</h1>
   <h2>Angaben gemäß § 5 DDG</h2>
   <p>Andreas Paul<br/>FindMyDup<br/>Germersheimer Straße 17<br/>70499 Stuttgart<br/>Deutschland</p>
+  <h2>Umsatzsteuer-Identifikationsnummer</h2>
+  <p>Umsatzsteuer-Identifikationsnummer gemäß § 27a UStG: DE320657230</p>
   <h2>Kontakt</h2>
   <p>E-Mail: <a href={"mailto:"+supportEmail}>{supportEmail}</a></p>
   <h2>Inhaltlich verantwortlich</h2>
