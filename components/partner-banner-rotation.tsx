@@ -16,7 +16,8 @@ export function PartnerBannerRotation() {
 
   useEffect(() => {
     // Start at a different banner on each page visit, without a hydration mismatch.
-    setIndex(Math.floor(Math.random() * banners.length));
+    const timer = window.setTimeout(() => setIndex(Math.floor(Math.random() * banners.length)), 0);
+    return () => window.clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -41,6 +42,7 @@ export function PartnerBannerRotation() {
           aria-label={`Werbung von ${banner.name} (öffnet in neuem Tab)`}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={image} alt={`${banner.name} Werbebanner`} loading="lazy" />
+          <span className="partner-banner-text">Angebote bei {banner.name} ansehen ↗</span>
         </a>
       </div>
       <div className="partner-banner-controls" aria-label="Werbebanner wechseln">
