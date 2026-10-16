@@ -257,6 +257,17 @@ try {
   assert.equal(productSchema.offers,undefined,"Never publish stale feed data as live offers");
   assert.equal(productSchema.review,undefined,"No invented reviews");
   assert.equal(productSchema.aggregateRating,undefined,"No invented ratings");
+  // Contact details must consistently use the new public support mailbox.
+  for(const route of ["/ueber-uns/","/partner/","/impressum/","/datenschutz/"]){
+    const response=await fetch(origin+route);
+    assert.equal(response.status,200);
+    const content=await response.text();
+    assert.match(content,/support@findmydup\.de/);
+    assert.ok(!content.includes("andreas.paul4282@gmail.com"),"Old personal mailbox is not displayed on "+route);
+  }
+  await page.goto(origin+"/",{waitUntil:"domcontentloaded"});
+  assert.equal(await page.locator('footer a[href="mailto:support@findmydup.de"]').count(),1,
+   "Footer contact link points to dedicated support mailbox");
   await page.goto(`${origin}/ueber-uns/`,{waitUntil:"domcontentloaded"});
   await page.getByRole("heading",{name:"Mehr wissen, bevor du kaufst."}).waitFor();
   await page.goto(`${origin}/partner/`,{waitUntil:"domcontentloaded"});
