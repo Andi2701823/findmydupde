@@ -46,7 +46,9 @@ export function ConsentProvider({children}:{children:React.ReactNode}){
    // Basic consent mode: never download Google Analytics before opt-in.
    const w=window as Window & {dataLayer?:unknown[];gtag?:(...args:unknown[])=>void};
    w.dataLayer=w.dataLayer||[];
-   w.gtag=(...args:unknown[])=>{w.dataLayer?.push(args);};
+   // gtag.js expects each queued command to be the native Arguments object,
+   // not an Array created by a rest-parameter arrow function.
+   w.gtag=function(..._args:unknown[]){w.dataLayer?.push(arguments);};
    w.gtag("consent","default",{analytics_storage:"denied",ad_storage:"denied",ad_user_data:"denied",ad_personalization:"denied"});
    w.gtag("consent","update",{analytics_storage:"granted",ad_storage:"denied",ad_user_data:"denied",ad_personalization:"denied"});
    w.gtag("js",new Date());
