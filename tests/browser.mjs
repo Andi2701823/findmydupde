@@ -42,6 +42,22 @@ try {
     "https://www.googletagmanager.com/gtag/js?id=G-D3QN1F7G47");
   assert.equal(await analyticsPage.evaluate(()=>localStorage.getItem("findmydup:analytics-consent:v1")),
     "accepted");
+  // Google gtag.js silently ignores Array-based commands; its queue must contain
+  // native Arguments objects, or Tag Assistant finds the tag but GA4 records 0 hits.
+  const queued=await analyticsPage.evaluate(()=>{
+    const commands=(window.dataLayer||[]).filter(item=>
+      Object.prototype.toString.call(item)==="[object Arguments]");
+    return {
+      hasConfig:commands.some(item=>item[0]==="config" && item[1]==="G-D3QN1F7G47"),
+      hasGrantedConsent:commands.some(item=>item[0]==="consent" && item[1]==="update" &&
+        item[2]?.analytics_storage==="granted"),
+      count:commands.length,
+    };
+  });
+  assert.ok(queued.count>=4,"Google command queue must contain native Arguments objects");
+  assert.ok(queued.hasConfig,"gtag('config') must be a recognized command");
+  assert.ok(queued.hasGrantedConsent,"GA4 must receive granted Analytics consent");
+
   assert.ok(analyticsRequests.some(url=>url.includes("G-D3QN1F7G47")),
     "Consent must trigger the real Google Analytics tag request");
   await analyticsContext.close();
