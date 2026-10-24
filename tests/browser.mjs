@@ -308,13 +308,13 @@ try {
   // Focus from the pause/resume button must not silently disable the rotation.
   await bannerPage.waitForFunction(
     () => document.querySelector(".reifen-ads-label")?.textContent==="Anzeige · Reifen.com",
-    {timeout:4000}
+    undefined,{timeout:4000}
   );
   await nextBanner.hover();
   // A visitor hovering over controls must still see automatic changes.
   await bannerPage.waitForFunction(
     () => document.querySelector(".reifen-ads-label")?.textContent==="Anzeige · MacTrade",
-    {timeout:4000}
+    undefined,{timeout:4000}
   );
   await bannerContext.close();
   await page.waitForFunction(()=>document.querySelectorAll(".affiliate-card").length===63);
