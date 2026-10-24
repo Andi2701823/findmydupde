@@ -50,6 +50,8 @@ try {
     body: Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9SjlZyQAAAAASUVORK5CYII=", "base64"),
   }));
   await page.goto(origin + "/suche/?q=handtasche&source=ebay", { waitUntil: "domcontentloaded" });
+  await page.getByRole("dialog", { name: "Deine Privatsphäre bei FindMyDup" })
+    .getByRole("button", { name: "Auswahl speichern" }).click();
   await page.getByRole("heading", { name: "Produkte auf eBay vergleichen" }).waitFor();
   await page.locator('[data-ebay-offer="100"]').waitFor();
   assert.equal(await page.locator("[data-ebay-offer]").count(), 4);
