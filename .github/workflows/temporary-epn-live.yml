@@ -1,0 +1,55 @@
+name: Temporary eBay affiliate live check
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/temporary-epn-live.yml
+  push:
+    branches:
+      - test/epn-affiliate-live-20261024
+permissions:
+  contents: read
+jobs:
+  verify-epn-live:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe public FindMyDup eBay API and tracking
+        run: |
+          python3 - <<'PY'
+          import urllib.request,urllib.error,urllib.parse,json
+          expected='5339222617'
+          base='https://findmydup.de/api/ebay/search/'
+          for q in ['Samsung Galaxy S25','Handtasche']:
+              u=base+'?'+urllib.parse.urlencode({'q':q})
+              req=urllib.request.Request(u,headers={'User-Agent':'FindMyDupEPNVerify/1.0','Accept':'application/json'})
+              try:
+                  with urllib.request.urlopen(req,timeout=30) as r:
+                      status=r.status
+                      data=json.load(r)
+              except urllib.error.HTTPError as e:
+                  status=e.code
+                  try: data=json.loads(e.read())
+                  except: data={'error':'Non-JSON response'}
+              print('SEARCH',repr(q),'STATUS',status,'ERROR',data.get('error'),'MARKETPLACE',data.get('marketplace'))
+              if status!=200:
+                  continue
+              items=data.get('items',[])
+              print('ITEM_COUNT',len(items),'AFFILIATE_TRUE',sum(x.get('affiliate') is True for x in items))
+              counts={}
+              for x in items:
+                  link=x.get('outboundUrl') or ''
+                  url=urllib.parse.urlparse(link)
+                  params=urllib.parse.parse_qs(url.query)
+                  campaign=params.get('campid',[''])[0]
+                  key=(str(x.get('affiliate')),url.hostname,str(campaign==expected))
+                  counts[key]=counts.get(key,0)+1
+              for (aff,host,match),count in sorted(counts.items()):
+                  print('TRACKING', 'affiliate='+aff,'host='+str(host),'campid_matches='+match,'offers='+str(count))
+              if items:
+                  tracked=[x for x in items if x.get('affiliate') is True]
+                  print('FIRST_OFFER_PRICE',items[0].get('price'),items[0].get('currency'))
+                  if tracked:
+                      print('TRACKED_SAMPLE_TITLE',repr(tracked[0].get('title','')[:100]))
+                      print('VALID_TRACKING',urllib.parse.parse_qs(urllib.parse.urlparse(tracked[0]['outboundUrl']).query).get('campid')==[expected])
+          PY
