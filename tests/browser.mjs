@@ -274,8 +274,49 @@ try {
   assert.equal(await page.locator('.reifen-ads').count(),1,"One partner advertising area");
   assert.equal(await page.locator('.reifen-ads a[href*="awin1.com/cread.php"]').count(),1,
     "Only one advertising link visible at any time");
-  assert.equal(await page.locator('.reifen-ads .partner-banner-controls button').count(),2,
-    "Visitors may change rotating banners");
+  assert.equal(await page.locator('.reifen-ads .partner-banner-controls button').count(),3,
+    "Visitors may navigate or pause rotating banners");
+  // Use an isolated browser page and shortened banner-only timers to verify that
+  // the automatic rotation continues even while a control is focused or hovered.
+  const bannerContext = await browser.newContext({viewport:{width:1024,height:720}});
+  await bannerContext.addInitScript(() => {
+    localStorage.setItem("findmydup:affiliate-consent:v1", "rejected");
+    localStorage.setItem("findmydup:analytics-consent:v1", "rejected");
+    const originalTimeout = window.setTimeout.bind(window);
+    window.setTimeout = (callback,delay,...args) => originalTimeout(callback, delay===10000 ? 1100 : delay, ...args);
+  });
+  const bannerPage = await bannerContext.newPage();
+  await bannerPage.goto(origin+"/produkte/",{waitUntil:"domcontentloaded"});
+  const bannerLabel = bannerPage.locator(".reifen-ads-label");
+  const nextBanner = bannerPage.getByRole("button",{name:"Nächster Werbebanner"});
+  const pauseBanner = bannerPage.getByRole("button",{name:"Bannerrotation pausieren"});
+  await bannerLabel.waitFor();
+  assert.equal(await bannerLabel.innerText(),"Anzeige · Reifen.com","Banner rotation begins with a stable first item");
+  const bannerClick=bannerPage.locator(".reifen-ads-grid a");
+  assert.match(await bannerClick.getAttribute("href"),/s=3855040/);
+  assert.ok((await bannerPage.locator(".partner-banner-text").first().evaluate(el=>getComputedStyle(el).lineHeight))!=="0px",
+    "Consent placeholder remains readable");
+  await nextBanner.click();
+  assert.equal(await bannerLabel.innerText(),"Anzeige · Samsung Shop DE","Manual next changes advertiser, not just creative");
+  await nextBanner.click();
+  assert.equal(await bannerLabel.innerText(),"Anzeige · MacTrade");
+  await pauseBanner.click();
+  assert.equal(await bannerPage.getByRole("button",{name:"Bannerrotation fortsetzen"}).count(),1);
+  await bannerPage.waitForTimeout(1600);
+  assert.equal(await bannerLabel.innerText(),"Anzeige · MacTrade","Explicit pause stops the timer");
+  await bannerPage.getByRole("button",{name:"Bannerrotation fortsetzen"}).click();
+  // Focus from the pause/resume button must not silently disable the rotation.
+  await bannerPage.waitForFunction(
+    () => document.querySelector(".reifen-ads-label")?.textContent==="Anzeige · Reifen.com",
+    {timeout:4000}
+  );
+  await nextBanner.hover();
+  // A visitor hovering over controls must still see automatic changes.
+  await bannerPage.waitForFunction(
+    () => document.querySelector(".reifen-ads-label")?.textContent==="Anzeige · MacTrade",
+    {timeout:4000}
+  );
+  await bannerContext.close();
   await page.waitForFunction(()=>document.querySelectorAll(".affiliate-card").length===63);
   assert.equal(await page.locator('a[rel*="sponsored"][href*="awin1.com/pclick.php"]').count(),63);
 
