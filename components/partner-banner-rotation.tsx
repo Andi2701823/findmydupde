@@ -23,11 +23,16 @@ export function PartnerBannerRotation() {
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) setPaused(true);
     const updateVisibility = () => setVisible(document.visibilityState === "visible");
-    updateVisibility();
     document.addEventListener("visibilitychange", updateVisibility);
-    return () => document.removeEventListener("visibilitychange", updateVisibility);
+    const initialCheck = window.setTimeout(() => {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) setPaused(true);
+      updateVisibility();
+    }, 0);
+    return () => {
+      window.clearTimeout(initialCheck);
+      document.removeEventListener("visibilitychange", updateVisibility);
+    };
   }, []);
 
   useEffect(() => {
