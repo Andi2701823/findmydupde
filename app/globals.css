@@ -2489,6 +2489,10 @@ select {
 .partner-banner-controls{display:flex;align-items:center;justify-content:center;gap:13px;margin-top:12px;color:var(--muted);font-size:11px}
 .partner-banner-controls button{width:32px;height:32px;border:1px solid var(--line);background:white;border-radius:50%;font-size:22px;line-height:1}
 .partner-banner-controls button:hover{background:var(--cream)}
+.partner-banner-text{display:block;line-height:1.5;padding:12px 8px;text-align:center;font-size:13px}
+.partner-banner-cta{font-size:12px;padding:10px 8px;color:#29734f;font-weight:700}
+.partner-banner-controls .partner-banner-pause{width:auto;min-width:40px;padding:0 9px;border-radius:18px;font-size:15px}
+
 
 
 /* Optional affiliate consent: equal prominence for accepting or declining. */
