@@ -16,7 +16,7 @@ export function SearchBox({ compact = false, initialQuery = "", initialSource = 
       <button className="button primary" type="submit">{compact?"Neu suchen":"Entdecken"} <Icon name="arrow" /></button>
     </form>
     {!compact&&<div className="suggestions">
-      <span>Oft gesucht:</span>
+      <span>Zum Beispiel:</span>
       {["Serum","Genie","Ranger"].map(word => <Link href={destination(word)} key={word}>{word} ↗</Link>)}
     </div>}
     {compact&&initialSource!=="all"&&<p className="repeat-search-scope">Suche innerhalb der gewählten Quelle. <Link href="/suche/">Stattdessen alle Quellen durchsuchen</Link></p>}
