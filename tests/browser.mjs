@@ -104,7 +104,7 @@ try {
   assert.match(favicon.headers.get("content-type")||"",/image\/svg\+xml/);
   assert.match(await favicon.text(),/viewBox="0 0 64 64"/);
   assert.equal(await page.locator('meta[name="robots"][content*="noindex"]').count(),0);
-  assert.match(await page.title(),/Preise vergleichen.*günstigere Alternativen/);
+  assert.match(await page.title(),/Produkte entdecken und Händlerpreise vergleichen/);
   const websiteLd=JSON.parse(await page.locator('script[type="application/ld+json"]').first().innerText());
   assert.equal(websiteLd["@type"],"WebSite");
   assert.equal(websiteLd.url,"https://findmydup.de/");
