@@ -73,6 +73,10 @@ try {
     "Homepage should link directly to existing merchant catalogs");
   assert.equal(await page.getByRole("link",{name:"IMOU entdecken"}).count(),1);
   assert.equal(await page.getByRole("link",{name:"ANTHBOT entdecken"}).count(),1);
+  for(const topic of ["Mode","Beauty","Wohnen","Technik"]) {
+    assert.equal(await page.locator('a.category-tile[href="/ratgeber/#'+topic.toLowerCase()+'"]').count(),1,
+      "Editorial category links must lead to the matching guide section");
+  }
   for(const term of ["Serum","Genie","Ranger"]) {
     assert.equal(await page.getByRole("link",{name:term+" ↗"}).count(),1,
       "Homepage search examples should have catalog matches");
