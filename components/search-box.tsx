@@ -16,11 +16,10 @@ export function SearchBox({ compact = false, initialQuery = "", initialSource = 
       <button className="button primary" type="submit">{compact?"Neu suchen":"Entdecken"} <Icon name="arrow" /></button>
     </form>
     {!compact&&<div className="suggestions">
-      <span>Oft gesucht:</span>
-      {["Gesichtsserum","Sneaker","Kopfhörer"].map(word => <Link href={destination(word)} key={word}>{word} ↗</Link>)}
+      <span>Zum Beispiel:</span>
+      {["Serum","Genie","Ranger"].map(word => <Link href={destination(word)} key={word}>{word} ↗</Link>)}
     </div>}
     {compact&&initialSource!=="all"&&<p className="repeat-search-scope">Suche innerhalb der gewählten Quelle. <Link href="/suche/">Stattdessen alle Quellen durchsuchen</Link></p>}
-    {!compact&&<div className="photo-search-teaser"><Icon name="image" /><div><strong>Produktsuche per Foto</strong><span>Die KI-Bildsuche wird vorbereitet. Aktuell kannst du über Produktnamen und Suchbegriffe suchen.</span></div></div>}
-    {!compact&&<p className="search-note"><Icon name="shield" /> Echte Händlerprodukte und Einkaufsratgeber. Weitere Sortimente folgen.</p>}
+    {!compact&&<p className="search-note"><Icon name="shield" /> Suche ohne Anmeldung. Händlerpreise und Verfügbarkeit bitte im jeweiligen Shop prüfen.</p>}
   </section>;
 }

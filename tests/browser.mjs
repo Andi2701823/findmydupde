@@ -65,7 +65,22 @@ try {
   await page.getByRole("heading",{name:"Finde Produkte. Vergleiche Preise."}).waitFor();
   await page.getByRole("link",{name:/Ratgeber lesen: Gesichtsserum vergleichen/}).waitFor();
   assert.equal(await page.locator(".product-card").count(),0);
-  assert.equal(await page.getByText("Produktsuche per Foto").count(),1);
+  assert.equal(await page.getByText("Produktsuche per Foto").count(),0,
+    "Do not advertise an unavailable photo search in the hero");
+  assert.equal(await page.locator(".affiliate-featured").count(),0,
+    "Do not highlight months-old fixed feed prices on the homepage");
+  assert.equal(await page.locator(".merchant-directory-card").count(),3,
+    "Homepage should link directly to existing merchant catalogs");
+  assert.equal(await page.getByRole("link",{name:"IMOU entdecken"}).count(),1);
+  assert.equal(await page.getByRole("link",{name:"ANTHBOT entdecken"}).count(),1);
+  for(const topic of ["Mode","Beauty","Wohnen","Technik"]) {
+    assert.equal(await page.locator('a.category-tile[href="/ratgeber/#'+topic.toLowerCase()+'"]').count(),1,
+      "Editorial category links must lead to the matching guide section");
+  }
+  for(const term of ["Serum","Genie","Ranger"]) {
+    assert.equal(await page.getByRole("link",{name:term+" ↗"}).count(),1,
+      "Homepage search examples should have catalog matches");
+  }
   assert.equal(await page.locator("input[type=file]").count(),0,"Never imply photo recognition is already enabled");
   assert.equal(await page.locator('[name="verification"][content="00fd05c1707e91d286f87c424f566383"]').count(),1);
   assert.equal(await page.locator('meta[name="google-site-verification"][content="YtCGA15drFx3pEG8yUQPmsIonnN8kDuFLIgtHicPnQY"]').count(),1);
@@ -89,7 +104,7 @@ try {
   assert.match(favicon.headers.get("content-type")||"",/image\/svg\+xml/);
   assert.match(await favicon.text(),/viewBox="0 0 64 64"/);
   assert.equal(await page.locator('meta[name="robots"][content*="noindex"]').count(),0);
-  assert.match(await page.title(),/Preise vergleichen.*günstigere Alternativen/);
+  assert.match(await page.title(),/Produkte entdecken und Händlerpreise vergleichen/);
   const websiteLd=JSON.parse(await page.locator('script[type="application/ld+json"]').first().innerText());
   assert.equal(websiteLd["@type"],"WebSite");
   assert.equal(websiteLd.url,"https://findmydup.de/");

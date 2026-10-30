@@ -6,12 +6,11 @@ import {WebsiteJsonLd,OrganizationJsonLd} from "@/components/seo-jsonld";
 import { GuideCard } from "@/components/guide-card";
 import { Icon } from "@/components/icon";
 import { guides } from "@/lib/guides";
-import { affiliateProducts } from "@/lib/affiliate-products";
-import { AffiliateProductCard } from "@/components/affiliate-product-card";
+import { MerchantDirectoryCard } from "@/components/merchant-directory-card";
 export const metadata: Metadata = {
-  title: {absolute:"FindMyDup: Preise vergleichen & günstigere Alternativen finden"},
-  description: "Suche dein Wunschprodukt, vergleiche Händlerangebote nach Preis und entdecke passende Alternativen. FindMyDup zeigt transparente Preise und hilfreiche Kauftipps.",
-  openGraph:{type:"website",title:"FindMyDup – Produkte suchen und Preise vergleichen",description:"Finde passende Händlerangebote und entdecke Alternativen.",url:"https://findmydup.de/",images:[{url:"https://findmydup.de/share-image/",width:1200,height:630,type:"image/png",alt:"FindMyDup – Produkte suchen und Preise vergleichen"}]},
+  title: {absolute:"FindMyDup: Produkte entdecken und Händlerpreise vergleichen"},
+  description: "Suche Produkte aus Händlerkatalogen, vergleiche Preisangaben und finde praktische Einkaufsratgeber. Aktuelle Preise und Verfügbarkeit prüfst du im Shop.",
+  openGraph:{type:"website",title:"FindMyDup – Produkte suchen und Preise vergleichen",description:"Entdecke Händlerkataloge und vergleiche passende Produktangebote.",url:"https://findmydup.de/",images:[{url:"https://findmydup.de/share-image/",width:1200,height:630,type:"image/png",alt:"FindMyDup – Produkte suchen und Preise vergleichen"}]},
   alternates: { canonical: "https://findmydup.de/" },
 };
 const categories = [
@@ -28,22 +27,22 @@ export default function Home() {
       <div className="hero-copy">
         <span className="eyebrow"><span className="little-star">✳</span> PRODUKTE SUCHEN. BESSER ENTSCHEIDEN.</span>
         <h1>Finde Produkte.<br /><span className="underlined">Vergleiche Preise.</span></h1>
-        <p className="hero-description">Gib den Namen deines Wunschprodukts ein. Vergleiche passende Händlerangebote nach Artikelpreis und entdecke Alternativen. Modell, Zustand und Versandkosten solltest du vor dem Kauf zusätzlich prüfen.</p>
+        <p className="hero-description">Suche nach einem Wunschprodukt und entdecke passende Händlerangebote. Vergleiche Preise und prüfe, welches Produkt zu deinen Bedürfnissen passt.</p>
         <SearchBox />
       </div>
-      <div className="hero-visual" aria-label="Stilisierte Illustrationen von zwei Handtaschen">
+      <div className="hero-visual" aria-label="Illustrationen aus den Bereichen Beauty und Technik">
         <div className="visual-grid" />
-        <span className="visual-top-label"><Icon name="sparkle" /> INSPIRATION FÜR DEINE PRODUKTSUCHE</span>
+        <span className="visual-top-label"><Icon name="sparkle" /> PRODUKTE AUS VERSCHIEDENEN KATEGORIEN</span>
         <div className="visual-ring" />
         <div className="floating-reference">
-          <span>DEIN WUNSCHPRODUKT</span>
-          <Image src="/products/bag-tan.svg" alt="" width={245} height={245} />
-          <span className="reference-caption">So etwas suchst du?</span>
+          <span>BEAUTY</span>
+          <Image src="/products/serum.svg" alt="" width={245} height={245} />
+          <span className="reference-caption">Pflegeprodukte entdecken</span>
         </div>
         <div className="floating-match">
-          <span className="match-label"><Icon name="check" /> PRODUKTE ENTDECKEN</span>
-          <Image src="/products/bag.svg" alt="" width={290} height={290} />
-          <div><strong>Suchen.<br />Entdecken.</strong><span className="visual-arrow">↗</span></div>
+          <span className="match-label"><Icon name="check" /> TECHNIK</span>
+          <Image src="/products/headphones.svg" alt="" width={290} height={290} />
+          <div><strong>Suchen.<br />Vergleichen.</strong><span className="visual-arrow">↗</span></div>
         </div>
         <div className="float-sparkle">✳</div>
         <span className="visual-bottom-label">Illustrationen zur Gestaltung, keine Händlerangebote</span>
@@ -62,7 +61,7 @@ export default function Home() {
         <div className="how-header">
           <span className="eyebrow">DEINE PRODUKTSUCHE</span>
           <h2>Vom Suchbegriff<br/>zum passenden Produkt.</h2>
-          <p>So nutzt du die aktuelle Produktsuche. Eine Bildsuche mit KI ist für eine spätere Ausbaustufe geplant.</p>
+          <p>So findest du Angebote und hilfreiche Informationen zu deinem Wunschprodukt.</p>
         </div>
         <div className="steps-grid">
           {[
@@ -77,24 +76,32 @@ export default function Home() {
       </div>
     </section>
     <section className="shell section-space" id="kategorien">
-      <div className="section-heading"><div><span className="eyebrow">PRODUKTE & EINKAUFSWISSEN</span><h2>Diese Themen kannst du entdecken.</h2><p>Beauty-Produkte sind bereits im Katalog. Für Mode, Wohnen und Technik findest du passende Ratgeber; weitere Händlerangebote sollen folgen.</p></div>
+      <div className="section-heading"><div><span className="eyebrow">PRODUKTE & EINKAUFSWISSEN</span><h2>Diese Themen kannst du entdecken.</h2><p>Entdecke Einkaufsratgeber zu wichtigen Eigenschaften, Materialien und Kaufkriterien.</p></div>
         <Link href="/ratgeber/" className="text-link">Alle Ratgeber <Icon name="arrow" /></Link></div>
       <div className="category-grid">
-        {categories.map(c => <Link href={`/suche/?category=${encodeURIComponent(c.name)}`} className={`category-tile tile-${c.name}`} key={c.name}>
+        {categories.map(c => <Link href={`/ratgeber/#${c.name.toLowerCase()}`} className={`category-tile tile-${c.name}`} key={c.name}>
           <Image src={`/products/${c.image}.svg`} alt="" width={180} height={180}/>
           <div><h3>{c.name}</h3><p>{c.sub}</p></div>
           <span className="category-arrow"><Icon name="arrow" /></span>
         </Link>)}
       </div>
     </section>
-    <section className="shell section-space showcase" id="beauty-produkte">
+    <section className="shell section-space showcase" id="haendler">
       <div className="section-heading">
-        <div><span className="eyebrow">AUS UNSEREM AKTUELLEN KATALOG</span><h2>Produkte, die du jetzt entdecken kannst.</h2>
-          <p>Unsere ersten geprüften Katalogeinträge stammen von bdr-beauty. Weitere Händler möchten wir ergänzen. Preisangaben aus dem Feed können vom aktuellen Shoppreis abweichen.</p></div>
-        <Link href="/produkte/" className="text-link">Alle 63 Produkte ansehen <Icon name="arrow" /></Link>
+        <div><span className="eyebrow">HÄNDLERKATALOGE ENTDECKEN</span><h2>Finde Produkte aus verschiedenen Bereichen.</h2>
+          <p>Durchsuche vorhandene Kataloge nach Modell oder Produktname. Weitere aktuell verfügbare Händler findest du in der vollständigen Händlerübersicht.</p></div>
+        <Link href="/produkte/" className="text-link">Alle Händler ansehen <Icon name="arrow" /></Link>
       </div>
-      <div className="affiliate-grid affiliate-featured">
-        {affiliateProducts.filter(p => ["1352","269","242","110"].includes(p.id)).map(product => <AffiliateProductCard key={product.id} product={product}/>)}
+      <div className="merchant-directory-grid">
+        <MerchantDirectoryCard label="IMOU DE · AWIN" name="Überwachungskameras & Smart Home"
+          description="IMOU Kameras, Video-Türklingeln und Zubehör nach Modellen entdecken."
+          href="/imou/" action="IMOU entdecken" accent="imou"/>
+        <MerchantDirectoryCard label="ANTHBOT DE · AWIN" name="Mähroboter & Zubehör"
+          description="ANTHBOT Mähroboter, Modellvarianten und Zubehör durchstöbern."
+          href="/anthbot/" action="ANTHBOT entdecken" accent="anthbot"/>
+        <MerchantDirectoryCard label="WEITERE HÄNDLER" name="Produktkatalog"
+          description="Weitere angebundene Händler und Beauty-Produkte in der Übersicht finden."
+          href="/produkte/" action="Zum Produktkatalog" accent="beauty"/>
       </div>
     </section>
     <section className="shell section-space showcase">
