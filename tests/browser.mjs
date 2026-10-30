@@ -65,7 +65,18 @@ try {
   await page.getByRole("heading",{name:"Finde Produkte. Vergleiche Preise."}).waitFor();
   await page.getByRole("link",{name:/Ratgeber lesen: Gesichtsserum vergleichen/}).waitFor();
   assert.equal(await page.locator(".product-card").count(),0);
-  assert.equal(await page.getByText("Produktsuche per Foto").count(),1);
+  assert.equal(await page.getByText("Produktsuche per Foto").count(),0,
+    "Do not advertise an unavailable photo search in the hero");
+  assert.equal(await page.locator(".affiliate-featured").count(),0,
+    "Do not highlight months-old fixed feed prices on the homepage");
+  assert.equal(await page.locator(".merchant-directory-card").count(),3,
+    "Homepage should link directly to existing merchant catalogs");
+  assert.equal(await page.getByRole("link",{name:"IMOU entdecken"}).count(),1);
+  assert.equal(await page.getByRole("link",{name:"ANTHBOT entdecken"}).count(),1);
+  for(const term of ["Serum","Genie","Ranger"]) {
+    assert.equal(await page.getByRole("link",{name:term+" ↗"}).count(),1,
+      "Homepage search examples should have catalog matches");
+  }
   assert.equal(await page.locator("input[type=file]").count(),0,"Never imply photo recognition is already enabled");
   assert.equal(await page.locator('[name="verification"][content="00fd05c1707e91d286f87c424f566383"]').count(),1);
   assert.equal(await page.locator('meta[name="google-site-verification"][content="YtCGA15drFx3pEG8yUQPmsIonnN8kDuFLIgtHicPnQY"]').count(),1);
