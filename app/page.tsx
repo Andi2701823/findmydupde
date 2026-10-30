@@ -8,9 +8,9 @@ import { Icon } from "@/components/icon";
 import { guides } from "@/lib/guides";
 import { MerchantDirectoryCard } from "@/components/merchant-directory-card";
 export const metadata: Metadata = {
-  title: {absolute:"FindMyDup: Preise vergleichen & günstigere Alternativen finden"},
-  description: "Suche dein Wunschprodukt, vergleiche Händlerangebote nach Preis und entdecke passende Alternativen. FindMyDup zeigt transparente Preise und hilfreiche Kauftipps.",
-  openGraph:{type:"website",title:"FindMyDup – Produkte suchen und Preise vergleichen",description:"Finde passende Händlerangebote und entdecke Alternativen.",url:"https://findmydup.de/",images:[{url:"https://findmydup.de/share-image/",width:1200,height:630,type:"image/png",alt:"FindMyDup – Produkte suchen und Preise vergleichen"}]},
+  title: {absolute:"FindMyDup: Produkte entdecken und Händlerpreise vergleichen"},
+  description: "Suche Produkte aus Händlerkatalogen, vergleiche Preisangaben und finde praktische Einkaufsratgeber. Aktuelle Preise und Verfügbarkeit prüfst du im Shop.",
+  openGraph:{type:"website",title:"FindMyDup – Produkte suchen und Preise vergleichen",description:"Entdecke Händlerkataloge und vergleiche passende Produktangebote.",url:"https://findmydup.de/",images:[{url:"https://findmydup.de/share-image/",width:1200,height:630,type:"image/png",alt:"FindMyDup – Produkte suchen und Preise vergleichen"}]},
   alternates: { canonical: "https://findmydup.de/" },
 };
 const categories = [
