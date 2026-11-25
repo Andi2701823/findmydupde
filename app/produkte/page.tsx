@@ -10,15 +10,15 @@ import {anthbotProducts} from "@/lib/anthbot-products";
 import {imouModels,imouVariantCount} from "@/lib/imou-products";
 export const dynamic="force-dynamic";
 export const metadata:Metadata={
-  title:"Produktkatalog: Angebote und Produkte entdecken",
-  description:"Produkte aus echten Händlerfeeds entdecken, mit Suchfiltern, Awin-Händlerlinks und transparenten Feedpreisen.",
+  title:"Produktkatalog: Technik, Garten, Smart Home & Beauty",
+  description:"Entdecke Produkte von ausgewählten Händlern: Technik, Smart Home, Mähroboter und Hautpflege. Filtere nach Modell, Kategorie und Preis.",
   alternates:{canonical:"https://findmydup.de/produkte/"},
 };
 export default function ProductsPage(){
   return <main id="main" className="shell affiliate-page">
     <nav className="breadcrumb" aria-label="Brotkrumennavigation"><Link href="/">Startseite</Link><span>/</span> Produktkatalog</nav>
     <span className="eyebrow">PRODUKTE NACH HÄNDLERN ENTDECKEN</span>
-    <h1>Unser Produktkatalog.</h1>
+    <h1>Produktkatalog: Produkte und Händler entdecken</h1>
     <p className="affiliate-intro">Entdecke unsere Awin-Händler auf einen Blick und wähle die passende Produktsuche. In den einzelnen Händlerkatalogen kannst du das Sortiment nach Modell, Kategorie oder Preis eingrenzen.</p>
     <aside className="affiliate-disclosure-box"><strong>Transparenzhinweis</strong>
       <p>Diese Seite enthält Werbelinks (Affiliate-Links). Bei einem Kauf können wir eine Provision erhalten. Die angezeigten Beträge sind <strong>Feedpreise und keine live geprüften Angebote</strong>. Verbindlich sind die Angaben im jeweiligen Shop. Ähnliche Namen oder Verpackungen bedeuten nicht identische Produkte.</p>

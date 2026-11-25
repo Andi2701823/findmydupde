@@ -7,8 +7,8 @@ import {MactradeProductCard} from "@/components/mactrade-product-card";
 export const dynamic="force-dynamic";
 export async function generateMetadata({searchParams}:{searchParams:Promise<Record<string,string|string[]|undefined>>}):Promise<Metadata>{
   return merchantCatalogMetadata({
-    title:"MacTrade: MacBooks, iPhones und Zubehör",
-    description:"MacTrade DE Produkte aus dem Awin-Produktfeed. Nach MacBooks, Desktop-Macs, iPhone, iPad, Watch und Zubehör suchen und filtern.",
+    title:"MacTrade: MacBooks, iPhones, iPads & Zubehör",
+    description:"Entdecke MacBook, iMac, iPhone, iPad, Apple Watch und Zubehör bei MacTrade. Filtere nach Modell, Kategorie und angezeigtem Preis.",
     canonical:"https://findmydup.de/mactrade/",
     params:await searchParams
   });
@@ -40,7 +40,7 @@ export default async function MactradeCatalog({searchParams}:{searchParams:Promi
   return <main id="main" className="shell affiliate-page mactrade-catalog-page">
     <nav className="breadcrumb" aria-label="Brotkrumennavigation"><Link href="/">Startseite</Link><span>/</span><Link href="/produkte/">Produktkatalog</Link><span>/</span>MacTrade</nav>
     <span className="eyebrow">MACTRADE DE · AWIN</span>
-    <h1>MacTrade-Produkte entdecken.</h1>
+    <h1>MacTrade: MacBooks, iPhones und iPads</h1>
     <p className="affiliate-intro">MacBooks, Desktop-Macs, iPhones, iPads, Apple Watch und Zubehör aus dem MacTrade-Händlerfeed. Suche nach Modell und filtere nach Preis oder Kategorie.</p>
     <aside className="affiliate-disclosure-box"><strong>Preise und Werbelinks</strong>
       <p>Artikelpreise, Versand und Lieferstatus stammen aus einem importierten Awin-Feed. Sie werden nicht live geprüft. Preis, Lieferzeit und Verfügbarkeit bitte direkt bei MacTrade kontrollieren. Die Händlerlinks sind Werbelinks, für die FindMyDup eine Provision erhalten kann. MacTrade ist ein Händler und nicht der offizielle Apple Online Store.</p>

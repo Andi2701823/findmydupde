@@ -7,8 +7,8 @@ import {JoybuyProductCard} from "@/components/joybuy-product-card";
 export const dynamic="force-dynamic";
 export async function generateMetadata({searchParams}:{searchParams:Promise<Record<string,string|string[]|undefined>>}):Promise<Metadata>{
   return merchantCatalogMetadata({
-    title:"JoyBuy-Produkte entdecken",
-    description:"JoyBuy DE Produkte aus dem Awin-Produktfeed: Beauty, Wohnen, Lebensmittel, Technik, Mode und mehr. Mit Filtern für Kategorien, Preise und Marke.",
+    title:"JoyBuy Produkte für Technik, Haushalt & Beauty",
+    description:"Entdecke JoyBuy-Produkte aus Technik, Haushalt, Beauty und weiteren Kategorien. Filtere nach Marke, Artikelname und angezeigtem Preis.",
     canonical:"https://findmydup.de/joybuy/",
     params:await searchParams
   });
@@ -43,7 +43,7 @@ export default async function JoybuyCatalog({searchParams}:{searchParams:Promise
   return <main id="main" className="shell affiliate-page joybuy-catalog-page">
     <nav className="breadcrumb" aria-label="Brotkrumennavigation"><Link href="/">Startseite</Link><span>/</span><Link href="/produkte/">Produktkatalog</Link><span>/</span> JoyBuy</nav>
     <span className="eyebrow">JOYBUY DE · AWIN</span>
-    <h1>JoyBuy-Produkte entdecken.</h1>
+    <h1>JoyBuy Produkte für Technik, Haushalt und Beauty</h1>
     <p className="affiliate-intro">Finde Produkte aus vielen Kategorien. Filtere nach Artikelname, Marke, Kategorie und Preis. Es werden nur ausgewählte, laut Feed lieferbare Angebote angezeigt.</p>
     <aside className="affiliate-disclosure-box"><strong>Preise &amp; Werbelinks</strong>
       <p>Preise, Lieferstatus und Versand stammen aus einem importierten Awin-Feed und werden hier nicht live überprüft. Verbindlich sind allein die aktuellen Angaben bei JoyBuy. Die Shop-Links sind Affiliate-Werbelinks; FindMyDup verkauft die Produkte nicht selbst.</p>

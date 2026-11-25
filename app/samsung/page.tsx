@@ -9,8 +9,8 @@ import {parseEuroCents,samsungSort,validPriceRange} from "@/lib/samsung-filters"
 export const dynamic="force-dynamic";
 export async function generateMetadata({searchParams}:{searchParams:Promise<Record<string,string|string[]|undefined>>}):Promise<Metadata>{
   return merchantCatalogMetadata({
-    title:"Samsung-Produkte entdecken",
-    description:"Samsung Shop DE: Smartphones, Tablets, Fernseher, Monitore und Zubehör aus dem Awin-Produktfeed. Suche und filtere nach Kategorien.",
+    title:"Samsung Smartphones, Fernseher, Tablets & Zubehör",
+    description:"Entdecke Samsung Galaxy Smartphones, Tablets, Fernseher, Monitore und Zubehör. Filtere nach Modell, Kategorie und angezeigtem Preis.",
     canonical:"https://findmydup.de/samsung/",
     params:await searchParams
   });
@@ -46,7 +46,7 @@ export default async function SamsungCatalog({searchParams}:{searchParams:Promis
   return <main id="main" className="shell affiliate-page samsung-catalog-page">
     <nav className="breadcrumb"><Link href="/">Startseite</Link><span>/</span><Link href="/produkte/">Produktkatalog</Link><span>/</span> Samsung</nav>
     <span className="eyebrow">AUS DEM AWIN-PRODUKTDATENFEED</span>
-    <h1>Samsung-Produkte entdecken.</h1>
+    <h1>Samsung Smartphones, Fernseher und Zubehör</h1>
     <p className="affiliate-intro">Smartphones, Fernseher, Tablets, Monitore und Zubehör direkt aus dem Samsung Shop DE Feed. Nutze die Suche und die Hauptkategorien, ohne dich durch hunderte Unterseiten klicken zu müssen.</p>
     <aside className="affiliate-disclosure-box"><strong>Preise und Affiliate-Transparenz</strong>
       <p>Die angezeigten Artikel- und Versandpreise stammen aus einem importierten Awin-Feed und werden hier nicht live aktualisiert. Angebote und Verfügbarkeit können sich ändern. Die Shop-Links sind Werbelinks. FindMyDup verkauft die Produkte nicht selbst und garantiert weder gleiche Modelle noch Preisvorteile gegenüber anderen Angeboten.</p>
