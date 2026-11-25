@@ -121,6 +121,15 @@ try {
   assert.equal(sitemap.status,200);
   const sitemapContent=await sitemap.text();
   assert.match(sitemapContent,/gesichtsserum-vergleichen/);
+  for(const slug of ["maehroboter","ueberwachungskameras","smartphones","notebooks","fernseher","gesichtspflege"]){
+    const url="/kategorien/"+slug+"/";
+    assert.ok(sitemapContent.includes("https://findmydup.de"+url));
+    const html=await fetch(origin+url);
+    assert.equal(html.status,200);
+    const source=await html.text();
+    assert.ok(source.includes("Checkliste vor dem Kauf"));
+    assert.ok(source.includes("https://findmydup.de"+url));
+  }
   assert.equal((sitemapContent.match(/<loc>https:\/\/findmydup\.de\/produkte\/[^<]+<\/loc>/g)||[]).length,63);
   assert.equal((sitemapContent.match(/<loc>https:\/\/findmydup\.de\/anthbot\/[^<]+<\/loc>/g)||[]).length,35,
    "All 35 ANTHBOT product pages must be in the XML sitemap");

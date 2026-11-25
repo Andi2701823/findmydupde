@@ -50,6 +50,7 @@ export default function ProductsPage(){
           href="#beauty-catalog-heading" action="Beauty-Produkte ansehen" accent="beauty"/>
       </div>
     </section>
+    <section className="article-section"><h2>Nach Produktthemen stöbern</h2><p>Du suchst noch den passenden Produkttyp? <Link href="/kategorien/">Alle Produktkategorien und Kaufkriterien</Link> helfen bei der Auswahl.</p></section>
     <PartnerBannerRotation />
     <section className="digital-tool-tile digital-tool-promo" aria-labelledby="digital-tools-catalog-heading">
       <div className="digital-tool-mark" aria-hidden="true">FC</div>

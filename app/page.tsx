@@ -92,6 +92,7 @@ export default function Home() {
       <div className="footer-links">
         <Link href="/anthbot/">ANTHBOT Mähroboter und Zubehör</Link>
         <Link href="/imou/">IMOU Überwachungskameras und Smart Home</Link>
+        <Link href="/kategorien/">Alle Produktkategorien und Kaufkriterien</Link>
         <Link href="/produkte/">Alle verfügbaren Händlerkataloge</Link>
         <Link href="/digitale-tools/">Digitale Tools und Software</Link>
       </div>

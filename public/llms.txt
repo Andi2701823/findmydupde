@@ -9,6 +9,7 @@
 - [ANTHBOT Mähroboter und Zubehör](https://findmydup.de/anthbot/): Eigene Händlerseite mit Awin-Feedpreisen und Varianten; Preise sind nicht live geprüft.
 - [Produktkatalog](https://findmydup.de/produkte/): Übersicht der verfügbaren Händlerkataloge, einschließlich Beauty, Technik, Smart Home und Garten. Feedpreise sind nicht live geprüft; verbindlich sind die Angaben beim Händler.
 - [IMOU Überwachungskameras](https://findmydup.de/imou/): Modellgruppen, Varianten und historische Feedpreise.
+- [Produktkategorien](https://findmydup.de/kategorien/): Kaufkriterien nach Produktthema, unabhängig von einzelnen Händlern.
 - [Einkaufsratgeber](https://findmydup.de/ratgeber/): Kaufkriterien und Informationen zu Mode, Beauty, Wohnen und Technik.
 - [Digitale Tools](https://findmydup.de/digitale-tools/): Sachliche Informationen über Software-Abonnements und laufende Kosten.
 - [FunnelCockpit](https://findmydup.de/digitale-tools/funnelcockpit/): Funktionen, Anbieterbilder, Tarife und Hinweise zu einem Software-Abonnement.

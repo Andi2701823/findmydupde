@@ -5,6 +5,7 @@ export function Footer() {
     <div className="footer-top"><div><Link className="logo" href="/">findmydup<span className="logo-dot">.</span></Link><p>Wissen, das beim Einkaufen hilft.</p></div>
       <div className="footer-links">
         <Link href="/produkte/">Produktkatalog</Link>
+        <Link href="/kategorien/">Produktkategorien</Link>
         <Link href="/anthbot/">Mähroboter und Zubehör</Link>
         <Link href="/imou/">Überwachungskameras</Link>
         <Link href="/ratgeber/">Einkaufsratgeber</Link>
