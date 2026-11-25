@@ -5,8 +5,8 @@ import {funnelcockpit as product} from "@/lib/digital-tools";
 import {BreadcrumbJsonLd} from "@/components/seo-jsonld";
 
 export const metadata:Metadata={
- title:"FunnelCockpit 2026: Funktionen, Bilder & Abo-Preise",
- description:"Was kann FunnelCockpit? Software-Bilder, FunnelBuilder, E-Mail-Marketing, Mitgliederbereiche, ehrliche Einschätzung, Testphase und Abo-Kosten im Überblick.",
+ title:"FunnelCockpit: Funktionen, Tarife & Kosten",
+ description:"Was kann FunnelCockpit? Entdecke FunnelBuilder, E-Mail-Marketing, Mitgliederbereiche, Tarife und Hinweise zur Testphase vor dem Abo-Abschluss.",
  alternates:{canonical:"https://findmydup.de/digitale-tools/funnelcockpit/"},
  openGraph:{title:"FunnelCockpit 2026: Funktionen, Bilder & Preise",description:"Der FunnelCockpit-Überblick mit Anbieterbildern, Funktionen, Tarifen und ehrlichen Kaufhinweisen.",url:"https://findmydup.de/digitale-tools/funnelcockpit/"}
 };

@@ -167,7 +167,7 @@ try {
   await page.getByRole("link", { name: "Merkliste", exact: true }).click();
   await page.waitForFunction(() => document.querySelectorAll(".guide-card").length === 1);
   await page.goto(origin + "/produkte/", { waitUntil: "domcontentloaded" });
-  await page.getByRole("heading", { name: "Unser Produktkatalog." }).waitFor();
+  await page.getByRole("heading", { name: "Produktkatalog: Produkte und Händler entdecken" }).waitFor();
   await page.waitForFunction(() => document.querySelectorAll(".affiliate-card").length === 63);
   assert.equal(await page.locator('.affiliate-card a[rel*="sponsored"]').count(), 63);
   assert.equal(await page.locator('.reifen-ads a[href*="awin1.com/cread.php"][rel*="sponsored"]').count(), 1,

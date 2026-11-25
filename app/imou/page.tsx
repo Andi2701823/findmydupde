@@ -8,8 +8,8 @@ export const dynamic="force-dynamic";
 type Params={q?:string;category?:string;sort?:string;page?:string};
 export async function generateMetadata({searchParams}:{searchParams:Promise<Record<string,string|string[]|undefined>>}):Promise<Metadata>{
  return merchantCatalogMetadata({
-  title:"IMOU Kameras, Video-Türklingeln und Smart Home entdecken",
-  description:"IMOU Überwachungskameras, Sicherheitssysteme und Zubehör aus dem Awin-Händlerfeed. Modellvarianten und historische Feedpreise vergleichen.",
+  title:"IMOU Überwachungskameras & Video-Türklingeln",
+  description:"Entdecke IMOU Überwachungskameras, Video-Türklingeln und Zubehör. Vergleiche Modellvarianten und angezeigte Feedpreise.",
   canonical:"https://findmydup.de/imou/",params:await searchParams
  });
 }

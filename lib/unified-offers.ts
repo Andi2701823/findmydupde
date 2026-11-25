@@ -118,13 +118,13 @@ export function relevantTitle(title:string,query:string):boolean{
 export function beautyOffers(products:BeautyEntry[]):SearchOffer[]{
   return products.flatMap(p=>cents(p.priceCents)!==null&&imageAt(p.image,"beauty")&&affiliateAt(p.affiliateUrl,"beauty")
     ?[{id:"beauty:"+p.id,source:"beauty" as const,merchant:merchantNames.beauty,title:p.name,image:p.image,
-       href:p.affiliateUrl,articleCents:p.priceCents,shippingCents:null,condition:null,priceUpdated:null}]
+       href:p.affiliateUrl,articleCents:p.priceCents,shippingCents:null,condition:null,priceUpdated:"2026-06-25"}]
     :[]);
 }
 export function anthbotOffers(products:readonly AnthbotProduct[]):SearchOffer[]{
   return products.flatMap(p=>cents(p.priceCents)!==null&&imageAt(p.image,"anthbot")&&affiliateAt(p.affiliateUrl,"anthbot")
     ?[{id:"anthbot:"+p.id,source:"anthbot" as const,merchant:merchantNames.anthbot,title:p.name,image:p.image,
-       href:p.affiliateUrl,articleCents:p.priceCents,shippingCents:null,condition:null,priceUpdated:null}]
+       href:p.affiliateUrl,articleCents:p.priceCents,shippingCents:null,condition:/generalüberholt/i.test(p.name)?"Generalüberholt":null,priceUpdated:"2026-10-16"}]
     :[]);
 }
 export function feedOffers(source:"joybuy"|"samsung"|"mactrade"|"imou",raw:unknown):SearchOffer[]{
@@ -140,7 +140,7 @@ export function feedOffers(source:"joybuy"|"samsung"|"mactrade"|"imou",raw:unkno
        !p.product_name||price===null||!imageAt(p.image_url,source)||!affiliateAt(p.affiliate_url,source))return [];
     const shipping=cents(source==="joybuy"?p.shipping_cents:p.delivery_cents,false);
     return [{id:source+":"+id,source,merchant:merchantNames[source],title:p.product_name,image:p.image_url,
-      href:p.affiliate_url,articleCents:price,shippingCents:shipping,condition:null,priceUpdated:null}];
+      href:p.affiliate_url,articleCents:price,shippingCents:shipping,condition:null,priceUpdated:source==="imou"?"2026-10-16":null}];
   });
 }
 export function ebayOffers(raw:unknown):SearchOffer[]{
@@ -155,7 +155,8 @@ export function ebayOffers(raw:unknown):SearchOffer[]{
        typeof p.price!=="number"||!Number.isFinite(p.price)||p.price<=0||p.price>=1_000_000||
        !imageAt(p.imageUrl,"ebay")||!affiliateAt(p.outboundUrl,"ebay"))return [];
     const shipment=p.shippingCost&&typeof p.shippingCost==="object"?p.shippingCost as Entry:null;
-    const val=shipment?.currency==="EUR"?Number(shipment.value):NaN;
+    const rawShipping=shipment?.value;
+    const val=shipment?.currency==="EUR"&&(typeof rawShipping==="number"||(typeof rawShipping==="string"&&rawShipping.trim()!==""))?Number(rawShipping):NaN;
     const shipping=Number.isFinite(val)&&val>=0&&val<1_000_000?Math.round(val*100):null;
     return [{id:"ebay:"+p.externalId,source:"ebay" as const,merchant:merchantNames.ebay,title:p.title,
       image:p.imageUrl,href:p.outboundUrl,articleCents:Math.round(p.price*100),shippingCents:shipping,
@@ -163,10 +164,25 @@ export function ebayOffers(raw:unknown):SearchOffer[]{
       priceUpdated:typeof p.priceObservedAt==="string"?p.priceObservedAt:null}];
   });
 }
+export type OfferSort="article"|"total";
+export function knownTotal(offer:SearchOffer):number|null{
+ return offer.shippingCents===null?null:offer.articleCents+offer.shippingCents;
+}
+export function sortOffers(offers:readonly SearchOffer[],sort:OfferSort):SearchOffer[]{
+ return [...offers].sort((a,b)=>{
+  if(sort==="total"){
+   const at=knownTotal(a),bt=knownTotal(b);
+   if(at===null&&bt!==null)return 1;
+   if(at!==null&&bt===null)return -1;
+   if(at!==null&&bt!==null&&at!==bt)return at-bt;
+  }
+  return a.articleCents-b.articleCents||a.title.localeCompare(b.title,"de")||a.merchant.localeCompare(b.merchant);
+ });
+}
 export function rankedOffers(offers:SearchOffer[],query:string):SearchOffer[]{
   const seen=new Set<string>();
-  return offers.filter(p=>{
+  return sortOffers(offers.filter(p=>{
     if(seen.has(p.id)||!relevantTitle(p.title,query))return false;
     seen.add(p.id);return true;
-  }).sort((a,b)=>a.articleCents-b.articleCents||a.title.localeCompare(b.title,"de")||a.merchant.localeCompare(b.merchant));
+  }),"article");
 }

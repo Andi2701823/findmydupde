@@ -24,7 +24,7 @@ export function WebsiteJsonLd(){
     name:"FindMyDup",
     url:"https://findmydup.de/",
     inLanguage:"de-DE",
-    description:"Produkte suchen, Händlerangebote vergleichen und passende Alternativen entdecken.",
+    description:"Produkte, Händlerangebote und digitale Tools entdecken und mit Einkaufsratgebern einordnen.",
   };
   return <script type="application/ld+json" dangerouslySetInnerHTML={{__html:safeJson(data)}}/>;
 }
@@ -63,7 +63,7 @@ export function ArticleJsonLd({headline,description,category,keywords,url}:{
   return <script type="application/ld+json" dangerouslySetInnerHTML={{__html:safeJson(data)}}/>;
 }
 
-/** Descriptive product facts only. Our June 2026 Awin prices are not current Offers. */
+/** Descriptive product facts only. Historical Awin prices are not current Offers. */
 export function ProductInfoJsonLd({name,image,description,url}:{
   name:string;image:string;description:string;url:string;
 }){

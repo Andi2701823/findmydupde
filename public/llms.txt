@@ -7,7 +7,9 @@
 - [Startseite](https://findmydup.de/): Produktsuche, Einstieg und aktuelle Inhalte.
 - [Produktsuche](https://findmydup.de/suche/): Suche nach Produktnamen oder Stichwörtern. Bei aktiver eBay-Anbindung erscheinen aktuelle eBay-Angebote. Für angezeigte Treffer ist ein Vergleich der Artikelpreise möglich.
 - [ANTHBOT Mähroboter und Zubehör](https://findmydup.de/anthbot/): Eigene Händlerseite mit Awin-Feedpreisen und Varianten; Preise sind nicht live geprüft.
-- [Produktkatalog](https://findmydup.de/produkte/): Beauty-Produkte aus dem Awin-Partnerdatenfeed von bdr-beauty. Feedpreise sind nicht live geprüft; verbindlich sind die Angaben beim Händler.
+- [Produktkatalog](https://findmydup.de/produkte/): Übersicht der verfügbaren Händlerkataloge, einschließlich Beauty, Technik, Smart Home und Garten. Feedpreise sind nicht live geprüft; verbindlich sind die Angaben beim Händler.
+- [IMOU Überwachungskameras](https://findmydup.de/imou/): Modellgruppen, Varianten und historische Feedpreise.
+- [Produktkategorien](https://findmydup.de/kategorien/): Kaufkriterien nach Produktthema, unabhängig von einzelnen Händlern.
 - [Einkaufsratgeber](https://findmydup.de/ratgeber/): Kaufkriterien und Informationen zu Mode, Beauty, Wohnen und Technik.
 - [Digitale Tools](https://findmydup.de/digitale-tools/): Sachliche Informationen über Software-Abonnements und laufende Kosten.
 - [FunnelCockpit](https://findmydup.de/digitale-tools/funnelcockpit/): Funktionen, Anbieterbilder, Tarife und Hinweise zu einem Software-Abonnement.
@@ -22,6 +24,14 @@
 - [Sessel kaufen](https://findmydup.de/ratgeber/sessel-kaufen/)
 - [Kopfhörer vergleichen](https://findmydup.de/ratgeber/kopfhoerer-vergleichen/)
 - [Powerbank kaufen](https://findmydup.de/ratgeber/powerbank-kaufen/)
+
+- [Mähroboter ohne Begrenzungskabel: RTK, Kamera oder LiDAR?](https://findmydup.de/ratgeber/maehroboter-ohne-begrenzungskabel/)
+- [Überwachungskamera ohne Abo: Was funktioniert ohne Cloud?](https://findmydup.de/ratgeber/ueberwachungskamera-ohne-abo/)
+- [Überwachungskamera für außen kaufen: WLAN, PoE oder Akku?](https://findmydup.de/ratgeber/ueberwachungskamera-aussen-kaufen/)
+- [Samsung Galaxy A oder S: Welche Serie lohnt sich für dich?](https://findmydup.de/ratgeber/samsung-galaxy-a-oder-s/)
+- [OLED oder QLED: Welcher Fernseher passt zu deinem Wohnzimmer?](https://findmydup.de/ratgeber/oled-oder-qled/)
+- [MacBook Air oder MacBook Pro: Welches lohnt sich für dich?](https://findmydup.de/ratgeber/macbook-air-oder-pro/)
+- [FunnelCockpit Kosten: So planst du dein Softwarebudget](https://findmydup.de/ratgeber/funnelcockpit-kosten-planen/)
 
 ## Wichtige Hinweise zu Angeboten und Funktionen
 

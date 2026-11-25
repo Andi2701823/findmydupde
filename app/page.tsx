@@ -9,9 +9,9 @@ import { guides } from "@/lib/guides";
 import { affiliateProducts } from "@/lib/affiliate-products";
 import { AffiliateProductCard } from "@/components/affiliate-product-card";
 export const metadata: Metadata = {
-  title: {absolute:"FindMyDup: Preise vergleichen & günstigere Alternativen finden"},
-  description: "Suche dein Wunschprodukt, vergleiche Händlerangebote nach Preis und entdecke passende Alternativen. FindMyDup zeigt transparente Preise und hilfreiche Kauftipps.",
-  openGraph:{type:"website",title:"FindMyDup – Produkte suchen und Preise vergleichen",description:"Finde passende Händlerangebote und entdecke Alternativen.",url:"https://findmydup.de/",images:[{url:"https://findmydup.de/share-image/",width:1200,height:630,type:"image/png",alt:"FindMyDup – Produkte suchen und Preise vergleichen"}]},
+  title: {absolute:"FindMyDup | Produkte, Angebote & Einkaufsratgeber"},
+  description: "Entdecke Produkte aus Technik, Smart Home, Garten und Beauty. Suche Händlerangebote, vergleiche verfügbare Artikelpreise und lies Einkaufsratgeber.",
+  openGraph:{type:"website",title:"FindMyDup | Produkte, Angebote & Einkaufsratgeber",description:"Entdecke Produkte, Händlerangebote und hilfreiche Einkaufsratgeber.",url:"https://findmydup.de/",images:[{url:"https://findmydup.de/share-image/",width:1200,height:630,type:"image/png",alt:"FindMyDup | Produkte, Angebote & Einkaufsratgeber"}]},
   alternates: { canonical: "https://findmydup.de/" },
 };
 const categories = [
@@ -77,7 +77,7 @@ export default function Home() {
       </div>
     </section>
     <section className="shell section-space" id="kategorien">
-      <div className="section-heading"><div><span className="eyebrow">PRODUKTE & EINKAUFSWISSEN</span><h2>Diese Themen kannst du entdecken.</h2><p>Beauty-Produkte sind bereits im Katalog. Für Mode, Wohnen und Technik findest du passende Ratgeber; weitere Händlerangebote sollen folgen.</p></div>
+      <div className="section-heading"><div><span className="eyebrow">PRODUKTE & EINKAUFSWISSEN</span><h2>Diese Themen kannst du entdecken.</h2><p>Entdecke Händlerkataloge für Technik, Smart Home, Garten und Beauty sowie unsere Einkaufsratgeber für Mode und Wohnen.</p></div>
         <Link href="/ratgeber/" className="text-link">Alle Ratgeber <Icon name="arrow" /></Link></div>
       <div className="category-grid">
         {categories.map(c => <Link href={`/suche/?category=${encodeURIComponent(c.name)}`} className={`category-tile tile-${c.name}`} key={c.name}>
@@ -87,11 +87,21 @@ export default function Home() {
         </Link>)}
       </div>
     </section>
+    <section className="shell section-space" aria-labelledby="merchant-home-heading">
+      <div className="section-heading"><div><span className="eyebrow">HÄNDLER UND SORTIMENTE</span><h2 id="merchant-home-heading">Produkte nach Themen entdecken</h2><p>Entdecke ausgewählte Händlerkataloge und Informationen zu digitalen Tools.</p></div></div>
+      <div className="footer-links">
+        <Link href="/anthbot/">ANTHBOT Mähroboter und Zubehör</Link>
+        <Link href="/imou/">IMOU Überwachungskameras und Smart Home</Link>
+        <Link href="/kategorien/">Alle Produktkategorien und Kaufkriterien</Link>
+        <Link href="/produkte/">Alle verfügbaren Händlerkataloge</Link>
+        <Link href="/digitale-tools/">Digitale Tools und Software</Link>
+      </div>
+    </section>
     <section className="shell section-space showcase" id="beauty-produkte">
       <div className="section-heading">
-        <div><span className="eyebrow">AUS UNSEREM AKTUELLEN KATALOG</span><h2>Produkte, die du jetzt entdecken kannst.</h2>
-          <p>Unsere ersten geprüften Katalogeinträge stammen von bdr-beauty. Weitere Händler möchten wir ergänzen. Preisangaben aus dem Feed können vom aktuellen Shoppreis abweichen.</p></div>
-        <Link href="/produkte/" className="text-link">Alle 63 Produkte ansehen <Icon name="arrow" /></Link>
+        <div><span className="eyebrow">AUS UNSEREM AKTUELLEN KATALOG</span><h2>Ausgewählte Beauty-Produkte</h2>
+          <p>Hier findest du ausgewählte Hautpflegeprodukte von bdr-beauty. Weitere Händler und Sortimente findest du im Produktkatalog. Feedpreise können vom aktuellen Shoppreis abweichen.</p></div>
+        <Link href="/produkte/" className="text-link">Zum Produktkatalog <Icon name="arrow" /></Link>
       </div>
       <div className="affiliate-grid affiliate-featured">
         {affiliateProducts.filter(p => ["1352","269","242","110"].includes(p.id)).map(product => <AffiliateProductCard key={product.id} product={product}/>)}
@@ -101,7 +111,7 @@ export default function Home() {
       <div className="section-heading"><div><span className="eyebrow">UNSERE EINKAUFSRATGEBER</span><h2>Das lohnt sich zu wissen.</h2><p>Konkrete Checklisten und verständliche Tipps statt unbelegter Produktversprechen.</p></div>
         <Link href="/ratgeber/" className="text-link">Alle Beiträge <Icon name="arrow" /></Link>
       </div>
-      <div className="guides-grid">{[guides[0],guides[2],guides[4],guides[6]].map(guide => <GuideCard guide={guide} key={guide.slug}/>)}</div>
+      <div className="guides-grid">{[...guides.slice(-7,-4),guides[0]].map(guide => <GuideCard guide={guide} key={guide.slug}/>)}</div>
     </section>
     <section className="shell about-section">
       <div className="about-mark">f<span>↗</span></div>

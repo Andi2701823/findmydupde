@@ -9,6 +9,7 @@ import {AffiliateDetailImage} from "@/components/affiliate-detail-image";
 import {AnthbotProductCard} from "@/components/anthbot-product-card";
 import {BreadcrumbJsonLd,ProductInfoJsonLd} from "@/components/seo-jsonld";
 import {Icon} from "@/components/icon";
+import {compactDescription,anthbotChecks} from "@/lib/product-purchase-checks";
 
 export const dynamicParams=false;
 export function generateStaticParams(){
@@ -19,9 +20,9 @@ export async function generateMetadata({params}:{params:Promise<{slug:string}>})
  const product=findAnthbotProductBySlug(slug);
  if(!product)return {title:"ANTHBOT Produkt nicht gefunden",robots:{index:false,follow:true}};
  const url="https://findmydup.de"+anthbotProductPath(product);
- const description=(product.name+" – Produktvariante, Herstellerinformationen und Awin-Feedpreis bei FindMyDup. Preis und Lieferumfang direkt bei ANTHBOT prüfen.").slice(0,160);
+ const description=compactDescription(product.name+": "+product.category+" aus dem ANTHBOT-Katalog. "+(product.category==="Mähroboter"?"Modell, Zustand und Lieferumfang":"Modellkompatibilität und Lieferumfang")+" prüfen.");
  return {
-  title:product.name+" – ANTHBOT Produktdetails",
+  title:product.name+(/ANTHBOT/i.test(product.name)?" | Produktdetails":" | ANTHBOT Zubehör"),
   description,
   alternates:{canonical:url},
   openGraph:{type:"website",title:product.name,description,url,images:[{url:product.image,alt:product.name}]},
@@ -35,6 +36,7 @@ export default async function AnthbotProductPage({params}:{params:Promise<{slug:
  if(!product)notFound();
  const url="https://findmydup.de"+anthbotProductPath(product);
  const isMower=product.category==="Mähroboter";
+ const checks=anthbotChecks(product.name,product.category);
  const related=anthbotProducts.filter(p=>p.id!==product.id&&p.category===product.category).slice(0,3);
  return <main id="main" className="shell product-detail-page anthbot-product-detail">
   <BreadcrumbJsonLd items={[
@@ -77,6 +79,7 @@ export default async function AnthbotProductPage({params}:{params:Promise<{slug:
     <span className="eyebrow">KAUFHILFE</span>
     <h2>{isMower?"Worauf bei einem Mähroboter achten?":"Passt das Zubehör zu deinem Mähroboter?"}</h2>
     <ul>
+     {checks.map(item=><li key={item}>{item}</li>)}
      {isMower?<>
       <li>Vergleiche die offiziell angegebene Flächenleistung mit Größe und Aufbau deines Gartens.</li>
       <li>Prüfe Navigation, Steigungsgrenzen, Hinderniserkennung und die Anforderungen der Installation beim Hersteller.</li>
@@ -88,6 +91,7 @@ export default async function AnthbotProductPage({params}:{params:Promise<{slug:
       <li>Prüfe Einbau- und Sicherheitshinweise sowie die tatsächliche Verfügbarkeit direkt beim Händler.</li>
      </>}
     </ul>
+    <p><Link href="/kategorien/maehroboter/">Mähroboter: Kaufkriterien und Modelle</Link></p>
     <Link href="/anthbot/" className="text-link">Weitere ANTHBOT-Produkte vergleichen <Icon name="arrow"/></Link>
    </aside>
   </div>

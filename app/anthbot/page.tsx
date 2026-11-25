@@ -8,8 +8,8 @@ export const dynamic="force-dynamic";
 type Params={q?:string;category?:string;sort?:string};
 export async function generateMetadata({searchParams}:{searchParams:Promise<Record<string,string|string[]|undefined>>}):Promise<Metadata>{
  return merchantCatalogMetadata({
-  title:"ANTHBOT Mähroboter & Zubehör – Produkte und Preise",
-  description:"ANTHBOT Mähroboter und Zubehör aus dem Awin-Händlerfeed entdecken, Varianten auswählen und angezeigte Feedpreise vergleichen.",
+  title:"ANTHBOT Mähroboter: Modelle, Preise & Zubehör",
+  description:"Entdecke ANTHBOT Mähroboter und passendes Zubehör. Vergleiche Modellvarianten, Ausstattung und angezeigte Feedpreise.",
   canonical:"https://findmydup.de/anthbot/",
   params:await searchParams
  });

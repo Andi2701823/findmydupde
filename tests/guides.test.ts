@@ -1,10 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { guides, guideCategories, searchGuides, findGuide } from "../lib/guides.ts";
-test("eight genuine editorial guides with unique valid slugs across four categories",()=>{
-  assert.equal(guides.length,8);
-  assert.equal(new Set(guides.map(g=>g.slug)).size,8);
-  for(const category of guideCategories)assert.equal(guides.filter(g=>g.category===category).length,2);
+test("fifteen genuine editorial guides with unique valid slugs across six categories",()=>{
+  assert.equal(guides.length,15);
+  assert.equal(new Set(guides.map(g=>g.slug)).size,15);
+  for(const category of guideCategories)assert.ok(guides.some(g=>g.category===category));
   for(const guide of guides) {
     assert.match(guide.slug,/^[a-z0-9-]+$/);
     assert.equal(findGuide(guide.slug),guide);
@@ -16,8 +16,14 @@ test("the public search operates on real editorial text rather than fake product
   assert.deepEqual(searchGuides(""), guides);
   assert.deepEqual(searchGuides("serum").map(g=>g.slug),["gesichtsserum-vergleichen"]);
   assert.deepEqual(searchGuides("KOPFHÖRER").map(g=>g.slug),["kopfhoerer-vergleichen"]);
-  assert.equal(searchGuides("Technik").length,2);
+  assert.equal(searchGuides("Technik").length,7);
   assert.equal(searchGuides("", "Beauty").length,2);
   assert.equal(searchGuides("xyznevermatching").length,0);
   assert.equal(guides.some(g=>/demo|erfunden|fiktiv/i.test(g.title)),false);
+});
+
+test("new buying guides have traceable sources and valid topic links",()=>{
+ for(const g of guides.slice(8)){assert.ok(g.sources?.length);assert.ok(g.sources.every(s=>s.url.startsWith("https://")));}
+ assert.ok(findGuide("maehroboter-ohne-begrenzungskabel"));
+ assert.ok(findGuide("funnelcockpit-kosten-planen")?.links?.some(l=>l.href==="/digitale-tools/funnelcockpit/"));
 });

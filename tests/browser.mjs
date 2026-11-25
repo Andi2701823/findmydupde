@@ -89,7 +89,7 @@ try {
   assert.match(favicon.headers.get("content-type")||"",/image\/svg\+xml/);
   assert.match(await favicon.text(),/viewBox="0 0 64 64"/);
   assert.equal(await page.locator('meta[name="robots"][content*="noindex"]').count(),0);
-  assert.match(await page.title(),/Preise vergleichen.*günstigere Alternativen/);
+  assert.match(await page.title(),/Produkte, Angebote & Einkaufsratgeber/);
   const websiteLd=JSON.parse(await page.locator('script[type="application/ld+json"]').first().innerText());
   assert.equal(websiteLd["@type"],"WebSite");
   assert.equal(websiteLd.url,"https://findmydup.de/");
@@ -121,6 +121,16 @@ try {
   assert.equal(sitemap.status,200);
   const sitemapContent=await sitemap.text();
   assert.match(sitemapContent,/gesichtsserum-vergleichen/);
+  for(const slug of ["maehroboter-ohne-begrenzungskabel","ueberwachungskamera-ohne-abo","ueberwachungskamera-aussen-kaufen","samsung-galaxy-a-oder-s","oled-oder-qled","macbook-air-oder-pro","funnelcockpit-kosten-planen"]) assert.ok(sitemapContent.includes("https://findmydup.de/ratgeber/"+slug+"/"));
+  for(const slug of ["maehroboter","ueberwachungskameras","smartphones","notebooks","fernseher","gesichtspflege"]){
+    const url="/kategorien/"+slug+"/";
+    assert.ok(sitemapContent.includes("https://findmydup.de"+url));
+    const html=await fetch(origin+url);
+    assert.equal(html.status,200);
+    const source=await html.text();
+    assert.ok(source.includes("Checkliste vor dem Kauf"));
+    assert.ok(source.includes("https://findmydup.de"+url));
+  }
   assert.equal((sitemapContent.match(/<loc>https:\/\/findmydup\.de\/produkte\/[^<]+<\/loc>/g)||[]).length,63);
   assert.equal((sitemapContent.match(/<loc>https:\/\/findmydup\.de\/anthbot\/[^<]+<\/loc>/g)||[]).length,35,
    "All 35 ANTHBOT product pages must be in the XML sitemap");
@@ -266,11 +276,11 @@ try {
   await page.getByRole("heading",{name:"Was möchtest du entdecken?"}).waitFor();
   assert.ok(!new URL(page.url()).searchParams.has("source"),"User can reset back to all merchants");
   await page.goto(`${origin}/suche/?category=Technik`,{waitUntil:"domcontentloaded"});
-  assert.equal(await page.locator(".guide-card").count(),2);
+  assert.equal(await page.locator(".guide-card").count(),7);
   await page.goto(`${origin}/ratgeber/`,{waitUntil:"domcontentloaded"});
-  assert.equal(await page.locator(".guide-card").count(),8);
+  assert.equal(await page.locator(".guide-card").count(),15);
   await page.goto(`${origin}/produkte/`,{waitUntil:"domcontentloaded"});
-  await page.getByRole("heading",{name:"Unser Produktkatalog."}).waitFor();
+  await page.getByRole("heading",{name:"Produktkatalog: Produkte und Händler entdecken"}).waitFor();
   assert.equal(await page.locator('.reifen-ads').count(),1,"One partner advertising area");
   assert.equal(await page.locator('.reifen-ads a[href*="awin1.com/cread.php"]').count(),1,
     "Only one advertising link visible at any time");
@@ -459,7 +469,7 @@ try {
   assert.deepEqual(remoteRequests.filter(url => new URL(url).hostname !== "bdr-beauty.com" &&
     !permittedFunnelScreenshots.has(url) && !permittedAwinBanner(url)),[]);
   assert.deepEqual(uploads,[]);
-  console.log("PASS: public editorial home, real guide search and categories, 8 published articles, saved reading list, legal and partner routes, SEO sitemap, Awin verification, mobile breakpoints and no remote requests.");
+  console.log("PASS: public editorial home, real guide search and categories, 15 editorial articles, saved reading list, legal and partner routes, SEO sitemap, Awin verification, mobile breakpoints and no remote requests.");
 } catch(error) {
   mkdirSync("test-artifacts",{recursive:true});
   if(page&&!page.isClosed())await page.screenshot({path:"test-artifacts/failure.png",fullPage:true}).catch(()=>{});

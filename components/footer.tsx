@@ -4,10 +4,13 @@ export function Footer() {
   return <footer className="footer"><div className="shell">
     <div className="footer-top"><div><Link className="logo" href="/">findmydup<span className="logo-dot">.</span></Link><p>Wissen, das beim Einkaufen hilft.</p></div>
       <div className="footer-links">
-        <Link href="/produkte/">Beauty-Produkte</Link>
+        <Link href="/produkte/">Produktkatalog</Link>
+        <Link href="/kategorien/">Produktkategorien</Link>
+        <Link href="/anthbot/">Mähroboter und Zubehör</Link>
+        <Link href="/imou/">Überwachungskameras</Link>
         <Link href="/ratgeber/">Einkaufsratgeber</Link>
         <Link href="/digitale-tools/">Digitale Tools</Link>
-        <Link href="/suche/">Themensuche</Link>
+        <Link href="/suche/">Produktsuche</Link>
         <Link href="/ueber-uns/">Über uns</Link>
         <Link href="/partner/">Für Händler</Link>
         <a href={"mailto:"+supportEmail}>Kontakt</a>

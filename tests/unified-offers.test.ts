@@ -1,7 +1,7 @@
 import test from "node:test";
 import {anthbotProducts} from "../lib/anthbot-products.ts";
 import assert from "node:assert/strict";
-import {rankedOffers,relevantTitle,beautyOffers,anthbotOffers,feedOffers,ebayOffers,type SearchOffer} from "../lib/unified-offers.ts";
+import {rankedOffers,relevantTitle,beautyOffers,anthbotOffers,feedOffers,ebayOffers,sortOffers,knownTotal,type SearchOffer} from "../lib/unified-offers.ts";
 
 function offer(id:string,title:string,articleCents:number):SearchOffer {
   return {id,source:"beauty",merchant:"bdr-beauty",title,articleCents,shippingCents:null,
@@ -119,4 +119,19 @@ test("MacBook computer searches keep actual Neo, Air and Pro models, not compati
   {...offer("joybuy:pro",real[2],129900),source:"joybuy" as const}
  ];
  assert.deepEqual(rankedOffers(offers,"MacBook").map(o=>o.id),["mactrade:neo","joybuy:pro"]);
+});
+
+test("known shipping total sorts known costs first without treating unknown shipping as zero",()=>{
+ const a={...offer("a","Test",1000),shippingCents:500};
+ const b={...offer("b","Test",1200),shippingCents:0};
+ const c=offer("c","Test",500);
+ assert.equal(knownTotal(c),null);
+ assert.equal(knownTotal(a),1500);
+ assert.deepEqual(sortOffers([a,b,c],"article").map(x=>x.id),["c","a","b"]);
+ assert.deepEqual(sortOffers([a,b,c],"total").map(x=>x.id),["b","a","c"]);
+});
+test("eBay null and blank shipping values are not free shipping",()=>{
+ const item={externalId:"test",title:"Test",price:10,currency:"EUR",retailer:"eBay",imageUrl:"https://i.ebayimg.com/images/test.jpg",outboundUrl:"https://www.ebay.de/itm/123"};
+ for(const value of [null,""," "])assert.equal(ebayOffers({source:"ebay",items:[{...item,shippingCost:{currency:"EUR",value}}]})[0].shippingCents,null);
+ assert.equal(ebayOffers({source:"ebay",items:[{...item,shippingCost:{currency:"EUR",value:"0"}}]})[0].shippingCents,0);
 });

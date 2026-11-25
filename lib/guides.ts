@@ -1,4 +1,5 @@
-export type GuideCategory = "Mode" | "Beauty" | "Wohnen" | "Technik";
+import {newShoppingGuides} from "./shopping-guides.ts";
+export type GuideCategory = "Mode" | "Beauty" | "Wohnen" | "Technik" | "Garten" | "Software";
 export interface Guide {
   slug: string;
   category: GuideCategory;
@@ -6,9 +7,11 @@ export interface Guide {
   excerpt: string;
   keywords: string[];
   readMinutes: number;
+  sources?: {name:string;url:string}[];
+  links?: {name:string;href:string}[];
   sections: { heading: string; paragraphs: string[]; tips?: string[] }[];
 }
-export const guideCategories: GuideCategory[] = ["Mode", "Beauty", "Wohnen", "Technik"];
+export const guideCategories: GuideCategory[] = ["Mode", "Beauty", "Wohnen", "Technik", "Garten", "Software"];
 export const guides: Guide[] = [
   {
     slug: "gesichtsserum-vergleichen", category: "Beauty",
@@ -170,7 +173,7 @@ export const guides: Guide[] = [
         "Nutze unbeschädigte Geräte und passende Kabel. Beschädigte oder auffällig überhitzende Akkus sollten nicht weiterverwendet werden. Beachte Herstellerhinweise zur Lagerung und Entsorgung."
       ] }
     ]
-  }
+  }  ,...newShoppingGuides
 ];
 export function findGuide(slug: string) {
   return guides.find((guide) => guide.slug === slug);
