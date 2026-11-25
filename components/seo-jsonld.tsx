@@ -24,7 +24,7 @@ export function WebsiteJsonLd(){
     name:"FindMyDup",
     url:"https://findmydup.de/",
     inLanguage:"de-DE",
-    description:"Produkte suchen, Händlerangebote vergleichen und passende Alternativen entdecken.",
+    description:"Produkte, Händlerangebote und digitale Tools entdecken und mit Einkaufsratgebern einordnen.",
   };
   return <script type="application/ld+json" dangerouslySetInnerHTML={{__html:safeJson(data)}}/>;
 }
