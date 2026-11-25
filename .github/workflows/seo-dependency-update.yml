@@ -1,0 +1,29 @@
+name: Prepare SEO dependency security update
+on:
+  push:
+    branches: [seo/sitewide-fixes]
+permissions:
+  contents: read
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Generate updated lockfile using npm
+        run: |
+          npm install --package-lock-only --ignore-scripts --save-exact next@16.4.6
+          npm install --package-lock-only --ignore-scripts --save-dev --save-exact eslint-config-next@16.4.6 typescript-eslint@8.74.0
+          npm audit --json > audit-proposed.json || true
+          node -e 'const a=require("./audit-proposed.json"); console.log(JSON.stringify(a.metadata,null,2)); if(!a.metadata) process.exit(1)'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: seo-dependency-update
+          path: |
+            package.json
+            package-lock.json
+            audit-proposed.json
+      - run: npm ci
+      - run: npm run check
