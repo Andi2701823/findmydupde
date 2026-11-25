@@ -46,7 +46,7 @@ export function Results({ ebaySearch = false, samsungSearch = false, joybuySearc
     <div className="results-heading">
       <span className="eyebrow">PRODUKTE UND EINKAUFSWISSEN ENTDECKEN</span>
       <h1>{q?`Funde zu „${q}“`:category?`Entdecken: ${category}`:"Was möchtest du entdecken?"}</h1>
-      <p>Finde passende Angebote aus allen verfügbaren Quellen – die niedrigsten Artikelpreise stehen zuerst. Vergleiche Modell, Versand und Zustand vor dem Kauf.</p>
+      <p>Finde passende Angebote aus den verfügbaren Quellen. Sortiere nach Artikelpreis oder bekanntem Versand und prüfe Modell, Zustand und Lieferumfang.</p>
     </div>
     <SearchBox key={q+"|"+source} compact initialQuery={q} initialSource={source}/>
     {digital&&<section className="digital-search-match" aria-label="Digitales Software-Angebot">
