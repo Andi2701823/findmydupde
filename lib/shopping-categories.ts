@@ -34,7 +34,9 @@ export const shoppingCategories:ShoppingCategory[] = [
     "merchants": [
       "anthbot"
     ],
-    "guideSlugs": []
+    "guideSlugs": [
+      "maehroboter-ohne-begrenzungskabel"
+    ]
   },
   {
     "slug": "ueberwachungskameras",
@@ -65,7 +67,10 @@ export const shoppingCategories:ShoppingCategory[] = [
     "merchants": [
       "imou"
     ],
-    "guideSlugs": []
+    "guideSlugs": [
+      "ueberwachungskamera-ohne-abo",
+      "ueberwachungskamera-aussen-kaufen"
+    ]
   },
   {
     "slug": "smartphones",
@@ -99,7 +104,8 @@ export const shoppingCategories:ShoppingCategory[] = [
       "joybuy"
     ],
     "guideSlugs": [
-      "powerbank-kaufen"
+      "powerbank-kaufen",
+      "samsung-galaxy-a-oder-s"
     ]
   },
   {
@@ -133,7 +139,9 @@ export const shoppingCategories:ShoppingCategory[] = [
       "samsung",
       "joybuy"
     ],
-    "guideSlugs": []
+    "guideSlugs": [
+      "macbook-air-oder-pro"
+    ]
   },
   {
     "slug": "fernseher",
@@ -165,7 +173,9 @@ export const shoppingCategories:ShoppingCategory[] = [
       "samsung",
       "joybuy"
     ],
-    "guideSlugs": []
+    "guideSlugs": [
+      "oled-oder-qled"
+    ]
   },
   {
     "slug": "gesichtspflege",

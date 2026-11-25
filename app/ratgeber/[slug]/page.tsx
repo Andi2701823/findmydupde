@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { guides, findGuide } from "@/lib/guides";
+import {shoppingCategories,categoryPath} from "@/lib/shopping-categories";
 import { GuideCard } from "@/components/guide-card";
 import { Icon } from "@/components/icon";
 import {BreadcrumbJsonLd,ArticleJsonLd} from "@/components/seo-jsonld";
@@ -22,7 +23,9 @@ export default async function GuidePage({ params }: { params: Promise<{slug: str
   const {slug} = await params;
   const guide = findGuide(slug);
   if (!guide) notFound();
-  const related = guides.filter(g => g.category === guide.category && g.slug !== guide.slug).slice(0,2);
+  const categories=shoppingCategories.filter(c=>c.guideSlugs.includes(guide.slug));
+  const relatedSlugs=new Set(categories.flatMap(c=>c.guideSlugs));
+  const related = guides.filter(g => g.category === guide.category && g.slug !== guide.slug).sort((a,b)=>Number(relatedSlugs.has(b.slug))-Number(relatedSlugs.has(a.slug))).slice(0,2);
   const products=guide.slug==="sonnenschutz-kaufen"
     ?affiliateProducts.filter(p=>p.category==="Sonnenschutz").slice(0,3)
     :guide.slug==="gesichtsserum-vergleichen"
@@ -50,11 +53,13 @@ export default async function GuidePage({ params }: { params: Promise<{slug: str
             {section.tips && <div className="article-tips"><h3>Deine Checkliste</h3><ul>{section.tips.map(tip => <li key={tip}>{tip}</li>)}</ul></div>}
           </section>
         ))}
+        {guide.sources?.length?<section className="article-section"><h2>Quellen und weiterführende Informationen</h2><p>Herstellerinformationen dienen zur Einordnung; sie sind keine unabhängigen Produkttests.</p><ul>{guide.sources.map(s=><li key={s.url}><a href={s.url} target="_blank" rel="noopener noreferrer">{s.name}</a></li>)}</ul></section>:null}
         <aside className="article-disclosure">
           <strong>Transparenter Vergleich statt Preisversprechen</strong>
           <p>Dieser Ratgeber enthält allgemeine Einkaufshinweise und keinen eigenen Produkttest. Verlinkte Händlerprodukte sind Affiliate-Werbelinks. Preise, Verfügbarkeit und Produkteigenschaften sind beim jeweiligen Händler zu prüfen.</p>
         </aside>
       </article>
+      {(categories.length>0||guide.links?.length)?<section className="article-section"><h2>Passende Produkte und weitere Kaufhilfen</h2><ul>{categories.map(c=><li key={c.slug}><Link href={categoryPath(c.slug)}>{c.name}: Kaufkriterien und Händlerkataloge</Link></li>)}{guide.links?.map(l=><li key={l.href}><Link href={l.href}>{l.name}</Link></li>)}</ul></section>:null}
       {products.length>0&&<section className="search-products" aria-label="Passende Produkte aus dem Beauty-Katalog">
         <div className="section-heading">
           <div><span className="eyebrow">ERGÄNZEND ZUM RATGEBER</span>

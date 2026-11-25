@@ -111,7 +111,7 @@ export default function Home() {
       <div className="section-heading"><div><span className="eyebrow">UNSERE EINKAUFSRATGEBER</span><h2>Das lohnt sich zu wissen.</h2><p>Konkrete Checklisten und verständliche Tipps statt unbelegter Produktversprechen.</p></div>
         <Link href="/ratgeber/" className="text-link">Alle Beiträge <Icon name="arrow" /></Link>
       </div>
-      <div className="guides-grid">{[guides[0],guides[2],guides[4],guides[6]].map(guide => <GuideCard guide={guide} key={guide.slug}/>)}</div>
+      <div className="guides-grid">{[...guides.slice(-7,-4),guides[0]].map(guide => <GuideCard guide={guide} key={guide.slug}/>)}</div>
     </section>
     <section className="shell about-section">
       <div className="about-mark">f<span>↗</span></div>

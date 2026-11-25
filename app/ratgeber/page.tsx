@@ -4,7 +4,7 @@ import { guides, guideCategories } from "@/lib/guides";
 import { GuideCard } from "@/components/guide-card";
 import { Icon } from "@/components/icon";
 export const metadata: Metadata = {
-  title: "Einkaufsratgeber für Mode, Beauty, Wohnen & Technik",
+  title: "Einkaufsratgeber für Technik, Garten, Beauty & mehr",
   description: "Unabhängige Einkaufsratgeber zu Materialien, Funktionen, Größen und Preisen. Entdecke, worauf es beim Vergleichen wirklich ankommt.",
   alternates:{canonical:"https://findmydup.de/ratgeber/"},
 };
@@ -15,7 +15,7 @@ export default function GuidesPage() {
       <span className="eyebrow">WISSEN, DAS BEIM EINKAUF HILFT</span>
       <h1>Bewusster wählen. Besser vergleichen.</h1>
       <p className="guides-intro">
-        Ob Hautpflege, Sneaker, Möbel oder Technik: Ein gutes Angebot erkennst du nicht nur am Preis.
+        Ob Hautpflege, Mähroboter, Technik oder Software: Ein gutes Angebot erkennst du nicht nur am Preis.
         Unsere Ratgeber zeigen dir konkrete Kriterien, mit denen du Produkte selbst vergleichen kannst.
       </p>
       <div className="guide-category-nav" aria-label="Ratgeber nach Themen">
