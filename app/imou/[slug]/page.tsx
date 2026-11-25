@@ -7,15 +7,16 @@ import {AffiliateDetailImage} from "@/components/affiliate-detail-image";
 import {ImouModelCard} from "@/components/imou-model-card";
 import {BreadcrumbJsonLd} from "@/components/seo-jsonld";
 import {Icon} from "@/components/icon";
+import {compactDescription,imouChecks} from "@/lib/product-purchase-checks";
 export const dynamicParams=false;
 export function generateStaticParams(){return imouModels.map(m=>({slug:m.slug}));}
 export async function generateMetadata({params}:{params:Promise<{slug:string}>}):Promise<Metadata>{
  const {slug}=await params,model=findImouModelBySlug(slug);
  if(!model)return {title:"IMOU Produkt nicht gefunden",robots:{index:false,follow:true}};
  const url="https://findmydup.de"+imouModelPath(model);
- const description=(model.name+" – Kamera- und Produktvarianten aus dem IMOU-Awin-Feed entdecken. Historische Preise und Händlerangaben prüfen.").slice(0,160);
+ const description=compactDescription(model.name+": "+model.category+". "+model.variants.length+" gelistete "+(model.variants.length===1?"Variante":"Varianten")+", Ausstattung und historische Feedpreise einordnen.");
  return {
-  title:model.name+" – IMOU Varianten im Überblick",
+  title:model.name+(/IMOU/i.test(model.name)?" | Varianten & Kaufhinweise":" | IMOU Produktdetails"),
   description,alternates:{canonical:url},
   openGraph:{type:"website",url,title:model.name,description,images:[{url:model.image,alt:model.name}]},
   twitter:{card:"summary_large_image",title:model.name,description,images:[model.image]},
@@ -26,6 +27,7 @@ export default async function ImouDetail({params}:{params:Promise<{slug:string}>
  const {slug}=await params,model=findImouModelBySlug(slug);
  if(!model)notFound();
  const url="https://findmydup.de"+imouModelPath(model);
+ const checks=imouChecks(model.name,model.category,model.variants.length);
  const related=imouModels.filter(m=>m.id!==model.id&&m.category===model.category).slice(0,3);
  return <main id="main" className="shell product-detail-page imou-product-detail">
   <BreadcrumbJsonLd items={[{name:"Startseite",url:"https://findmydup.de/"},{name:"IMOU",url:"https://findmydup.de/imou/"},{name:model.name,url}]}/>
@@ -53,12 +55,8 @@ export default async function ImouDetail({params}:{params:Promise<{slug:string}>
    <aside className="product-advice">
     <span className="eyebrow">VOR DEM KAUF PRÜFEN</span>
     <h2>Welche Ausführung passt?</h2>
-    <ul>
-     <li>Vergleiche die genaue Modellbezeichnung und Auflösung.</li>
-     <li>Prüfe Speicherkarte, Stromversorgung, Lieferumfang und eventuelle Abokosten.</li>
-     <li>Achte auf Netzwerk-Kompatibilität, Installation und die Herstellerhinweise.</li>
-     <li>Kontrolliere Versandkosten, Garantie und den aktuellen Händlerpreis.</li>
-    </ul>
+    <ul>{checks.map(item=><li key={item}>{item}</li>)}<li>Kontrolliere Garantie, Versand und den aktuellen Händlerpreis.</li></ul>
+    {["Überwachungskameras","Kamera-Sets","Video-Türklingeln"].includes(model.category)&&<p><Link href="/kategorien/ueberwachungskameras/">Überwachungskameras: Kaufkriterien und Modelle</Link></p>}
     <Link href="/imou/" className="text-link">Weitere IMOU-Modelle entdecken <Icon name="arrow"/></Link>
    </aside>
   </div>
