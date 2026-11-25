@@ -46,7 +46,7 @@ function OfferRow({offer,highlight,selected,onToggle,selectionFull}:{offer:Searc
 }
 export function UnifiedOffers({query,beauty,anthbot,enabled}:{query:string;beauty:AffiliateProduct[];anthbot:AnthbotProduct[];enabled:Enabled}){
   const {samsung,joybuy,mactrade,imou,ebay}=enabled;
-  const enabledSources={samsung,joybuy,mactrade,imou,ebay};
+  const enabledSources=useMemo(()=>({samsung,joybuy,mactrade,imou,ebay}),[samsung,joybuy,mactrade,imou,ebay]);
   const key=query+":"+sources.map(s=>String(enabledSources[s])).join(":");
   const [state,setState]=useState<Current|null>(null);
   const [visible,setVisible]=useState(5);
@@ -74,7 +74,7 @@ export function UnifiedOffers({query,beauty,anthbot,enabled}:{query:string;beaut
         });
     }
     return ()=>controller.abort();
-  },[key,query,start,samsung,joybuy,mactrade,imou,ebay]);
+  },[key,query,start,enabledSources]);
   const active=state?.key===key?state:null;
   const offers=sortOffers(rankedOffers(active?.offers??start,query),sort);
   const selected=offers.filter(o=>selectedIds.includes(o.id));
