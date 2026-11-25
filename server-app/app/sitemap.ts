@@ -1,1 +1,2 @@
-export { default, dynamic } from "../../app/sitemap";
+export { default } from "../../app/sitemap";
+export const dynamic = "force-dynamic";
