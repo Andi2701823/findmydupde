@@ -16,7 +16,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   if(mactradeCatalogEnabled()) fixed.push("/mactrade/");
   return [...fixed.map(path => ({url:base+path})),
     ...shoppingCategories.map(c=>({url:base+categoryPath(c.slug)})),
-    ...guides.map(g => ({url:`${base}/ratgeber/${g.slug}/`})),
+    ...guides.map(g => ({url:`${base}/ratgeber/${g.slug}/`, lastModified:g.dateModified ?? g.datePublished})),
     ...affiliateProducts.map(p => ({url:base+affiliateProductPath(p)})),
     ...anthbotProducts.map(p=>({url:base+anthbotProductPath(p)})),
     ...imouModels.map(m=>({url:base+imouModelPath(m)}))];

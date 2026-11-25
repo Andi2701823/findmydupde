@@ -3,6 +3,7 @@ import type {Guide} from "./guides.ts";
 export const newShoppingGuides:Guide[] = [
   {
     "slug": "maehroboter-ohne-begrenzungskabel",
+    "datePublished": "2026-11-25",
     "category": "Garten",
     "title": "Mähroboter ohne Begrenzungskabel: RTK, Kamera oder LiDAR?",
     "excerpt": "Welche kabellose Navigation passt zu deinem Garten? Vergleiche RTK, Kameras und LiDAR anhand von Grundstück, Montage und Folgekosten.",
@@ -56,6 +57,7 @@ export const newShoppingGuides:Guide[] = [
   },
   {
     "slug": "ueberwachungskamera-ohne-abo",
+    "datePublished": "2026-11-25",
     "category": "Technik",
     "title": "Überwachungskamera ohne Abo: Was funktioniert ohne Cloud?",
     "excerpt": "Lokale Speicherung, Livebild und Benachrichtigungen: So prüfst du, welche Kamerafunktionen ohne kostenpflichtiges Abo verfügbar sind.",
@@ -109,6 +111,7 @@ export const newShoppingGuides:Guide[] = [
   },
   {
     "slug": "ueberwachungskamera-aussen-kaufen",
+    "datePublished": "2026-11-25",
     "category": "Technik",
     "title": "Überwachungskamera für außen kaufen: WLAN, PoE oder Akku?",
     "excerpt": "So wählst du eine Außenkamera nach Stromversorgung, Netzwerk, Montageort und Aufnahmefunktionen aus.",
@@ -162,6 +165,7 @@ export const newShoppingGuides:Guide[] = [
   },
   {
     "slug": "samsung-galaxy-a-oder-s",
+    "datePublished": "2026-11-25",
     "category": "Technik",
     "title": "Samsung Galaxy A oder S: Welche Serie lohnt sich für dich?",
     "excerpt": "Galaxy A oder Galaxy S? Vergleiche Leistung, Kamera, Updateversorgung und Gesamtkosten anhand deiner tatsächlichen Nutzung.",
@@ -214,6 +218,7 @@ export const newShoppingGuides:Guide[] = [
   },
   {
     "slug": "oled-oder-qled",
+    "datePublished": "2026-11-25",
     "category": "Technik",
     "title": "OLED oder QLED: Welcher Fernseher passt zu deinem Wohnzimmer?",
     "excerpt": "OLED und QLED unterscheiden sich bei der Bilderzeugung. Entscheide anhand von Raumhelligkeit, Filmen, Sport und Gaming.",
@@ -266,6 +271,7 @@ export const newShoppingGuides:Guide[] = [
   },
   {
     "slug": "macbook-air-oder-pro",
+    "datePublished": "2026-11-25",
     "category": "Technik",
     "title": "MacBook Air oder MacBook Pro: Welches lohnt sich für dich?",
     "excerpt": "MacBook Air oder Pro? So entscheidest du anhand von Arbeitsaufgaben, Mobilität, Speicher, Anschlüssen und Gesamtbudget.",
@@ -318,6 +324,7 @@ export const newShoppingGuides:Guide[] = [
   },
   {
     "slug": "funnelcockpit-kosten-planen",
+    "datePublished": "2026-11-25",
     "category": "Software",
     "title": "FunnelCockpit Kosten: So planst du dein Softwarebudget",
     "excerpt": "Welche laufenden Kosten entstehen bei FunnelCockpit? Prüfe Tarifgrenzen, Zusatzdienste, Abrechnung und Kündigung vor dem Abschluss.",
