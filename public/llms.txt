@@ -14,6 +14,15 @@
 - [Digitale Tools](https://findmydup.de/digitale-tools/): Sachliche Informationen über Software-Abonnements und laufende Kosten.
 - [FunnelCockpit](https://findmydup.de/digitale-tools/funnelcockpit/): Funktionen, Anbieterbilder, Tarife und Hinweise zu einem Software-Abonnement.
 
+## Weitere Händlerkataloge (bei aktivierter Anbindung)
+
+- [Samsung](https://findmydup.de/samsung/): Smartphones, Fernseher, Tablets und Zubehör.
+- [JoyBuy](https://findmydup.de/joybuy/): Technik, Haushalt, Beauty und weitere Kategorien.
+- [MacTrade](https://findmydup.de/mactrade/): Apple-Geräte und Zubehör.
+- bdr-beauty: Hautpflege im [Produktkatalog](https://findmydup.de/produkte/).
+
+Die verfügbaren Händlerkataloge hängen von der aktiven Anbindung ab. Feedpreise sind keine live geprüften Angebote.
+
 ## Ausgewählte Einkaufsratgeber
 
 - [Gesichtsserum vergleichen](https://findmydup.de/ratgeber/gesichtsserum-vergleichen/)

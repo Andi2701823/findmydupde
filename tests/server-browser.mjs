@@ -149,7 +149,7 @@ try {
     await page.setViewportSize({ width, height: 900 });
     await page.goto(origin, { waitUntil: "domcontentloaded" });
     await page
-      .getByRole("heading", { name: "Finde Produkte. Vergleiche Preise." })
+      .getByRole("heading", { name: "Produkte finden. Händlerpreise vergleichen." })
       .waitFor();
     assert.equal(
       await page.evaluate(

@@ -9,6 +9,7 @@ export interface Guide {
   readMinutes: number;
   datePublished?: string;
   dateModified?: string;
+  comparison?: { caption: string; headers: string[]; rows: string[][] };
   sources?: {name:string;url:string}[];
   links?: {name:string;href:string}[];
   sections: { heading: string; paragraphs: string[]; tips?: string[] }[];

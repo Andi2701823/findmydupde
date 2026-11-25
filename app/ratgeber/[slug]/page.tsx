@@ -45,6 +45,7 @@ export default async function GuidePage({ params }: { params: Promise<{slug: str
         {guide.datePublished && <p>Veröffentlicht: <time dateTime={guide.datePublished}>{new Intl.DateTimeFormat("de-DE", {dateStyle:"long",timeZone:"UTC"}).format(new Date(guide.datePublished))}</time></p>}
         {guide.dateModified && <p>Aktualisiert: <time dateTime={guide.dateModified}>{new Intl.DateTimeFormat("de-DE", {dateStyle:"long",timeZone:"UTC"}).format(new Date(guide.dateModified))}</time></p>}
         <p className="article-lead">{guide.excerpt}</p>
+        {guide.comparison && <div className="guide-table-wrap"><table className="guide-table"><caption>{guide.comparison.caption}</caption><thead><tr>{guide.comparison.headers.map((header,i)=><th scope="col" key={i}>{header}</th>)}</tr></thead><tbody>{guide.comparison.rows.map((row,i)=><tr key={i}>{row.map((cell,j)=>j===0?<th scope="row" key={j}>{cell}</th>:<td key={j}>{cell}</td>)}</tr>)}</tbody></table><p>Die Übersicht fasst die Kaufkriterien dieses Ratgebers zusammen. Maßgeblich sind die Angaben zum konkreten Modell oder Tarif.</p></div>}
         <div className="article-index"><strong>In diesem Ratgeber</strong>
           <ol>{guide.sections.map((section,i) => <li key={i}><a href={`#abschnitt-${i+1}`}>{section.heading}</a></li>)}</ol>
         </div>
