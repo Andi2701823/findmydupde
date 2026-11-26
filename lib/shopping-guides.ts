@@ -6,7 +6,7 @@ export const newShoppingGuides:Guide[] = [
     "comparison": {"caption":"Kabellose Navigation im Vergleich","headers":["Verfahren","Grundprinzip","Vor dem Kauf prüfen"],"rows":[["RTK","Satellitenpositionierung mit Korrekturdaten","Referenzstation oder Netzwerkdienst, Sicht zum Himmel"],["Kamera","Visuelle Erfassung der Umgebung","Beleuchtung, erkennbare Strukturen und Hindernisse"],["LiDAR","Entfernungsmessung mit Lichtimpulsen","Reichweite, Kartierung und Modellgrenzen"]]},
     "category": "Garten",
     "title": "Mähroboter ohne Begrenzungskabel: RTK, Kamera oder LiDAR?",
-    "excerpt": "Welche kabellose Navigation passt zu deinem Garten? Vergleiche RTK, Kameras und LiDAR anhand von Grundstück, Montage und Folgekosten.",
+    "excerpt": "RTK, Kamera und LiDAR ermöglichen virtuelle Begrenzungen bei Mährobotern. Welche Navigation passt, hängt von Grundstück, Sichtbedingungen, Installationsaufwand und Folgekosten ab.",
     "keywords": [
       "mähroboter ohne begrenzungskabel",
       "rtk",
@@ -60,7 +60,7 @@ export const newShoppingGuides:Guide[] = [
     "comparison": {"caption":"Speicheroptionen im Vergleich","headers":["Speicher","Aufzeichnung","Kosten und Voraussetzungen"],"rows":[["Speicherkarte","Lokal am Gerät","Kompatible Karte, Kapazität und Überschreiben"],["Netzwerkrekorder","Zentral für mehrere Kameras","Zusätzliche Hardware und geeignete Verbindung"],["Cloud","Außerhalb des Geräts","Tarif und laufende Kosten prüfen"]]},
     "category": "Technik",
     "title": "Überwachungskamera ohne Abo: Was funktioniert ohne Cloud?",
-    "excerpt": "Lokale Speicherung, Livebild und Benachrichtigungen: So prüfst du, welche Kamerafunktionen ohne kostenpflichtiges Abo verfügbar sind.",
+    "excerpt": "Eine Überwachungskamera ohne Abo kann je nach Modell lokal speichern. Prüfe vor dem Kauf, welche Livebild-, Wiedergabe- und Benachrichtigungsfunktionen nach einer Testphase verfügbar bleiben.",
     "keywords": [
       "überwachungskamera ohne abo",
       "lokaler speicher",
@@ -114,7 +114,7 @@ export const newShoppingGuides:Guide[] = [
     "comparison": {"caption":"Anschlussarten für Außenkameras","headers":["Variante","Versorgung","Vor dem Kauf prüfen"],"rows":[["WLAN","Häufig separates Stromkabel","Funkempfang und Stromanschluss"],["PoE","Strom und Daten über Netzwerkkabel","Kompatible Hardware und Verkabelung"],["Akku","Akku, gegebenenfalls Solarzubehör","Ladeplanung und Aufnahmefunktionen"]]},
     "category": "Technik",
     "title": "Überwachungskamera für außen kaufen: WLAN, PoE oder Akku?",
-    "excerpt": "So wählst du eine Außenkamera nach Stromversorgung, Netzwerk, Montageort und Aufnahmefunktionen aus.",
+    "excerpt": "Bei Außenkameras sind Stromversorgung, Netzwerk und Montageort entscheidend: WLAN braucht häufig ein separates Stromkabel, PoE überträgt Strom und Daten bei kompatibler Hardware, Akku benötigt eine Ladeplanung.",
     "keywords": [
       "überwachungskamera außen",
       "wlan kamera",
@@ -168,7 +168,7 @@ export const newShoppingGuides:Guide[] = [
     "comparison": {"caption":"Galaxy A und Galaxy S im Vergleich","headers":["Serie","Typische Ausrichtung","Entscheidungskriterien"],"rows":[["Galaxy A","Preisbewusste Alltagsnutzung","Kamera, Speicher und konkrete Updatezusage"],["Galaxy S","Höher ausgestattetes Segment","Mehrwert bei Spielen, Video oder intensiver Nutzung"]]},
     "category": "Technik",
     "title": "Samsung Galaxy A oder S: Welche Serie lohnt sich für dich?",
-    "excerpt": "Galaxy A oder Galaxy S? Vergleiche Leistung, Kamera, Updateversorgung und Gesamtkosten anhand deiner tatsächlichen Nutzung.",
+    "excerpt": "Galaxy A richtet sich eher an preisbewusste Alltagsnutzer, Galaxy S an Käufer höher ausgestatteter Geräte. Vergleiche konkrete Modelle nach Kamera, Leistung, Speicher, Updatezusage und Gesamtkosten.",
     "keywords": [
       "samsung galaxy a oder s",
       "galaxy a serie",
@@ -221,7 +221,7 @@ export const newShoppingGuides:Guide[] = [
     "comparison": {"caption":"OLED und QLED im Vergleich","headers":["Technik","Bilderzeugung","Vor dem Kauf prüfen"],"rows":[["OLED","Selbstleuchtende Bildpunkte","Schwarzdarstellung, Helligkeit und Hinweise zu statischen Inhalten"],["QLED","LCD mit Quantenpunkten und Hintergrundbeleuchtung","Kontrast, Helligkeit und Entspiegelung des konkreten Modells"]]},
     "category": "Technik",
     "title": "OLED oder QLED: Welcher Fernseher passt zu deinem Wohnzimmer?",
-    "excerpt": "OLED und QLED unterscheiden sich bei der Bilderzeugung. Entscheide anhand von Raumhelligkeit, Filmen, Sport und Gaming.",
+    "excerpt": "OLED nutzt selbstleuchtende Bildpunkte, QLED üblicherweise LCD mit Quantenpunkten und Hintergrundbeleuchtung. Welche Technik passt, hängt von Raumhelligkeit, Nutzung und dem konkreten Modell ab.",
     "keywords": [
       "oled oder qled",
       "oled qled unterschied",
@@ -274,7 +274,7 @@ export const newShoppingGuides:Guide[] = [
     "comparison": {"caption":"MacBook Air und Pro im Vergleich","headers":["Modellreihe","Typische Nutzung","Vor dem Kauf prüfen"],"rows":[["Air","Mobile Alltagsaufgaben","RAM, SSD, Gewicht und Monitorunterstützung"],["Pro","Anspruchsvollere Arbeitsabläufe je nach Ausstattung","Programmanforderungen, Anschlüsse und Mehrpreis"]]},
     "category": "Technik",
     "title": "MacBook Air oder MacBook Pro: Welches lohnt sich für dich?",
-    "excerpt": "MacBook Air oder Pro? So entscheidest du anhand von Arbeitsaufgaben, Mobilität, Speicher, Anschlüssen und Gesamtbudget.",
+    "excerpt": "Ein passend ausgestattetes MacBook Air eignet sich für viele mobile Alltagsaufgaben; bei dauerhaft anspruchsvollen Arbeitsabläufen lohnt ein Vergleich mit Pro-Konfigurationen. Entscheidend sind Chip, RAM, SSD und Anschlüsse.",
     "keywords": [
       "macbook air oder pro",
       "macbook vergleich",
@@ -327,7 +327,7 @@ export const newShoppingGuides:Guide[] = [
     "comparison": {"caption":"Kostenvergleich mit fiktiven Beispielbeträgen","headers":["Szenario","Monatliche Kosten"],"rows":[["Drei bisherige Dienste","65 Euro"],["Softwarepaket ohne Zusatzdienst","50 Euro"],["Softwarepaket mit Zusatzdienst","70 Euro"]]},
     "category": "Software",
     "title": "FunnelCockpit Kosten: So planst du dein Softwarebudget",
-    "excerpt": "Welche laufenden Kosten entstehen bei FunnelCockpit? Prüfe Tarifgrenzen, Zusatzdienste, Abrechnung und Kündigung vor dem Abschluss.",
+    "excerpt": "Die Gesamtkosten von FunnelCockpit hängen vom Tarif, den benötigten Funktionen, Zusatzdiensten und dem Abrechnungszeitraum ab. Vergleiche diese Faktoren mit deinen bisherigen Softwarekosten.",
     "keywords": [
       "funnelcockpit kosten",
       "funnelcockpit preise",

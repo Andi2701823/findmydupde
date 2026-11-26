@@ -20,7 +20,7 @@ export const guides: Guide[] = [
   {
     slug: "gesichtsserum-vergleichen", category: "Beauty",
     title: "Gesichtsserum vergleichen: Inhaltsstoffe statt Werbeversprechen",
-    excerpt: "Woran du unterschiedliche Seren erkennst und welche Fragen vor dem Kauf sinnvoll sind.",
+    excerpt: "Vergleiche Gesichtsseren nach Pflegezweck, Inhaltsstoffliste, Verträglichkeit und Preis pro Milliliter. Ein hoher Preis oder ähnliche Verpackungen belegen keine gleiche Wirkung.",
     keywords: ["serum", "gesichtspflege", "hautpflege", "skincare", "niacinamid", "hyaluron", "kosmetik"],
     readMinutes: 5,
     sections: [
@@ -41,7 +41,7 @@ export const guides: Guide[] = [
   {
     slug: "sonnenschutz-kaufen", category: "Beauty",
     title: "Sonnenschutz kaufen: Auf diese Angaben kommt es an",
-    excerpt: "LSF, UVA-Schutz, Anwendung und Hautgefühl: So liest du Produktangaben besser.",
+    excerpt: "Vergleiche Sonnenschutz nach Lichtschutzfaktor, UVA-Kennzeichnung, Anwendungshinweisen und Preis pro 100 ml. Entscheidend ist auch, dass du das Produkt ausreichend und regelmäßig anwendest.",
     keywords: ["sonnenschutz", "sonnencreme", "spf", "lsf", "uva", "beauty", "pflege"],
     readMinutes: 4,
     sections: [
@@ -61,7 +61,7 @@ export const guides: Guide[] = [
   {
     slug: "handtasche-kaufen", category: "Mode",
     title: "Handtaschen vergleichen: Form, Material und Alltagstauglichkeit",
-    excerpt: "Ein ähnlicher Look ist schnell gefunden. Doch entscheidend sind Verarbeitung und Nutzung.",
+    excerpt: "Vergleiche Handtaschen nach Einsatzbereich, Maßen, Material, Verarbeitung und Gesamtkosten. Ähnliche Optik bedeutet nicht automatisch gleiche Qualität.",
     keywords: ["handtasche", "tasche", "bag", "leder", "schultertasche", "mode", "accessoires"],
     readMinutes: 4,
     sections: [
@@ -81,7 +81,7 @@ export const guides: Guide[] = [
   {
     slug: "sneaker-vergleichen", category: "Mode",
     title: "Sneaker vergleichen: Passform vor Preis",
-    excerpt: "Größentabelle, Dämpfung, Obermaterial und Rückgabe entscheiden mit.",
+    excerpt: "Vergleiche Sneaker nach Passform, Größentabelle, Dämpfung, Obermaterial und Rückgabebedingungen. Die richtige Größe des konkreten Modells ist wichtiger als der niedrigste Preis.",
     keywords: ["sneaker", "schuhe", "turnschuhe", "größe", "passform", "mode"],
     readMinutes: 4,
     sections: [
@@ -101,7 +101,7 @@ export const guides: Guide[] = [
   {
     slug: "tischleuchten-vergleichen", category: "Wohnen",
     title: "Tischleuchten vergleichen: Licht, Größe und Stromverbrauch",
-    excerpt: "Warum nicht allein die Form entscheidet, sondern auch Leuchtmittel und Einsatzort.",
+    excerpt: "Vergleiche Tischleuchten nach Einsatzort, Leuchtmittel, Licht und Abmessungen. Die Form allein sagt wenig darüber aus, ob eine Leuchte zu deinem Alltag passt.",
     keywords: ["lampe", "tischlampe", "licht", "leuchte", "led", "wohnen", "design"],
     readMinutes: 4,
     sections: [
@@ -121,7 +121,7 @@ export const guides: Guide[] = [
   {
     slug: "sessel-kaufen", category: "Wohnen",
     title: "Sessel kaufen: Komfort lässt sich nicht vom Bild ablesen",
-    excerpt: "Sitzhöhe, Tiefe, Bezug und Lieferbedingungen vor dem Kauf sinnvoll prüfen.",
+    excerpt: "Vergleiche Sessel nach Sitzhöhe, Sitztiefe, Bezug, Abmessungen und Lieferbedingungen. Berücksichtige den Platz im Raum und die Gesamtkosten.",
     keywords: ["sessel", "stuhl", "möbel", "wohnen", "polster", "loungesessel"],
     readMinutes: 4,
     sections: [
@@ -141,7 +141,7 @@ export const guides: Guide[] = [
   {
     slug: "kopfhoerer-vergleichen", category: "Technik",
     title: "Kopfhörer vergleichen: Klang, Komfort und Funktionen",
-    excerpt: "Was bei Over-Ear-Kopfhörern jenseits des Datenblatts zählt.",
+    excerpt: "Vergleiche Over-Ear-Kopfhörer nach Tragekomfort, Klang, Verbindung und den benötigten Funktionen. Technische Daten allein ersetzen keine persönliche Einschätzung.",
     keywords: ["kopfhörer", "headphones", "bluetooth", "anc", "audio", "technik"],
     readMinutes: 5,
     sections: [
@@ -161,7 +161,7 @@ export const guides: Guide[] = [
   {
     slug: "powerbank-kaufen", category: "Technik",
     title: "Powerbank kaufen: Kapazität und Ladeleistung verstehen",
-    excerpt: "mAh, Wh, USB-C und Schnellladen verständlich erklärt.",
+    excerpt: "Vergleiche Powerbanks nach Kapazität in Wh, Ausgangsleistung, Ladeprotokollen und Gewicht. USB-C allein garantiert kein schnelles Laden.",
     keywords: ["powerbank", "akku", "laden", "usb-c", "mah", "wh", "technik"],
     readMinutes: 4,
     sections: [

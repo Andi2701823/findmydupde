@@ -1,6 +1,7 @@
 import type {Metadata} from "next";
 import {merchantCatalogMetadata} from "@/lib/seo-catalog";
 import Link from "next/link";
+import {BreadcrumbJsonLd} from "@/components/seo-jsonld";
 import {notFound} from "next/navigation";
 import {samsungCatalogEnabled,samsungCategories,sanitizeSamsungQuery,searchSamsungProducts,validSamsungCategory} from "@/lib/samsung-catalog";
 import {SamsungProductCard} from "@/components/samsung-product-card";
@@ -44,10 +45,11 @@ export default async function SamsungCatalog({searchParams}:{searchParams:Promis
   const total=results?.total||0;
   const maxPage=Math.max(1,Math.ceil(total/24));
   return <main id="main" className="shell affiliate-page samsung-catalog-page">
+    <BreadcrumbJsonLd items={[{name:"Startseite",url:"https://findmydup.de/"},{name:"Produktkatalog",url:"https://findmydup.de/produkte/"},{name:"Samsung",url:"https://findmydup.de/samsung/"}]}/>
     <nav className="breadcrumb"><Link href="/">Startseite</Link><span>/</span><Link href="/produkte/">Produktkatalog</Link><span>/</span> Samsung</nav>
     <span className="eyebrow">AUS DEM AWIN-PRODUKTDATENFEED</span>
     <h1>Samsung Smartphones, Fernseher und Zubehör</h1>
-    <p className="affiliate-intro">Smartphones, Fernseher, Tablets, Monitore und Zubehör direkt aus dem Samsung Shop DE Feed. Nutze die Suche und die Hauptkategorien, ohne dich durch hunderte Unterseiten klicken zu müssen.</p>
+    <p className="affiliate-intro">Bei FindMyDup kannst du Produkte aus dem deutschen Samsung-Shop nach Modell, Kategorie und Artikelpreis filtern. Das Sortiment umfasst Galaxy-Smartphones, Fernseher, Tablets, Monitore und Zubehör. Wenn du ein bestimmtes Gerät suchst, vergleiche Speichervariante, Ausstattung und Versandkosten. Die angezeigten Europreise stammen aus einem Händlerfeed, nicht aus einer Live-Preisabfrage.</p>
     <aside className="affiliate-disclosure-box"><strong>Preise und Affiliate-Transparenz</strong>
       <p>Die angezeigten Artikel- und Versandpreise stammen aus einem importierten Awin-Feed und werden hier nicht live aktualisiert. Angebote und Verfügbarkeit können sich ändern. Die Shop-Links sind Werbelinks. FindMyDup verkauft die Produkte nicht selbst und garantiert weder gleiche Modelle noch Preisvorteile gegenüber anderen Angeboten.</p>
     </aside>

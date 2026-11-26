@@ -31,7 +31,7 @@ export default async function AnthbotPage({searchParams}:{searchParams:Promise<P
   </nav>
   <span className="eyebrow">ANTHBOT DE · AWIN PARTNER</span>
   <h1>ANTHBOT Mähroboter und Zubehör entdecken</h1>
-  <p className="affiliate-intro">Entdecke ANTHBOT-Mähroboter, Zubehör und passende Varianten im deutschen Händlerfeed. Nutze die Produktsuche und sortiere nach Artikelpreis, um Angebote einzuordnen. Die dargestellten Varianten können sich in Ausstattung und Lieferumfang unterscheiden.</p>
+  <p className="affiliate-intro">Bei FindMyDup findest du ANTHBOT Mähroboter und Zubehör aus dem deutschen Händlerfeed. Suche nach Modell oder Produktart und sortiere nach Artikelpreis. Für die Auswahl eines Mähroboters sind Grundstücksgröße, Navigation, Durchfahrtsbreite und Lieferumfang wichtig. Vergleiche die angezeigten Europreise nur unter Berücksichtigung der jeweiligen Variante und prüfe den aktuellen Endpreis im Shop.</p>
   <aside className="affiliate-disclosure-box"><strong>Werbung und Preistransparenz</strong>
    <p>Diese Seite enthält Awin-Affiliate-Links. Wir können bei einem Kauf eine Provision erhalten. Alle Produktdaten und Artikelpreise stammen aus einem bereitgestellten Händlerfeed vom 16.10.2026 und werden hier nicht live überprüft. Das Sortiment wurde um Versandschutz, Geschenkkarten, Gebühren, reine Serviceangebote und nicht verfügbare Einträge bereinigt. Prüfe aktuelle Preise, Verfügbarkeit, Versand und genaue Modellvariante im ANTHBOT-Shop.</p>
   </aside>

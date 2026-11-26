@@ -95,6 +95,7 @@ try {
   assert.equal(websiteLd.url,"https://findmydup.de/");
   const orgLd=JSON.parse((await page.locator('script[type="application/ld+json"]').allTextContents())[1]);
   assert.equal(orgLd["@type"],"Organization");
+  assert.equal(orgLd.email,"support@findmydup.de");
   assert.equal(orgLd.name,"FindMyDup");
   assert.equal((await fetch(`${origin}/robots.txt`).then(r=>r.text())).includes("Disallow: /"),false);
   const verification=await fetch(`${origin}/00fd05c1707e91d286f87c424f566383.html`);
@@ -392,6 +393,7 @@ try {
    "Footer contact link points to dedicated support mailbox");
   await page.goto(`${origin}/ueber-uns/`,{waitUntil:"domcontentloaded"});
   await page.getByRole("heading",{name:"Mehr wissen, bevor du kaufst."}).waitFor();
+  await page.getByRole("heading",{name:"Wie unsere Vergleiche entstehen"}).waitFor();
   await page.goto(`${origin}/partner/`,{waitUntil:"domcontentloaded"});
   await page.getByRole("heading",{name:"Produkte verständlich und transparent präsentieren."}).waitFor();
   await page.goto(`${origin}/impressum/`,{waitUntil:"domcontentloaded"});

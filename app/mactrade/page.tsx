@@ -1,6 +1,7 @@
 import type {Metadata} from "next";
 import {merchantCatalogMetadata} from "@/lib/seo-catalog";
 import Link from "next/link";
+import {BreadcrumbJsonLd} from "@/components/seo-jsonld";
 import {notFound} from "next/navigation";
 import {mactradeCatalogEnabled,searchMactradeProducts,mactradeCategories,validMactradeCategory,cleanMactradeSearch,mactradeSort,parseMactradeEuros} from "@/lib/mactrade-catalog";
 import {MactradeProductCard} from "@/components/mactrade-product-card";
@@ -38,10 +39,11 @@ export default async function MactradeCatalog({searchParams}:{searchParams:Promi
   const total=data?.total||0;
   const pages=Math.max(1,Math.ceil(total/24));
   return <main id="main" className="shell affiliate-page mactrade-catalog-page">
+    <BreadcrumbJsonLd items={[{name:"Startseite",url:"https://findmydup.de/"},{name:"Produktkatalog",url:"https://findmydup.de/produkte/"},{name:"MacTrade",url:"https://findmydup.de/mactrade/"}]}/>
     <nav className="breadcrumb" aria-label="Brotkrumennavigation"><Link href="/">Startseite</Link><span>/</span><Link href="/produkte/">Produktkatalog</Link><span>/</span>MacTrade</nav>
     <span className="eyebrow">MACTRADE DE · AWIN</span>
     <h1>MacTrade: MacBooks, iPhones und iPads</h1>
-    <p className="affiliate-intro">MacBooks, Desktop-Macs, iPhones, iPads, Apple Watch und Zubehör aus dem MacTrade-Händlerfeed. Suche nach Modell und filtere nach Preis oder Kategorie.</p>
+    <p className="affiliate-intro">Bei FindMyDup kannst du Apple-Geräte aus dem deutschen MacTrade-Händlerkatalog nach Modell, Kategorie und Artikelpreis filtern. Das Angebot umfasst MacBooks, Desktop-Macs, iPhones, iPads, Apple Watch und Zubehör. Vergleiche bei deiner Auswahl Chip, Speicher, Ausstattung und Zustand. Die angezeigten Europreise stammen aus einem Händlerfeed; aktuelle Gesamtkosten gelten im Shop.</p>
     <aside className="affiliate-disclosure-box"><strong>Preise und Werbelinks</strong>
       <p>Artikelpreise, Versand und Lieferstatus stammen aus einem importierten Awin-Feed. Sie werden nicht live geprüft. Preis, Lieferzeit und Verfügbarkeit bitte direkt bei MacTrade kontrollieren. Die Händlerlinks sind Werbelinks, für die FindMyDup eine Provision erhalten kann. MacTrade ist ein Händler und nicht der offizielle Apple Online Store.</p>
     </aside>

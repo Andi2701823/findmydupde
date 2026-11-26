@@ -1,6 +1,7 @@
 import type {Metadata} from "next";
 import {merchantCatalogMetadata} from "@/lib/seo-catalog";
 import Link from "next/link";
+import {BreadcrumbJsonLd} from "@/components/seo-jsonld";
 import {notFound} from "next/navigation";
 import {joybuyCatalogEnabled,searchJoybuyProducts,joybuyCategories,validJoybuyCategory,cleanJoybuySearch,joybuySort,euroCents} from "@/lib/joybuy-catalog";
 import {JoybuyProductCard} from "@/components/joybuy-product-card";
@@ -41,10 +42,11 @@ export default async function JoybuyCatalog({searchParams}:{searchParams:Promise
   const count=data?.total||0;
   const pages=Math.max(1,Math.ceil(count/24));
   return <main id="main" className="shell affiliate-page joybuy-catalog-page">
+    <BreadcrumbJsonLd items={[{name:"Startseite",url:"https://findmydup.de/"},{name:"Produktkatalog",url:"https://findmydup.de/produkte/"},{name:"JoyBuy",url:"https://findmydup.de/joybuy/"}]}/>
     <nav className="breadcrumb" aria-label="Brotkrumennavigation"><Link href="/">Startseite</Link><span>/</span><Link href="/produkte/">Produktkatalog</Link><span>/</span> JoyBuy</nav>
     <span className="eyebrow">JOYBUY DE · AWIN</span>
     <h1>JoyBuy Produkte für Technik, Haushalt und Beauty</h1>
-    <p className="affiliate-intro">Finde Produkte aus vielen Kategorien. Filtere nach Artikelname, Marke, Kategorie und Preis. Es werden nur ausgewählte, laut Feed lieferbare Angebote angezeigt.</p>
+    <p className="affiliate-intro">FindMyDup hilft dir, Produkte aus dem deutschen JoyBuy-Händlerkatalog zu finden. Suche nach Artikelname oder Marke und filtere Technik, Haushalt, Beauty und weitere Kategorien nach deinem Budget. Die angezeigten Europreise und Lieferinformationen stammen aus einem importierten Händlerfeed. Prüfe vor dem Kauf Modell, Versand und aktuelle Verfügbarkeit direkt bei JoyBuy.</p>
     <aside className="affiliate-disclosure-box"><strong>Preise &amp; Werbelinks</strong>
       <p>Preise, Lieferstatus und Versand stammen aus einem importierten Awin-Feed und werden hier nicht live überprüft. Verbindlich sind allein die aktuellen Angaben bei JoyBuy. Die Shop-Links sind Affiliate-Werbelinks; FindMyDup verkauft die Produkte nicht selbst.</p>
     </aside>

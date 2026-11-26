@@ -1,3 +1,5 @@
+import {supportEmail} from "@/lib/site-contact";
+
 type Crumb={name:string;url:string};
 
 function safeJson(value:unknown){
@@ -38,6 +40,8 @@ export function OrganizationJsonLd(){
     name:"FindMyDup",
     url:"https://findmydup.de/",
     logo:"https://findmydup.de/icon.svg",
+    email:supportEmail,
+    contactPoint:{"@type":"ContactPoint",email:supportEmail,contactType:"customer support",availableLanguage:"de"},
     description:"Deutschsprachige Produktsuche mit transparenten Händlerangeboten und Einkaufsratgebern.",
   };
   return <script type="application/ld+json" dangerouslySetInnerHTML={{__html:safeJson(data)}}/>;
