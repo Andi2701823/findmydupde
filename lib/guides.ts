@@ -15,11 +15,10 @@ export interface Guide {
   sections: { heading: string; paragraphs: string[]; tips?: string[] }[];
 }
 export const guideCategories: GuideCategory[] = ["Mode", "Beauty", "Wohnen", "Technik", "Garten", "Software"];
-// Dates refer to the first verified inclusion on the main branch, not deployment timestamps.
+// Only populate publication or modification dates when verified against public editorial history.
 export const guides: Guide[] = [
   {
     slug: "gesichtsserum-vergleichen", category: "Beauty",
-    datePublished: "2026-10-14",
     title: "Gesichtsserum vergleichen: Inhaltsstoffe statt Werbeversprechen",
     excerpt: "Woran du unterschiedliche Seren erkennst und welche Fragen vor dem Kauf sinnvoll sind.",
     keywords: ["serum", "gesichtspflege", "hautpflege", "skincare", "niacinamid", "hyaluron", "kosmetik"],
@@ -41,7 +40,6 @@ export const guides: Guide[] = [
   },
   {
     slug: "sonnenschutz-kaufen", category: "Beauty",
-    datePublished: "2026-10-14",
     title: "Sonnenschutz kaufen: Auf diese Angaben kommt es an",
     excerpt: "LSF, UVA-Schutz, Anwendung und Hautgefühl: So liest du Produktangaben besser.",
     keywords: ["sonnenschutz", "sonnencreme", "spf", "lsf", "uva", "beauty", "pflege"],
@@ -62,7 +60,6 @@ export const guides: Guide[] = [
   },
   {
     slug: "handtasche-kaufen", category: "Mode",
-    datePublished: "2026-10-14",
     title: "Handtaschen vergleichen: Form, Material und Alltagstauglichkeit",
     excerpt: "Ein ähnlicher Look ist schnell gefunden. Doch entscheidend sind Verarbeitung und Nutzung.",
     keywords: ["handtasche", "tasche", "bag", "leder", "schultertasche", "mode", "accessoires"],
@@ -83,7 +80,6 @@ export const guides: Guide[] = [
   },
   {
     slug: "sneaker-vergleichen", category: "Mode",
-    datePublished: "2026-10-14",
     title: "Sneaker vergleichen: Passform vor Preis",
     excerpt: "Größentabelle, Dämpfung, Obermaterial und Rückgabe entscheiden mit.",
     keywords: ["sneaker", "schuhe", "turnschuhe", "größe", "passform", "mode"],
@@ -104,7 +100,6 @@ export const guides: Guide[] = [
   },
   {
     slug: "tischleuchten-vergleichen", category: "Wohnen",
-    datePublished: "2026-10-14",
     title: "Tischleuchten vergleichen: Licht, Größe und Stromverbrauch",
     excerpt: "Warum nicht allein die Form entscheidet, sondern auch Leuchtmittel und Einsatzort.",
     keywords: ["lampe", "tischlampe", "licht", "leuchte", "led", "wohnen", "design"],
@@ -125,7 +120,6 @@ export const guides: Guide[] = [
   },
   {
     slug: "sessel-kaufen", category: "Wohnen",
-    datePublished: "2026-10-14",
     title: "Sessel kaufen: Komfort lässt sich nicht vom Bild ablesen",
     excerpt: "Sitzhöhe, Tiefe, Bezug und Lieferbedingungen vor dem Kauf sinnvoll prüfen.",
     keywords: ["sessel", "stuhl", "möbel", "wohnen", "polster", "loungesessel"],
@@ -146,7 +140,6 @@ export const guides: Guide[] = [
   },
   {
     slug: "kopfhoerer-vergleichen", category: "Technik",
-    datePublished: "2026-10-14",
     title: "Kopfhörer vergleichen: Klang, Komfort und Funktionen",
     excerpt: "Was bei Over-Ear-Kopfhörern jenseits des Datenblatts zählt.",
     keywords: ["kopfhörer", "headphones", "bluetooth", "anc", "audio", "technik"],
@@ -167,7 +160,6 @@ export const guides: Guide[] = [
   },
   {
     slug: "powerbank-kaufen", category: "Technik",
-    datePublished: "2026-10-14",
     title: "Powerbank kaufen: Kapazität und Ladeleistung verstehen",
     excerpt: "mAh, Wh, USB-C und Schnellladen verständlich erklärt.",
     keywords: ["powerbank", "akku", "laden", "usb-c", "mah", "wh", "technik"],

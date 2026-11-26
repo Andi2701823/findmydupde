@@ -121,11 +121,8 @@ try {
   assert.equal(sitemap.status,200);
   const sitemapContent=await sitemap.text();
   assert.match(sitemapContent,/gesichtsserum-vergleichen/);
-  assert.match(sitemapContent,/<lastmod>2026-10-14/);
-  assert.match(sitemapContent,/<lastmod>2026-11-25/);
   await page.goto(`${origin}/ratgeber/maehroboter-ohne-begrenzungskabel/`,{waitUntil:"domcontentloaded"});
   await page.getByRole("table",{name:"Kabellose Navigation im Vergleich"}).waitFor();
-  assert.equal(await page.locator("time[datetime=\"2026-11-25\"]").count(),1);
   await page.goto(`${origin}/`,{waitUntil:"domcontentloaded"});
   for(const slug of ["maehroboter-ohne-begrenzungskabel","ueberwachungskamera-ohne-abo","ueberwachungskamera-aussen-kaufen","samsung-galaxy-a-oder-s","oled-oder-qled","macbook-air-oder-pro","funnelcockpit-kosten-planen"]) assert.ok(sitemapContent.includes("https://findmydup.de/ratgeber/"+slug+"/"));
   for(const slug of ["maehroboter","ueberwachungskameras","smartphones","notebooks","fernseher","gesichtspflege"]){

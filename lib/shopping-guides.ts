@@ -4,7 +4,6 @@ export const newShoppingGuides:Guide[] = [
   {
     "slug": "maehroboter-ohne-begrenzungskabel",
     "comparison": {"caption":"Kabellose Navigation im Vergleich","headers":["Verfahren","Grundprinzip","Vor dem Kauf prüfen"],"rows":[["RTK","Satellitenpositionierung mit Korrekturdaten","Referenzstation oder Netzwerkdienst, Sicht zum Himmel"],["Kamera","Visuelle Erfassung der Umgebung","Beleuchtung, erkennbare Strukturen und Hindernisse"],["LiDAR","Entfernungsmessung mit Lichtimpulsen","Reichweite, Kartierung und Modellgrenzen"]]},
-    "datePublished": "2026-11-25",
     "category": "Garten",
     "title": "Mähroboter ohne Begrenzungskabel: RTK, Kamera oder LiDAR?",
     "excerpt": "Welche kabellose Navigation passt zu deinem Garten? Vergleiche RTK, Kameras und LiDAR anhand von Grundstück, Montage und Folgekosten.",
@@ -59,7 +58,6 @@ export const newShoppingGuides:Guide[] = [
   {
     "slug": "ueberwachungskamera-ohne-abo",
     "comparison": {"caption":"Speicheroptionen im Vergleich","headers":["Speicher","Aufzeichnung","Kosten und Voraussetzungen"],"rows":[["Speicherkarte","Lokal am Gerät","Kompatible Karte, Kapazität und Überschreiben"],["Netzwerkrekorder","Zentral für mehrere Kameras","Zusätzliche Hardware und geeignete Verbindung"],["Cloud","Außerhalb des Geräts","Tarif und laufende Kosten prüfen"]]},
-    "datePublished": "2026-11-25",
     "category": "Technik",
     "title": "Überwachungskamera ohne Abo: Was funktioniert ohne Cloud?",
     "excerpt": "Lokale Speicherung, Livebild und Benachrichtigungen: So prüfst du, welche Kamerafunktionen ohne kostenpflichtiges Abo verfügbar sind.",
@@ -114,7 +112,6 @@ export const newShoppingGuides:Guide[] = [
   {
     "slug": "ueberwachungskamera-aussen-kaufen",
     "comparison": {"caption":"Anschlussarten für Außenkameras","headers":["Variante","Versorgung","Vor dem Kauf prüfen"],"rows":[["WLAN","Häufig separates Stromkabel","Funkempfang und Stromanschluss"],["PoE","Strom und Daten über Netzwerkkabel","Kompatible Hardware und Verkabelung"],["Akku","Akku, gegebenenfalls Solarzubehör","Ladeplanung und Aufnahmefunktionen"]]},
-    "datePublished": "2026-11-25",
     "category": "Technik",
     "title": "Überwachungskamera für außen kaufen: WLAN, PoE oder Akku?",
     "excerpt": "So wählst du eine Außenkamera nach Stromversorgung, Netzwerk, Montageort und Aufnahmefunktionen aus.",
@@ -169,7 +166,6 @@ export const newShoppingGuides:Guide[] = [
   {
     "slug": "samsung-galaxy-a-oder-s",
     "comparison": {"caption":"Galaxy A und Galaxy S im Vergleich","headers":["Serie","Typische Ausrichtung","Entscheidungskriterien"],"rows":[["Galaxy A","Preisbewusste Alltagsnutzung","Kamera, Speicher und konkrete Updatezusage"],["Galaxy S","Höher ausgestattetes Segment","Mehrwert bei Spielen, Video oder intensiver Nutzung"]]},
-    "datePublished": "2026-11-25",
     "category": "Technik",
     "title": "Samsung Galaxy A oder S: Welche Serie lohnt sich für dich?",
     "excerpt": "Galaxy A oder Galaxy S? Vergleiche Leistung, Kamera, Updateversorgung und Gesamtkosten anhand deiner tatsächlichen Nutzung.",
@@ -223,7 +219,6 @@ export const newShoppingGuides:Guide[] = [
   {
     "slug": "oled-oder-qled",
     "comparison": {"caption":"OLED und QLED im Vergleich","headers":["Technik","Bilderzeugung","Vor dem Kauf prüfen"],"rows":[["OLED","Selbstleuchtende Bildpunkte","Schwarzdarstellung, Helligkeit und Hinweise zu statischen Inhalten"],["QLED","LCD mit Quantenpunkten und Hintergrundbeleuchtung","Kontrast, Helligkeit und Entspiegelung des konkreten Modells"]]},
-    "datePublished": "2026-11-25",
     "category": "Technik",
     "title": "OLED oder QLED: Welcher Fernseher passt zu deinem Wohnzimmer?",
     "excerpt": "OLED und QLED unterscheiden sich bei der Bilderzeugung. Entscheide anhand von Raumhelligkeit, Filmen, Sport und Gaming.",
@@ -277,7 +272,6 @@ export const newShoppingGuides:Guide[] = [
   {
     "slug": "macbook-air-oder-pro",
     "comparison": {"caption":"MacBook Air und Pro im Vergleich","headers":["Modellreihe","Typische Nutzung","Vor dem Kauf prüfen"],"rows":[["Air","Mobile Alltagsaufgaben","RAM, SSD, Gewicht und Monitorunterstützung"],["Pro","Anspruchsvollere Arbeitsabläufe je nach Ausstattung","Programmanforderungen, Anschlüsse und Mehrpreis"]]},
-    "datePublished": "2026-11-25",
     "category": "Technik",
     "title": "MacBook Air oder MacBook Pro: Welches lohnt sich für dich?",
     "excerpt": "MacBook Air oder Pro? So entscheidest du anhand von Arbeitsaufgaben, Mobilität, Speicher, Anschlüssen und Gesamtbudget.",
@@ -331,7 +325,6 @@ export const newShoppingGuides:Guide[] = [
   {
     "slug": "funnelcockpit-kosten-planen",
     "comparison": {"caption":"Kostenvergleich mit fiktiven Beispielbeträgen","headers":["Szenario","Monatliche Kosten"],"rows":[["Drei bisherige Dienste","65 Euro"],["Softwarepaket ohne Zusatzdienst","50 Euro"],["Softwarepaket mit Zusatzdienst","70 Euro"]]},
-    "datePublished": "2026-11-25",
     "category": "Software",
     "title": "FunnelCockpit Kosten: So planst du dein Softwarebudget",
     "excerpt": "Welche laufenden Kosten entstehen bei FunnelCockpit? Prüfe Tarifgrenzen, Zusatzdienste, Abrechnung und Kündigung vor dem Abschluss.",
