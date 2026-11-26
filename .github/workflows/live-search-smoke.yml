@@ -1,0 +1,30 @@
+name: Live search smoke
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/live-search-smoke.mjs'
+      - '.github/workflows/live-search-smoke.yml'
+permissions:
+  contents: read
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright-core install chromium
+      - run: node scripts/live-search-smoke.mjs
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: live-search-evidence
+          path: |
+            live-search-report.json
+            live-headphone-search.png
+          if-no-files-found: warn

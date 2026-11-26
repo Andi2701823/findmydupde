@@ -153,3 +153,9 @@ test("Shared product taxonomy excludes accessory listings across device families
  assert.equal(relevantTitle("Sony Kopfhörer","Kopfhörer","Technik"),true);
  assert.equal(relevantTitle("Leder Handtasche","Handtasche"),true);
 });
+
+test("Headphone bundles with included replacement pads and charging case remain discoverable",()=>{
+ assert.equal(relevantTitle("Bluetooth Kopfhörer mit Ladecase","Kopfhörer"),true);
+ assert.equal(relevantTitle("Kopfhörer inkl Ersatzpolster","Kopfhörer"),true);
+ assert.equal(relevantTitle("Kopfhörer Ohrpolster mit Etui","Kopfhörer"),false);
+});
