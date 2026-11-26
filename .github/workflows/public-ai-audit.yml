@@ -1,0 +1,23 @@
+name: Public AI search audit
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/public-ai-audit.py'
+      - '.github/workflows/public-ai-audit.yml'
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - name: Validate audit script
+        run: python3 -m py_compile scripts/public-ai-audit.py
+      - name: Check public website (read only)
+        run: python3 scripts/public-ai-audit.py > ai-search-audit.json
+      - uses: actions/upload-artifact@v6
+        with:
+          name: public-ai-search-audit
+          path: ai-search-audit.json
