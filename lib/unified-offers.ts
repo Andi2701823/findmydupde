@@ -108,7 +108,9 @@ function headphoneTitle(title:string):boolean{
  // Avoid treating "Kopfhörer Kabelgebunden" or "Kopfhörer mit Kabel" as accessories.
  const after=p.slice(noun+1);
  if(after.length&&audioAccessory.test(after[0]))return false;
- if(after.some(w=>/^(?:ersatzkabel|ohrpolster|ersatzpolster|ladecase|ladeetui|kopfhorerstander|schutzhulle|reparaturset)$/.test(w)))return false;
+ const bundleIndex=after.findIndex(w=>["mit","inkl","inklusive","with","bundle"].includes(w));
+ const core=bundleIndex<0?after:after.slice(0,bundleIndex);
+ if(core.some(w=>/^(?:ersatzkabel|ohrpolster|ersatzpolster|ladecase|ladeetui|kopfhorerstander|schutzhulle|reparaturset)$/.test(w)))return false;
  return true;
 }
 export function relevantTitle(title:string,query:string,category?:string):boolean{

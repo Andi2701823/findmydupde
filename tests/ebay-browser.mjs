@@ -13,6 +13,9 @@ const server = spawn(process.execPath,
       DATABASE_ACCESS_ENABLED: "false", CATALOG_SEARCH_ENABLED: "false",
       AWIN_IMPORT_ENABLED: "false", DB_MIGRATIONS_ENABLED: "false",
       IMAGE_SEARCH_ENABLED: "false",
+      JOYBUY_CATALOG_ENABLED: "true",
+      SUPABASE_URL: "https://fixture.supabase.co",
+      SUPABASE_PUBLISHABLE_KEY: "sb_publishable_fixturetestonly",
     },
   });
 let browser;
@@ -72,6 +75,46 @@ try {
   assert.equal(await page.locator("[data-ebay-offer]").count(), 4);
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
   assert.equal(await page.locator('a[rel*="sponsored"][href*="awin1.com"]').count() >= 0, true);
+  // Combined search regression reproduces the user-reported JoyBuy/eBay result.
+  await page.unroute("**/api/ebay/search/**");
+  await page.route("**/api/ebay/search/**", route => {
+    const q = new URL(route.request().url()).searchParams.get("q");
+    return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({source:"ebay",marketplace:"EBAY_DE",items:q==="Kopfhörer"?[
+      makeOffer("201","In Ear Kopfhörer Kabelgebunden 3,5mm Klinke Headset Mikrofon",3.89),
+      makeOffer("202","Kopfhörer Bluetooth mit Ladekabel",29.99)
+    ]:[]})});
+  });
+  const joybuy = (id, name, price, category="Technik") => ({
+    external_id:id,product_name:name,price_cents:price,shipping_cents:399,category,
+    image_url:"https://images1.joy-sourcing.com/test.png",
+    affiliate_url:"https://www.awin1.com/cread.php?awinmid=123926&awinaffid=3123004"
+  });
+  const audioCable=joybuy("301","Baseus Yiven Audiokabel 3,5 mm Klinkenstecker auf Klinke 1m für Hi-Fi Kopfhörer und Boxen, silber/schwarz",198);
+  await page.route("**/api/joybuy/search/**", route => {
+    const q=new URL(route.request().url()).searchParams.get("q");
+    return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({products:q==="Kopfhörer"?[
+      audioCable,joybuy("302","Linghushaoxia USB-A Ladegerät für Elektronik Zubehör ideal für Bluetooth-Kopfhörer",402),
+      joybuy("303","Sony Kopfhörer Over Ear",1999)
+    ]:[audioCable]})});
+  });
+  await page.route("**/api/imou/search/**",route=>route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({products:[]})}));
+  await page.route("https://images1.joy-sourcing.com/**",route=>route.abort());
+  await page.goto(origin+"/suche/?q="+encodeURIComponent("Kopfhörer"),{waitUntil:"domcontentloaded"});
+  await page.getByText("3 angezeigte Treffer",{exact:true}).waitFor();
+  assert.equal(await page.getByLabel("Sortieren nach").inputValue(),"relevance");
+  assert.equal(await page.locator(".unified-offer-best").count(),0);
+  assert.equal(await page.locator(".unified-offer").count(),3);
+  assert.equal(await page.locator(".unified-offer").filter({hasText:"Baseus Yiven Audiokabel"}).count(),0);
+  assert.equal(await page.locator(".unified-offer").filter({hasText:"USB-A Ladegerät"}).count(),0);
+  await page.getByLabel("Sortieren nach").selectOption("article");
+  assert.equal(await page.locator(".unified-offer").first().getAttribute("data-article-cents"),"389");
+  await page.locator(".unified-offer-best").getByText("Niedrigster Artikelpreis der geladenen Treffer").waitFor();
+  await page.getByLabel("Sortieren nach").selectOption("total");
+  assert.equal(await page.locator(".unified-offer").first().getAttribute("data-source"),"joybuy","Known shipping comes before unknown shipping");
+  await page.goto(origin+"/suche/?q="+encodeURIComponent("Kopfhörer Audiokabel"),{waitUntil:"domcontentloaded"});
+  await page.getByText("1 angezeigte Treffer",{exact:true}).waitFor();
+  assert.equal(await page.locator(".unified-offer").filter({hasText:"Baseus Yiven Audiokabel"}).count(),1);
+  console.log("PASS: combined headphone search, accessory exclusion, explicit accessory intent and both price sorts.");
   console.log("PASS: eBay reference selection, cheaper-price arithmetic, condition filter, manual price, invalid input, mobile layout, and original search results.");
 } finally {
   await browser?.close();
