@@ -10,6 +10,10 @@ export default function AboutPage(){return <main id="main" className="shell lega
   <p>Unsere Einkaufsratgeber erklären Unterschiede bei Materialien, Größen, Inhaltsstoffen, Funktionen und Kosten. Sie unterstützen dich mit nachvollziehbaren Fragen und Checklisten – damit du Angebote eigenständig einordnen kannst.</p>
   <h2>Unser Maßstab</h2>
   <p>Ähnliche Optik heißt nicht gleiche Qualität. Deshalb stellen wir Produkte nicht ohne überprüfbare Informationen als identisch dar. Wir erfinden weder Händlerpreise noch Bewertungen oder Produkttests.</p>
+  <h2>Wie unsere Vergleiche entstehen</h2>
+  <p>Wir unterscheiden redaktionelle Kaufhilfen von Händlerdaten. Händlerfeeds liefern Produktbezeichnungen, Artikelpreise und je nach Quelle weitere Angaben. Ein Feedpreis ist keine Live-Preisbestätigung. Beim Vergleich zählen auch Modell, Zustand, Versandkosten und Lieferumfang. FindMyDup wickelt keine Bestellungen ab.</p>
+  <p>Unsere Ratgeber erklären Kaufkriterien und kennzeichnen Herstellerinformationen als solche. Sie ersetzen keine eigenen Produkttests. Wenn dir eine falsche Angabe auffällt, melde uns bitte die betroffene Seite und die passende Quelle über unsere Kontaktadresse.</p>
+  <p><Link href="/produkte/">Händlerkataloge ansehen</Link> · <Link href="/ratgeber/">Einkaufsratgeber lesen</Link> · <Link href="/impressum/">Anbieterinformationen</Link></p>
   <h2>So finanzieren wir uns</h2>
   <p>FindMyDup zeigt ausgewählte Angebote freigegebener Händler mit entsprechend gekennzeichneten Affiliate-Links. Kommt über einen solchen Link ein Kauf zustande, können wir eine Provision erhalten. Die redaktionellen Ratgeber sind unabhängig davon lesbar.</p>
   <h2>Kontakt</h2>

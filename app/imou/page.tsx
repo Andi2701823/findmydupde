@@ -38,7 +38,7 @@ export default async function ImouPage({searchParams}:{searchParams:Promise<Para
   <nav className="breadcrumb" aria-label="Brotkrumennavigation"><Link href="/">Startseite</Link><span>/</span><Link href="/produkte/">Produktkatalog</Link><span>/</span> IMOU</nav>
   <span className="eyebrow">IMOU DE · AWIN PARTNER</span>
   <h1>IMOU Überwachungskameras und Smart Home entdecken</h1>
-  <p className="affiliate-intro">Entdecke {imouModels.length} Produktgruppen mit {imouVariantCount} Varianten: Überwachungskameras, Video-Türklingeln, Kamerasets und Zubehör. Die Produkte sind nach Modellen gebündelt, statt jede Speicherkarten- oder Auflösungsvariante auf einer eigenen SEO-Seite aufzuführen.</p>
+  <p className="affiliate-intro">Bei FindMyDup kannst du IMOU Überwachungskameras, Video-Türklingeln, Kamerasets und Zubehör aus dem deutschen Händlerfeed nach Modell und Artikelpreis vergleichen. Der Katalog bündelt {imouModels.length} Produktgruppen mit {imouVariantCount} Varianten. Prüfe vor dem Kauf Stromversorgung, Speicheroptionen, Lieferumfang und mögliche Abokosten. Die angezeigten Preise sind historische Feedpreise.</p>
   <aside className="affiliate-disclosure-box"><strong>Preise und Werbelinks</strong>
    <p>Alle Beträge und Produktinformationen stammen aus einem bereitgestellten Awin-Feed vom 16.10.2026. Sie sind Momentaufnahmen und werden nicht live abgefragt. Verfügbarkeit, Kamera-Ausführung, Lieferumfang und endgültige Preise bitte beim IMOU-Shop prüfen. Bei einem Kauf über unsere gekennzeichneten Werbelinks können wir eine Provision erhalten. Die Herstellerangaben sind keine unabhängigen Produkttests.</p>
   </aside>
