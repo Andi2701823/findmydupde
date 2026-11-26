@@ -89,10 +89,32 @@ function macbookFamily(title:string):string|null{
   .match(/\bmacbook\s+(air|pro|neo)\b/);
  return match?match[1]:null;
 }
+// Match audio product nouns, not mere compatibility mentions in accessory titles.
+const headphoneNoun=/^(?:kopfhorer(?:n)?|headphones?|headsets?|ohrhorer(?:n)?|earbuds?|earphones?)$/;
+const audioAccessory=/^(?:audio(?:kabel|adapter)|auxkabel|klinken(?:kabel|stecker|adapter)|ladekabel|ladegerat(?:e)?|ladegerate|ladestation|ladecase|ladeetui|netzteil|netzadapter|adapter|kabel|ersatzkabel|verlangerungskabel|ohrpolster|ersatzpolster|ohrmuscheln|ohrstopsel|ersatzteile|reparaturset|halterung|kopfhorerstander|stander|aufbewahrungstasche|tasche|etui|case|cover|schutzhulle|zubehor)$/;
+export function headphoneIntent(query:string):boolean{
+ const p=words(query);
+ return p.some(w=>headphoneNoun.test(w))&&!p.some(w=>audioAccessory.test(w));
+}
+function headphoneTitle(title:string):boolean{
+ const p=words(title);
+ const noun=p.findIndex(w=>headphoneNoun.test(w));
+ if(noun<0)return false;
+ // "Kabel für Kopfhörer", "Ladegerät ... ideal für Bluetooth-Kopfhörer".
+ const before=p.slice(0,noun);
+ if(before.some(w=>audioAccessory.test(w)))return false;
+ if(before.some(w=>["fur","fuer","for","kompatibel","compatible","passend"].includes(w)))return false;
+ // Avoid treating "Kopfhörer Kabelgebunden" or "Kopfhörer mit Kabel" as accessories.
+ const after=p.slice(noun+1);
+ if(after.length&&audioAccessory.test(after[0]))return false;
+ if(after.some(w=>/^(?:ersatzkabel|ohrpolster|ersatzpolster|ladecase|ladeetui|kopfhorerstander|schutzhulle|reparaturset)$/.test(w)))return false;
+ return true;
+}
 export function relevantTitle(title:string,query:string):boolean{
  const parts=words(query);
  const titleParts=words(title);
  if(parts.length===0||!parts.every(p=>titleParts.some(w=>w===p||w.startsWith(p))))return false;
+ if(headphoneIntent(query)&&!headphoneTitle(title))return false;
  if(macbookComputerIntent(query)){
    if(!macbookComputerTitle(title))return false;
    const requested=macbookFamilies.find(f=>parts.includes(f));
@@ -164,12 +186,15 @@ export function ebayOffers(raw:unknown):SearchOffer[]{
       priceUpdated:typeof p.priceObservedAt==="string"?p.priceObservedAt:null}];
   });
 }
-export type OfferSort="article"|"total";
+export type OfferSort="relevance"|"article"|"total";
 export function knownTotal(offer:SearchOffer):number|null{
  return offer.shippingCents===null?null:offer.articleCents+offer.shippingCents;
 }
-export function sortOffers(offers:readonly SearchOffer[],sort:OfferSort):SearchOffer[]{
+export function sortOffers(offers:readonly SearchOffer[],sort:OfferSort,query=""):SearchOffer[]{
+ const q=words(query).join(" ");
+ const score=(title:string)=>{const t=words(title).join(" ");return q&&t===q?3:q&&t.startsWith(q+" ")?2:q&&t.includes(q)?1:0;};
  return [...offers].sort((a,b)=>{
+  if(sort==="relevance"){const difference=score(b.title)-score(a.title);if(difference)return difference;}
   if(sort==="total"){
    const at=knownTotal(a),bt=knownTotal(b);
    if(at===null&&bt!==null)return 1;
