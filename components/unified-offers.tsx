@@ -50,7 +50,7 @@ export function UnifiedOffers({query,beauty,anthbot,enabled}:{query:string;beaut
   const key=query+":"+sources.map(s=>String(enabledSources[s])).join(":");
   const [state,setState]=useState<Current|null>(null);
   const [visible,setVisible]=useState(5);
-  const [sort,setSort]=useState<OfferSort>("article");
+  const [sort,setSort]=useState<OfferSort>("relevance");
   const [selectedIds,setSelectedIds]=useState<string[]>([]);
   const start=useMemo(()=>[...beautyOffers(beauty),...anthbotOffers(anthbot)],[beauty,anthbot]);
   useEffect(()=>{
@@ -76,7 +76,7 @@ export function UnifiedOffers({query,beauty,anthbot,enabled}:{query:string;beaut
     return ()=>controller.abort();
   },[key,query,start,enabledSources]);
   const active=state?.key===key?state:null;
-  const offers=sortOffers(rankedOffers(active?.offers??start,query),sort);
+  const offers=sortOffers(rankedOffers(active?.offers??start,query),sort,query);
   const selected=offers.filter(o=>selectedIds.includes(o.id));
   function toggle(id:string){setSelectedIds(ids=>ids.includes(id)?ids.filter(x=>x!==id):ids.length<3?[...ids,id]:ids);}
   const pending=active?.pending??sources.filter(source=>enabledSources[source]).length;
@@ -89,12 +89,12 @@ export function UnifiedOffers({query,beauty,anthbot,enabled}:{query:string;beaut
       <span className="unified-results-count" role="status">{offers.length} angezeigte Treffer{pending?" · weitere werden geladen":""}</span>
     </div>
     {offers.length>0?<>
-      <div className="offer-compare-controls"><label>Sortieren nach <select value={sort} onChange={e=>{setSort(e.target.value==="total"?"total":"article");setVisible(5);}}><option value="article">Artikelpreis (aufsteigend)</option><option value="total">Artikelpreis + bekannter Versand</option></select></label><span>{selected.length} von 3 Vergleichsplätzen belegt</span></div>
+      <div className="offer-compare-controls"><label>Sortieren nach <select value={sort} onChange={e=>{setSort(e.target.value==="total"?"total":e.target.value==="article"?"article":"relevance");setVisible(5);}}><option value="relevance">Relevanz</option><option value="article">Artikelpreis (aufsteigend)</option><option value="total">Artikelpreis + bekannter Versand</option></select></label><span>{selected.length} von 3 Vergleichsplätzen belegt</span></div>
       {sort==="total"&&<p className="unified-results-note">Treffer ohne bekannten Versand stehen am Ende. Auch angegebene Versandkosten können sich ändern.</p>}
       {selected.length>0&&<section className="offer-comparison" aria-label="Ausgewählte Angebote vergleichen"><h3>Deine Vergleichsauswahl</h3><p>Die ausgewählten Treffer sind nicht automatisch gleichwertig. Vergleiche die vollständige Modellbezeichnung und den Zustand.</p>
         <div className="offer-comparison-grid">{selected.map(o=><article key={o.id}><h4>{o.title}</h4><dl><dt>Händler</dt><dd>{o.merchant}</dd><dt>Zustand</dt><dd>{o.condition||"Nicht angegeben"}</dd><dt>Artikelpreis</dt><dd>{euro(o.articleCents)}</dd><dt>Versand</dt><dd>{o.shippingCents===null?"Unbekannt":euro(o.shippingCents)}</dd><dt>Preis inkl. genanntem Versand</dt><dd>{knownTotal(o)===null?"Nicht berechenbar":euro(knownTotal(o)!)}</dd><dt>Datenstand</dt><dd>{priceContext(o)}</dd></dl><button type="button" className="button secondary" onClick={()=>toggle(o.id)}>Aus Vergleich entfernen</button></article>)}</div>
       </section>}
-      <div className="unified-offer-list">{offers.slice(0,visible).map((offer,i)=><OfferRow key={offer.id} offer={offer} highlight={i===0&&pending===0?(sort==="article"?"Niedrigster Artikelpreis der geladenen Treffer":knownTotal(offer)!==null?"Niedrigster Preis inkl. bekanntem Versand":null):null} selected={selectedIds.includes(offer.id)} selectionFull={selectedIds.length>=3} onToggle={()=>toggle(offer.id)}/>)}</div>
+      <div className="unified-offer-list">{offers.slice(0,visible).map((offer,i)=><OfferRow key={offer.id} offer={offer} highlight={i===0&&pending===0&&sort!=="relevance"?(sort==="article"?"Niedrigster Artikelpreis der geladenen Treffer":knownTotal(offer)!==null?"Niedrigster Preis inkl. bekanntem Versand":null):null} selected={selectedIds.includes(offer.id)} selectionFull={selectedIds.length>=3} onToggle={()=>toggle(offer.id)}/>)}</div>
       {visible<offers.length&&<button type="button" className="button secondary unified-more" onClick={()=>setVisible(n=>n+10)}>
         Weitere passende Angebote anzeigen ({offers.length-visible})
       </button>}

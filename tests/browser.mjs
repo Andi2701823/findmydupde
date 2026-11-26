@@ -183,6 +183,7 @@ try {
   assert.equal(await page.locator(".guide-card").count(),1);
   await page.locator(".unified-offer").first().waitFor();
   assert.equal(await page.locator(".search-source-filters").count(),0,"All-merchant results should not start with vendor tabs");
+  await page.getByLabel("Sortieren nach").selectOption("article");
   const sortedPrices=await page.locator(".unified-offer").evaluateAll(rows=>rows.map(r=>Number(r.getAttribute("data-article-cents"))));
   assert.ok(sortedPrices.every((n,i)=>i===0||sortedPrices[i-1]<=n),"Offers are ordered by increasing article price");
   assert.ok(await page.locator(".unified-offer").first().getByText("bdr-beauty").count()>0,"Merchant is shown inside the offer");

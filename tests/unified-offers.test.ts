@@ -135,3 +135,13 @@ test("eBay null and blank shipping values are not free shipping",()=>{
  for(const value of [null,""," "])assert.equal(ebayOffers({source:"ebay",items:[{...item,shippingCost:{currency:"EUR",value}}]})[0].shippingCents,null);
  assert.equal(ebayOffers({source:"ebay",items:[{...item,shippingCost:{currency:"EUR",value:"0"}}]})[0].shippingCents,0);
 });
+
+ test("headphone searches exclude accessory mentions across merchants but retain explicit accessory intent",()=>{
+ const bad=["Baseus Yiven Audiokabel 3,5 mm Klinkenstecker auf Klinke 1m für Hi-Fi Kopfhörer und Boxen, silber/schwarz","Linghushaoxia USB-A Ladegerät für Elektronik Zubehör ideal für Bluetooth-Kopfhörer","Kopfhörer Ohrpolster Ersatz","Kopfhörer Kabel","Kopfhörer Ständer"];
+ for(const t of bad)assert.equal(relevantTitle(t,"Kopfhörer"),false,t);
+ const good=["In Ear Kopfhörer Kabelgebunden 3,5mm Klinke Headset Mikrofon Bass Handy PC MP3","Bluetooth-Kopfhörer mit Ladekabel","Sony Kopfhörer mit Kabel","Kopfhörer Noise Cancelling"];
+ for(const t of good)assert.equal(relevantTitle(t,"Kopfhörer"),true,t);
+ assert.equal(relevantTitle(bad[0],"Kopfhörer Audiokabel"),true);
+ assert.deepEqual(rankedOffers([{...offer("joybuy:1",bad[0],198),source:"joybuy"},{...offer("ebay:2",good[0],389),source:"ebay"},{...offer("joybuy:3",bad[1],402),source:"joybuy"}],"Kopfhörer").map(x=>x.id),["ebay:2"]);
+ assert.deepEqual(sortOffers([offer("a","Sony Kopfhörer",100),offer("b","Kopfhörer Bluetooth",200)],"relevance","Kopfhörer").map(x=>x.id),["b","a"]);
+ });
