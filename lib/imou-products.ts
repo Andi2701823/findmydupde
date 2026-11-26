@@ -1,3 +1,4 @@
+import {matchesProductIntent} from "./product-classification.ts";
 /** IMOU DE Awin Product Feed 115907, advertiser 125816, publisher 3123004.
  * Uploaded 16 October 2026: 624 raw rows; excluded 49 stock-status out of stock
  * and 16 IMOU Protect service licenses; 559 physical product variants, 69 model groups.
@@ -98,13 +99,13 @@ export function findImouModels(query="",category=""):ImouModel[]{
  return imouModels.filter(m=>(!category||m.category===category)&&
   words.every(w=>normalize(m.name+" "+m.category+" "+m.variants.map(v=>v.name).join(" ")).includes(w)));
 }
-export function imouOfferRows(query:string,limit=24):Array<{aw_product_id:string;product_name:string;price_cents:number;image_url:string;affiliate_url:string}>{
+export function imouOfferRows(query:string,limit=24):Array<{aw_product_id:string;product_name:string;price_cents:number;image_url:string;affiliate_url:string;category:ImouCategory}>{
  const words=normalize(query).split(/\s+/).filter(Boolean);
  if(!words.length)return [];
  const matches:ReturnType<typeof imouOfferRows>=[];
  for(const model of imouModels)for(const v of model.variants){
-  if(words.every(w=>normalize(v.name).includes(w))){
-   matches.push({aw_product_id:v.id,product_name:v.name,price_cents:v.priceCents,image_url:v.image,affiliate_url:v.affiliateUrl});
+  if(words.every(w=>normalize(v.name).includes(w))&&matchesProductIntent(v.name,query,model.category)){
+   matches.push({aw_product_id:v.id,product_name:v.name,price_cents:v.priceCents,image_url:v.image,affiliate_url:v.affiliateUrl,category:model.category});
   }
  }
  return matches.sort((a,b)=>a.price_cents-b.price_cents||a.product_name.localeCompare(b.product_name,"de")).slice(0,Math.max(1,Math.min(24,limit)));

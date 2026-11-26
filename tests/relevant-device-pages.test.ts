@@ -53,3 +53,9 @@ test("Headphone search scans past the first page of inexpensive accessories",asy
  const result=await relevantMacbookPage("Kopfhörer",async page=>({products:rows.slice((page-1)*24,page*24),total:rows.length,page}));
  assert.deepEqual(result.products,[rows[28]]);
 });
+
+test("Shared taxonomy filters supplier accessory category before pagination limit",async()=>{
+ const rows=[...Array.from({length:24},(_,i)=>({product_name:"Fernseher "+i,price_cents:100+i,category:"Zubehör"})),{product_name:"Fernseher 55 Zoll",price_cents:30000,category:"Fernseher"}];
+ const result=await relevantMacbookPage("Fernseher",async page=>({products:rows.slice((page-1)*24,page*24),total:rows.length,page}));
+ assert.deepEqual(result.products,[rows[24]]);
+});

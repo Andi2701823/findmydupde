@@ -145,3 +145,11 @@ test("eBay null and blank shipping values are not free shipping",()=>{
  assert.deepEqual(rankedOffers([{...offer("joybuy:1",bad[0],198),source:"joybuy"},{...offer("ebay:2",good[0],389),source:"ebay"},{...offer("joybuy:3",bad[1],402),source:"joybuy"}],"Kopfhörer").map(x=>x.id),["ebay:2"]);
  assert.deepEqual(sortOffers([offer("a","Sony Kopfhörer",100),offer("b","Kopfhörer Bluetooth",200)],"relevance","Kopfhörer").map(x=>x.id),["b","a"]);
  });
+
+test("Shared product taxonomy excludes accessory listings across device families",()=>{
+ const pairs=[["Fernseher","Wandhalterung für Fernseher","Samsung Fernseher 55 Zoll mit Fernbedienung"],["Monitor","Monitor Halterung","Monitor 27 Zoll mit Kabel"],["Staubsauger","Filter für Staubsauger","Staubsauger mit Filter"],["Mähroboter","Ersatzklingen für Mähroboter","Mähroboter mit Ladestation"],["Überwachungskamera","Netzteil für Überwachungskamera","Überwachungskamera mit Netzteil"],["Smartphone","Schutzhülle für Smartphone","Smartphone 128 GB"]];
+ for(const [q,bad,good] of pairs){assert.equal(relevantTitle(bad,q),false,bad);assert.equal(relevantTitle(good,q),true,good);assert.equal(relevantTitle(good,q,"Zubehör"),false,q);}
+ assert.equal(relevantTitle("Filter für Staubsauger","Staubsauger Filter"),true);
+ assert.equal(relevantTitle("Sony Kopfhörer","Kopfhörer","Technik"),true);
+ assert.equal(relevantTitle("Leder Handtasche","Handtasche"),true);
+});
