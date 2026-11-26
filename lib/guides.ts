@@ -7,11 +7,15 @@ export interface Guide {
   excerpt: string;
   keywords: string[];
   readMinutes: number;
+  datePublished?: string;
+  dateModified?: string;
+  comparison?: { caption: string; headers: string[]; rows: string[][] };
   sources?: {name:string;url:string}[];
   links?: {name:string;href:string}[];
   sections: { heading: string; paragraphs: string[]; tips?: string[] }[];
 }
 export const guideCategories: GuideCategory[] = ["Mode", "Beauty", "Wohnen", "Technik", "Garten", "Software"];
+// Only populate publication or modification dates when verified against public editorial history.
 export const guides: Guide[] = [
   {
     slug: "gesichtsserum-vergleichen", category: "Beauty",

@@ -27,8 +27,8 @@ export default function Home() {
     <section className="hero shell search-first-hero">
       <div className="hero-copy">
         <span className="eyebrow"><span className="little-star">✳</span> PRODUKTE SUCHEN. BESSER ENTSCHEIDEN.</span>
-        <h1>Finde Produkte.<br /><span className="underlined">Vergleiche Preise.</span></h1>
-        <p className="hero-description">Gib den Namen deines Wunschprodukts ein. Vergleiche passende Händlerangebote nach Artikelpreis und entdecke Alternativen. Modell, Zustand und Versandkosten solltest du vor dem Kauf zusätzlich prüfen.</p>
+        <h1>Produkte finden.<br /><span className="underlined">Händlerpreise vergleichen.</span></h1>
+        <p className="hero-description">FindMyDup ist eine deutschsprachige Produktsuche für Technik, Beauty, Smart Home, Garten und weitere Produktbereiche. Entdecke Händlerangebote, vergleiche verfügbare Artikelpreise und nutze unsere Einkaufsratgeber. Die Suche funktioniert ohne Anmeldung. Prüfe Modell, Zustand und Versandkosten vor dem Kauf.</p>
         <SearchBox />
       </div>
       <div className="hero-visual" aria-label="Stilisierte Illustrationen von zwei Handtaschen">

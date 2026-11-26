@@ -43,9 +43,9 @@ export function OrganizationJsonLd(){
   return <script type="application/ld+json" dangerouslySetInnerHTML={{__html:safeJson(data)}}/>;
 }
 
-/** Dates are deliberately omitted until the original publish dates can be verified. */
-export function ArticleJsonLd({headline,description,category,keywords,url}:{
-  headline:string;description:string;category:string;keywords:string[];url:string;
+/** Include only dates supported by editorial history. */
+export function ArticleJsonLd({headline,description,category,keywords,url,datePublished,dateModified}:{
+  headline:string;description:string;category:string;keywords:string[];url:string;datePublished?:string;dateModified?:string;
 }){
   const data={
     "@context":"https://schema.org",
@@ -56,6 +56,8 @@ export function ArticleJsonLd({headline,description,category,keywords,url}:{
     inLanguage:"de-DE",
     mainEntityOfPage:{"@type":"WebPage","@id":url},
     articleSection:category,
+    ...(datePublished ? {datePublished} : {}),
+    ...(dateModified ? {dateModified} : {}),
     keywords,
     author:{"@type":"Organization","@id":"https://findmydup.de/#organization","name":"FindMyDup"},
     publisher:{"@type":"Organization","@id":"https://findmydup.de/#organization","name":"FindMyDup"},

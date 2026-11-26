@@ -2517,3 +2517,9 @@ select {
 .consent-actions button:last-child{background:#276949;color:white}
 .consent-settings-link{position:fixed;bottom:10px;left:12px;z-index:800;border:1px solid #bfc9c6;border-radius:7px;background:white;color:#24563e;padding:6px 9px;font-size:11px;cursor:pointer;box-shadow:0 1px 6px #0002}
 @media(max-width:520px){.consent-card{padding:18px}.consent-actions{grid-template-columns:1fr}.consent-card strong{font-size:17px}}
+
+.guide-table-wrap {overflow-x:auto;margin:24px 0;}
+.guide-table {width:100%;border-collapse:collapse;font-size:14px;line-height:1.6;}
+.guide-table caption {text-align:left;font-weight:700;padding:0 0 12px;}
+.guide-table th,.guide-table td {border:1px solid #aab0b8;padding:10px;text-align:left;vertical-align:top;}
+.guide-table-wrap p {margin-top:12px;font-size:14px;}
