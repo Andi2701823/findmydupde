@@ -1,9 +1,10 @@
+import {matchesProductIntent} from "./product-classification.ts";
 import type {AnthbotProduct} from "./anthbot-products";
 export type OfferSource="beauty"|"joybuy"|"samsung"|"mactrade"|"ebay"|"anthbot"|"imou";
 export type SearchOffer={
   id:string;source:OfferSource;merchant:string;title:string;image:string;href:string;
   articleCents:number;shippingCents:number|null;condition:string|null;
-  priceUpdated:string|null;
+  priceUpdated:string|null;category?:string;
 };
 type Entry=Record<string,unknown>;
 export type BeautyEntry={id:string;name:string;image:string;priceCents:number;affiliateUrl:string;merchant:string};
@@ -110,7 +111,8 @@ function headphoneTitle(title:string):boolean{
  if(after.some(w=>/^(?:ersatzkabel|ohrpolster|ersatzpolster|ladecase|ladeetui|kopfhorerstander|schutzhulle|reparaturset)$/.test(w)))return false;
  return true;
 }
-export function relevantTitle(title:string,query:string):boolean{
+export function relevantTitle(title:string,query:string,category?:string):boolean{
+ if(!matchesProductIntent(title,query,category))return false;
  const parts=words(query);
  const titleParts=words(title);
  if(parts.length===0||!parts.every(p=>titleParts.some(w=>w===p||w.startsWith(p))))return false;
@@ -146,7 +148,7 @@ export function beautyOffers(products:BeautyEntry[]):SearchOffer[]{
 export function anthbotOffers(products:readonly AnthbotProduct[]):SearchOffer[]{
   return products.flatMap(p=>cents(p.priceCents)!==null&&imageAt(p.image,"anthbot")&&affiliateAt(p.affiliateUrl,"anthbot")
     ?[{id:"anthbot:"+p.id,source:"anthbot" as const,merchant:merchantNames.anthbot,title:p.name,image:p.image,
-       href:p.affiliateUrl,articleCents:p.priceCents,shippingCents:null,condition:/generalüberholt/i.test(p.name)?"Generalüberholt":null,priceUpdated:"2026-10-16"}]
+       href:p.affiliateUrl,articleCents:p.priceCents,shippingCents:null,condition:/generalüberholt/i.test(p.name)?"Generalüberholt":null,priceUpdated:"2026-10-16",category:p.category}]
     :[]);
 }
 export function feedOffers(source:"joybuy"|"samsung"|"mactrade"|"imou",raw:unknown):SearchOffer[]{
@@ -162,7 +164,7 @@ export function feedOffers(source:"joybuy"|"samsung"|"mactrade"|"imou",raw:unkno
        !p.product_name||price===null||!imageAt(p.image_url,source)||!affiliateAt(p.affiliate_url,source))return [];
     const shipping=cents(source==="joybuy"?p.shipping_cents:p.delivery_cents,false);
     return [{id:source+":"+id,source,merchant:merchantNames[source],title:p.product_name,image:p.image_url,
-      href:p.affiliate_url,articleCents:price,shippingCents:shipping,condition:null,priceUpdated:source==="imou"?"2026-10-16":null}];
+      href:p.affiliate_url,articleCents:price,shippingCents:shipping,condition:null,priceUpdated:source==="imou"?"2026-10-16":null,category:typeof p.category==="string"?p.category:undefined}];
   });
 }
 export function ebayOffers(raw:unknown):SearchOffer[]{
@@ -207,7 +209,7 @@ export function sortOffers(offers:readonly SearchOffer[],sort:OfferSort,query=""
 export function rankedOffers(offers:SearchOffer[],query:string):SearchOffer[]{
   const seen=new Set<string>();
   return sortOffers(offers.filter(p=>{
-    if(seen.has(p.id)||!relevantTitle(p.title,query))return false;
+    if(seen.has(p.id)||!relevantTitle(p.title,query,p.category))return false;
     seen.add(p.id);return true;
   }),"article");
 }
